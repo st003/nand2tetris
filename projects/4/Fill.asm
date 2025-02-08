@@ -26,25 +26,47 @@
 // To set a specific bit in a word, do col % 16 to figure out what value to be
 // set in the word
 
-// TODO - handle user input
+// program is infinite loop
+(START)
 
+    // always start with display color white
+    @color
+    M=0
+
+    // get value of keyboard map
+    @KBD
+    D=M
+
+    // if D is greater than 0, keyboard is pressed
+    @BLACK
+    D;JGT
+
+    // otherwise jump to DISPLAY
+    @DISPLAY
+    0;JMP
+
+(BLACK)
+    @color
+    M=-1
+
+(DISPLAY)
     // declare variables for i, len, and cursor
-
     @i
     M=1
 
+    // set total number of iterations. In this case 32x255
     @8160
     D=A
     @len
     M=D
 
+    // set our cursor to start where the display map starts
     @SCREEN
     D=A
     @cursor
     M=D
 
 (RENDER)
-    // set value of i into D
     @i
     D=M
 
@@ -53,14 +75,19 @@
     @len
     D=D-M
 
-    // if d greater than 0, jump to END
-    @END
+    // if d greater than 0, terminate loop, and jump to START
+    @START
     D;JGT
 
-    // set value at cursor to -1
+    // otherwise, get current @color
+    @color
+    D=M
+
+    // set address register to value at cursor, which changes M
+    // and now set the register at M to @color
     @cursor
     A=M
-    M=-1
+    M=D
 
     // move address value stored in cursor foward 1
     @cursor
@@ -72,8 +99,4 @@
 
     // jump to render
     @RENDER
-    0;JMP
-
-(END)
-    @END
     0;JMP

@@ -33,13 +33,13 @@ CHIP Memory {
     // split IO load between SCREEN and KEYBOARD
     DMux(in=IOL, sel=address[13], a=SL, b=KL);
 
-    // SCREEN (made up of 2 RAM4k)
-    DMux(in=SL, sel=address[12], a=SL0, b=SL1);
-    RAM4K(in=in, load=SL0, address=address[0..11], out=scrnOut1);
-    RAM4K(in=in, load=SL1, address=address[0..11], out=scrnOut2);
+    // SCREEN
+    Screen(in=in, load=SL, address=address[0..12], out=scrnOut);
 
     // KEYBOARD
-    Register(in=in, load=KL, out=keyOut);
+    Keyboard(out=keyOut);
 
-    // TODO - select the RAM chip to pass out
+    // out
+    Mux16(a=scrnOut, b=keyOut, sel=address[13], out=ioOut);
+    Mux16(a=dataOut, b=ioOut, sel=address[14], out=out);
 }

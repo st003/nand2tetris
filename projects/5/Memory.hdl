@@ -25,16 +25,13 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    DMux(in=load, sel=address[14], a=DL, b=IOL);
+    DMux(in=load, sel=address[14], a=dataLoad, b=scrnLoad);
 
     // DATA
-    RAM16K(in=in, load=DL, address=address[0..13], out=dataOut);
-
-    // split IO load between SCREEN and KEYBOARD
-    DMux(in=IOL, sel=address[13], a=SL, b=KL);
+    RAM16K(in=in, load=dataLoad, address=address[0..13], out=dataOut);
 
     // SCREEN
-    Screen(in=in, load=SL, address=address[0..12], out=scrnOut);
+    Screen(in=in, load=scrnLoad, address=address[0..12], out=scrnOut);
 
     // KEYBOARD
     Keyboard(out=keyOut);

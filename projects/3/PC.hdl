@@ -12,14 +12,16 @@
 CHIP PC {
     IN in[16], reset, load, inc;
     OUT out[16];
-    
+
     PARTS:
     // in or repeated/incremented value
     Mux16(a=repeat, b=in, sel=load, out=loadOut);
+
     // reset
     Mux16(a=loadOut, b=false, sel=reset, out=resetOut);
-    //
+
     Register(in=resetOut, load=true, out=loopback, out=out);
+
     // increment or not
     Inc16(in=loopback, out=incOut);
     Mux16(a=loopback, b=incOut, sel=inc, out=repeat);

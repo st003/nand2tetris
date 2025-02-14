@@ -32,14 +32,73 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Instructions
-    // TODO - get ALU output for b
-    Mux16(a=instruction, b=true, sel=instruction[15], out=insMuxOut);
-    // TODO - is load always set high for the A-Register?
-    ARegister(in=insMuxOut, load=true, out=aRegOut);
+    // Instruction
+    Mux16(a=instruction, b=aluOut, sel=instruction[15], out=insMuxOut);
+
+    // A-Register
+    // if op-code is 0, always set the A-Register with the new address value
+    // else the A-Register's load bit is the value of instruction[5]
+    Mux(a=true, b=instruction[5], sel=instruction[15], out=aRegLoad);
+    // always send the first 15-bits of the A-Register to addressM
+    ARegister(in=insMuxOut, load=aRegLoad, out=aRegOut, out[0..14]=addressM);
 
     // inM
-    // TODO - Do I need to swap a & b?
-    // TODO - What controls sel?
-    Mux16(a=aRegOut, b=inM, sel=false, out=inMMuxOut);
+    // if op-code is 0, always pass the value of the A-Register
+    // else use instruction[12] to determine which value should be passed:
+    // A-Register or inM
+    Mux(a=false, b=instruction[12], sel=instruction[15], out=inMsel);
+    Mux16(a=aRegOut, b=inM, sel=inMsel, out=inMMuxOut);
+
+    // D-Register
+    // if op-code is 0, do not load the D-Register
+    // else use instruction[4] as the load bit
+    Mux(a=false, b=instruction[4], sel=instruction[15], out=dRegSel);
+    DRegister(in=aluOut, load=dRegSel, out=dRegOut);
+
+    // ALU
+    // Only set the ALU configuration bits during a c-instruction
+    Mux(a=false, b=instruction[11], sel=instruction[15], out=zx);
+    Mux(a=false, b=instruction[10], sel=instruction[15], out=nx);
+    Mux(a=false, b=instruction[9], sel=instruction[15], out=zy);
+    Mux(a=false, b=instruction[8], sel=instruction[15], out=ny);
+    Mux(a=false, b=instruction[7], sel=instruction[15], out=f);
+    Mux(a=false, b=instruction[6], sel=instruction[15], out=no);
+    // TODO - we might need to swap x & y
+    ALU(x=dRegOut, y=inMMuxOut, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=aluOut, out=outM, zr=zr, ng=ng);
+
+    // writeM
+    // when op-code is 1, set writeM to the value of instruction[3]
+    Mux(a=false, b=instruction[3], sel=instruction[15], out=writeM);
+
+    // PC
+    DMux8Way(in=true, sel=instruction[0..2], a=noJMP, b=cmdJGT, c=cmdJEQ, d=cmdJGE, e=cmdJLT, f=cmdJNE, g=cmdJLE, h=JMP);
+
+    Not(in=zr, out=notZr);
+    Not(in=ng, out=notNg);
+
+    // JGT
+    And(a=notZr, b=notZr, out=cmpJGT);
+    And(a=cmdJGT, b=cmpJGT, out=JGT);
+
+    // JEQ
+    And(a=zr, b=notNg, out=cmpJEQ);
+    And(a=cmdJEQ, b=cmpJEQ, out=JEQ);
+
+    // JGE
+    And(a=cmdJGE, b=notNg, out=JGE);
+
+    // JLT
+    And(a=notZr, b=ng, out=cmpJLT);
+    And(a=cmdJLT, b=cmpJLT, out=JLT);
+
+    // JNE
+    And(a=cmdJNE, b=notZr, out=JNE);
+
+    // JLE
+    And(a=zr, b=ng, out=cmpJLE);
+    And(a=cmdJLE, b=cmpJLE, out=JLE);
+
+    Or8Way(in[0]=false, in[1]=JGT, in[2]=JEQ, in[3]=JGE, in[4]=JLT, in[5]=JNE, in[6]=JLE, in[7]=JMP, out=loadPC);
+
+    PC(in=aRegOut, load=loadPC, inc=noJMP, reset=reset, out[0..14]=pc);
 }

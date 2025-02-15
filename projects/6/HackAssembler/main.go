@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"os"
 )
 
@@ -24,5 +25,11 @@ func main() {
 	}
 	defer file.Close()
 
+	start := time.Now()
+
 	fmt.Printf("Assembling %v\n", asmFilePath)
+
+	end := time.Now()
+	executionTime := float64(end.UnixMilli() - start.UnixMilli()) / float64(1000)
+	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
 }

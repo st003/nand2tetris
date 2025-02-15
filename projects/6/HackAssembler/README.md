@@ -4,7 +4,7 @@ An assembler for Nand2Tetris' Hack ASM written in the Go programming language.
 
 ## Getting Started
 
-TODO - Incomplete
+Here are instructions for installing and building the HackAssembler locally.
 
 ### Prerequisites
 
@@ -12,11 +12,17 @@ TODO - Incomplete
 
 ### Installing
 
-TODO - Incomplete
+Install the minimum required Go version and download the repository.
 
 ### Build
 
-TODO - Incomplete
+Navigate into the root of the HackAssembler directory and run the command:
+
+```
+go build
+```
+
+An executable called "ha" will be created.
 
 ## Usage
 
@@ -24,7 +30,7 @@ TODO - Incomplete
 
 ## Running the tests
 
-TODO - Incomplete
+There are no tests at this time.
 
 ## Authors
 

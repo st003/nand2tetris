@@ -26,7 +26,12 @@ An executable called "ha" will be created.
 
 ## Usage
 
-TODO - Incomplete
+To use the assembler, from the directory with the "ha" executable, run the command:
+
+Linux/MacOS
+```
+./ha <path-to-asm-file>
+```
 
 ## Running the tests
 

@@ -29,14 +29,7 @@ func main() {
 
 	fmt.Printf("Assembling %v\n", asmFilePath)
 
-	// TODO - assemble(inFile, outFile)
-
 	end := time.Now()
 	executionTime := float64(end.UnixMilli() - start.UnixMilli()) / float64(1000)
 	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
-}
-
-
-func assemble(inFile File) {
-	
 }

@@ -26,6 +26,20 @@ func main() {
 	}
 	defer inFile.Close()
 
+	start := time.Now()
+
+	fmt.Printf("Assembling %v\n", asmFilePath)
+	lines := parse(inFile)
+
+	end := time.Now()
+
+	makeOutFile(lines)
+
+	executionTime := float64(end.UnixMilli()-start.UnixMilli()) / float64(1000)
+	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
+}
+
+func parse(inFile *os.File) []string {
 	lines := make([]string, 0, 10)
 
 	scanner := bufio.NewScanner(inFile)
@@ -34,6 +48,10 @@ func main() {
 		lines = append(lines, line)
 	}
 
+	return lines
+}
+
+func makeOutFile(lines []string) {
 	outFile, err := os.Create("outfile.hack")
 	if err != nil {
 		fmt.Println("Error opening outfile.hack:", err)
@@ -46,12 +64,4 @@ func main() {
 		fmt.Println("Unable to write lines to outfile", err)
 		os.Exit(2)
 	}
-
-	start := time.Now()
-
-	fmt.Printf("Assembling %v\n", asmFilePath)
-
-	end := time.Now()
-	executionTime := float64(end.UnixMilli()-start.UnixMilli()) / float64(1000)
-	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
 }

@@ -33,7 +33,10 @@ func main() {
 
 	end := time.Now()
 
-	makeOutFile(lines)
+	err = makeOutFile(lines)
+	if err != nil {
+		os.Exit(1)
+	}
 
 	executionTime := float64(end.UnixMilli()-start.UnixMilli()) / float64(1000)
 	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
@@ -51,17 +54,19 @@ func parse(inFile *os.File) []string {
 	return lines
 }
 
-func makeOutFile(lines []string) {
+func makeOutFile(lines []string) error {
 	outFile, err := os.Create("outfile.hack")
 	if err != nil {
 		fmt.Println("Error opening outfile.hack:", err)
-		os.Exit(1)
+		return err
 	}
 	defer outFile.Close()
 
 	_, err = outFile.WriteString(strings.Join(lines, "\n"))
 	if err != nil {
 		fmt.Println("Unable to write lines to outfile", err)
-		os.Exit(2)
+		return err
 	}
+
+	return nil
 }

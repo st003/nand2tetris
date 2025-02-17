@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -29,32 +28,27 @@ func main() {
 	start := time.Now()
 
 	fmt.Printf("Assembling %v\n", asmFilePath)
-	lines := parse(inFile)
+	instructions := parse(inFile)
 
 	end := time.Now()
 
-	err = makeOutFile(lines)
+	err = makeOutFile(instructions)
 	if err != nil {
-		os.Exit(1)
+		os.Exit(2)
 	}
 
 	executionTime := float64(end.UnixMilli()-start.UnixMilli()) / float64(1000)
 	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
 }
 
-func parse(inFile *os.File) []string {
-	lines := make([]string, 0, 10)
+func makeOutFile(instructions []Instruction) error {
 
-	scanner := bufio.NewScanner(inFile)
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
+	lines := make([]string, 0)
+	for _, ins := range instructions {
+		lines = append(lines, ins.Binary)
 	}
 
-	return lines
-}
-
-func makeOutFile(lines []string) error {
+	// TODO - dynamically get file name
 	outFile, err := os.Create("outfile.hack")
 	if err != nil {
 		fmt.Println("Error opening outfile.hack:", err)

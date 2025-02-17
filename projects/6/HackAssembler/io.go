@@ -13,7 +13,7 @@ func getFileName(filePath string) (string, error) {
 
 	ext := filepath.Ext(fileNameWithExt)
 	if ext != ".asm" {
-		return "", fmt.Errorf("file named: \"%v\" does not have required asm extention", fileNameWithExt)
+		return "", fmt.Errorf("file named \"%v\" does not have required \".asm\" extention", fileNameWithExt)
 	}
 
 	fileNameParts := strings.Split(fileNameWithExt, ".")

@@ -52,3 +52,17 @@ func TestParseLabelLineSuccess(t *testing.T) {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 }
+
+func TestGetInstructionTypeA(t *testing.T) {
+	actual := getInstructionType("@256")
+	if actual != A_INS {
+		t.Fatalf("Actual value: %v does not equal expected value true", actual)
+	}
+}
+
+func TestGetInstructionTypeC(t *testing.T) {
+	actual := getInstructionType("0;JMP")
+	if actual != C_INS {
+		t.Fatalf("Actual value: %v does not equal expected value false", actual)
+	}
+}

@@ -8,10 +8,14 @@ import (
 )
 
 type Instruction struct {
+	Type       int
 	LineNumber int
 	Asm        string
 	Binary     string
 }
+
+const A_INS = 0
+const C_INS = 1
 
 var labels = make(map[string]int)
 
@@ -31,6 +35,13 @@ func isEmptyOrCommentLine(line string) bool {
 
 func isLabelLine(line string) bool {
 	return line[0] == '('
+}
+
+func getInstructionType(line string) int {
+	if line[0] == '@' {
+		return A_INS
+	}
+	return C_INS
 }
 
 func parseLabelLine(line string, lineNum int) error {
@@ -76,9 +87,14 @@ func parse(inFile *os.File) ([]Instruction, error) {
 			continue
 		}
 
-		ins := Instruction{lineNum, line, ""}
-		instructions = append(instructions, ins)
+		ins := Instruction{
+			getInstructionType(line),
+			lineNum,
+			line,
+			"",
+		}
 
+		instructions = append(instructions, ins)
 		lineNum++
 	}
 

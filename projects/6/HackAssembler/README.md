@@ -35,7 +35,11 @@ Linux/MacOS
 
 ## Running the tests
 
-There are no tests at this time.
+Navigate into the root of the HackAssembler directory and run the command:
+
+```
+go test
+```
 
 ## Authors
 

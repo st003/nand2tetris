@@ -27,10 +27,10 @@ func main() {
 	}
 	defer inFile.Close()
 
+	fmt.Printf("Assembling %v\n", asmFilePath)
 	start := time.Now()
 
-	fmt.Printf("Assembling %v\n", asmFilePath)
-	instructions := parse(inFile)
+	instructions := assemble(inFile)
 
 	end := time.Now()
 

@@ -38,7 +38,7 @@ func parseLabelLine(line string, lineNum int) error {
 
 	// LABEL) should return a minimum of two strings
 	if len(parts) < 2 {
-		return fmt.Errorf("syntax error with label instruction: %v", line)
+		return fmt.Errorf("syntax error at line %v with label instruction: %v", lineNum, line)
 	}
 
 	label := parts[0]
@@ -46,7 +46,7 @@ func parseLabelLine(line string, lineNum int) error {
 	labelCopy = strings.ToUpper(labelCopy)
 
 	if strings.Compare(label, labelCopy) != 0 {
-		return fmt.Errorf("syntax error. Label instruction must be uppercase: %v", label)
+		return fmt.Errorf("syntax error at line %v. Label instruction must be uppercase: %v", lineNum, label)
 	}
 
 	labels[label] = lineNum

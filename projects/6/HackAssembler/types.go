@@ -1,7 +1,6 @@
 package main
 
-const A_INS = 0
-const C_INS = 1
+// STRUCTS
 
 type Instruction struct {
 	Type       int
@@ -9,5 +8,12 @@ type Instruction struct {
 	Asm        string
 	Binary     string
 }
+
+// CONSTANTS
+
+const A_INS = 0
+const C_INS = 1
+
+// LABELS & SYMBOLS
 
 var labels = make(map[string]int)

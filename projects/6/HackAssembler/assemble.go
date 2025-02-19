@@ -1,14 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
 
-func assembleAInstruction(asm string) string {
+func assembleAInstruction(ins Instruction) string {
+
 	// clear out any trailing whitespace and comments
 	end := -1
-	for i, c := range asm {
+	for i, c := range ins.Asm {
 		if c == ' ' || c == '/' {
 			end = i
 			break
@@ -16,18 +18,32 @@ func assembleAInstruction(asm string) string {
 	}
 
 	if end != -1 {
-		asm = asm[:end]
+		ins.Asm = ins.Asm[:end]
 	}
 
-	value := asm[1:]
-	lineNum, ok := labels[value]
-	if ok {
-		asm = "@" + strconv.Itoa(lineNum)
+	// ignore the '@'
+	value := ins.Asm[1:]
+
+	// check if instruction contains any labels
+	address, ok := labels[value]
+
+	// if no label is found, parse address string to an int
+	if !ok {
+		intValue, err := strconv.Atoi(value)
+		if err != nil {
+			// TODO - create new label?
+		}
+
+		// TODO - add a a negative number check
+		// TODO - add a max address value argument
+
+		address = intValue
 	}
 
-	// TODO - convert asm into binary
+	// convert to  binary representation of value
+	binary := "0" + fmt.Sprintf("%015b", address)
 
-	return asm
+	return binary
 }
 
 func assemble(inFile *os.File) ([]Instruction, error) {
@@ -44,7 +60,7 @@ func assemble(inFile *os.File) ([]Instruction, error) {
 	for i, ins := range instructions {
 
 		if ins.Type == A_INS {
-			binary := assembleAInstruction(ins.Asm)
+			binary := assembleAInstruction(ins)
 			instructions[i].Binary = binary
 
 		} else {

@@ -30,10 +30,11 @@ func assembleAInstruction(ins Instruction) (string, error) {
 	// if no label is found, parse address string to an int
 	if !ok {
 		intValue, err := strconv.Atoi(value)
+
+		// if not an int, create a new variable label
 		if err != nil {
-			labels[value] = varLabelAddress
-			intValue = varLabelAddress
-			// increment varLabelAddress so next new variable will get a new address
+			intValue, labels[value] = varLabelAddress, varLabelAddress
+			// next new variable will get a new address
 			varLabelAddress++
 		}
 
@@ -48,7 +49,7 @@ func assembleAInstruction(ins Instruction) (string, error) {
 		address = intValue
 	}
 
-	// convert to  binary representation of value
+	// convert to binary representation of value
 	binary := "0" + fmt.Sprintf("%015b", address)
 
 	return binary, nil

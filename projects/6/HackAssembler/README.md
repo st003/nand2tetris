@@ -8,7 +8,7 @@ Here are instructions for installing and building the HackAssembler locally.
 
 ### Prerequisites
 
-* Go version 1.22.X+
+* Go version 1.23.X+
 
 ### Installing
 

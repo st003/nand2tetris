@@ -19,8 +19,7 @@ const MAX_ADDRESS = 32_767
 
 // LABELS & SYMBOLS
 
-// Hack ASM specification states variable label address
-// start at 16
+// Hack ASM specification states variable label addresses start at 16
 var varLabelAddress int = 16
 
 // predefined labels from the Hack ASM specification

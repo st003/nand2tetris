@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func assembleAInstruction(ins Instruction) string {
+func assembleAInstruction(ins Instruction) (string, error) {
 
 	// clear out any trailing whitespace and comments
 	end := -1
@@ -31,11 +31,19 @@ func assembleAInstruction(ins Instruction) string {
 	if !ok {
 		intValue, err := strconv.Atoi(value)
 		if err != nil {
-			// TODO - create new label?
+			labels[value] = varLabelAddress
+			intValue = varLabelAddress
+			// increment varLabelAddress so next new variable will get a new address
+			varLabelAddress++
 		}
 
-		// TODO - add a a negative number check
-		// TODO - add a max address value argument
+		if intValue < 0 {
+			return "", fmt.Errorf("syntax error at line %v. Label cannot represent negative number", ins.LineNumber)
+		}
+
+		if intValue > MAX_ADDRESS {
+			return "", fmt.Errorf("syntax error at line %v. Address value cannot exceed %v", ins.LineNumber, MAX_ADDRESS)
+		}
 
 		address = intValue
 	}
@@ -43,7 +51,7 @@ func assembleAInstruction(ins Instruction) string {
 	// convert to  binary representation of value
 	binary := "0" + fmt.Sprintf("%015b", address)
 
-	return binary
+	return binary, nil
 }
 
 func assemble(inFile *os.File) ([]Instruction, error) {
@@ -60,7 +68,10 @@ func assemble(inFile *os.File) ([]Instruction, error) {
 	for i, ins := range instructions {
 
 		if ins.Type == A_INS {
-			binary := assembleAInstruction(ins)
+			binary, err := assembleAInstruction(ins)
+			if err != nil {
+				return nil, err
+			}
 			instructions[i].Binary = binary
 
 		} else {

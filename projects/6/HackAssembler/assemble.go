@@ -39,11 +39,11 @@ func assembleAInstruction(ins Instruction) (string, error) {
 		}
 
 		if intValue < 0 {
-			return "", fmt.Errorf("syntax error at line %v. Label cannot represent negative number", ins.LineNumber)
+			return "", fmt.Errorf("syntax error at line %v. Label cannot represent negative number", ins.FileLine)
 		}
 
 		if intValue > MAX_ADDRESS {
-			return "", fmt.Errorf("syntax error at line %v. Address value cannot exceed %v", ins.LineNumber, MAX_ADDRESS)
+			return "", fmt.Errorf("syntax error at line %v. Address value cannot exceed %v", ins.FileLine, MAX_ADDRESS)
 		}
 
 		address = intValue
@@ -55,6 +55,84 @@ func assembleAInstruction(ins Instruction) (string, error) {
 	return binary, nil
 }
 
+func assembleCInstruction(ins Instruction) (string, error) {
+
+	// default values
+	const opt = "111"
+	var comp string
+	dest := "000"
+	jump := "000"
+
+	equalsPos := 0
+	semiPos := 0
+
+	// locate '=' and ';' characters and skip trailing whitespace/comments
+	insEnd := len(ins.Asm)
+	for i, c := range ins.Asm {
+		if c == '=' {
+			equalsPos = i
+		} else if c == ';' {
+			semiPos = i
+		} else if c == ' ' || c == '/' {
+			insEnd = i
+			break
+		}
+	}
+
+	cleanAsm := ins.Asm[:insEnd]
+
+	// c-instructions must have either a '=' or a ';'
+	if (equalsPos == 0) && (semiPos == 0) {
+		return "", fmt.Errorf("sytanx error at line %v. \"%v\" is not a valid c-instruction", ins.FileLine, cleanAsm)
+	}
+
+	var compStart int
+	var symbol string
+	var ok bool
+
+	// get dest symbol
+	if equalsPos > 0 {
+		var ok bool
+		symbol = cleanAsm[:equalsPos]
+		dest, ok = destSymbols[symbol]
+		if !ok {
+			return "", fmt.Errorf("sytanx error at line %v. \"%v\" is not a valid dest symbol", ins.FileLine, symbol)
+		}
+		compStart = equalsPos + 1
+	}
+
+	// get comp symbol
+	if semiPos > 0 {
+		symbol = cleanAsm[compStart:semiPos]
+	} else {
+		symbol = cleanAsm[compStart:]
+	}
+
+	comp, ok = compSymbols[symbol]
+	if !ok {
+		return "", fmt.Errorf("sytanx error at line %v. \"%v\" is not a valid comp symbol", ins.FileLine, symbol)
+	}
+
+	// get jump symbol
+	if semiPos > 0 {
+		symbol = cleanAsm[(semiPos + 1):]
+		if len(symbol) > 0 {
+			jump, ok = jumpSymbols[symbol]
+			if !ok {
+				return "", fmt.Errorf("sytanx error at line %v. \"%v\" is not a valid jump symbol", ins.FileLine, symbol)
+			}
+		}
+	}
+
+	if len(comp) == 0 {
+		return "", fmt.Errorf("comp bits have not been set for instruction at line %v", ins.FileLine)
+	}
+
+	binary := opt + comp + dest + jump
+
+	return binary, nil
+}
+
 func assemble(inFile *os.File) ([]Instruction, error) {
 
 	instructions, err := parse(inFile)
@@ -62,22 +140,21 @@ func assemble(inFile *os.File) ([]Instruction, error) {
 		return nil, err
 	}
 
-	// TODO:
-	// load symbol tables
-	// parse and assemble asm into machine code
-
 	for i, ins := range instructions {
 
-		if ins.Type == A_INS {
-			binary, err := assembleAInstruction(ins)
-			if err != nil {
-				return nil, err
-			}
-			instructions[i].Binary = binary
+		var binary string
+		var err error
 
+		if ins.Type == A_INS {
+			binary, err = assembleAInstruction(ins)
 		} else {
-			instructions[i].Binary = instructions[i].Asm
+			binary, err = assembleCInstruction(ins)
 		}
+
+		if err != nil {
+			return nil, err
+		}
+		instructions[i].Binary = binary
 	}
 
 	return instructions, nil

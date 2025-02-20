@@ -7,6 +7,13 @@ import (
 	"strings"
 )
 
+func getInstructionType(line string) int {
+	if line[0] == '@' {
+		return A_INS
+	}
+	return C_INS
+}
+
 func isEmptyOrCommentLine(line string) bool {
 	if len(line) == 0 {
 		return true
@@ -21,35 +28,21 @@ func isEmptyOrCommentLine(line string) bool {
 	return false
 }
 
-func isLabelLine(line string) bool {
-	return line[0] == '('
+func isLabelLine(ins Instruction) bool {
+	return ins.Asm[0] == '('
 }
 
-func getInstructionType(line string) int {
-	if line[0] == '@' {
-		return A_INS
-	}
-	return C_INS
-}
-
-func parseLabelLine(line string, lineNum int) error {
-	trimmed := strings.TrimLeft(line, "(")
+func parseLabelLine(ins Instruction) error {
+	trimmed := strings.TrimLeft(ins.Asm, "(")
 	parts := strings.Split(trimmed, ")")
 
 	// LABEL) should return a minimum of two strings
 	if len(parts) < 2 {
-		return fmt.Errorf("syntax error at line %v. Label missing closing parenthesis: %v", lineNum, line)
+		return fmt.Errorf("syntax error at line %v. Label missing closing parenthesis: %v", ins.FileLine, ins.Asm)
 	}
 
 	label := parts[0]
-	labelCopy := strings.Clone(label)
-	labelCopy = strings.ToUpper(labelCopy)
-
-	if strings.Compare(label, labelCopy) != 0 {
-		return fmt.Errorf("syntax error at line %v. Label instruction must be uppercase", lineNum)
-	}
-
-	labels[label] = lineNum
+	labels[label] = ins.ProgramLine
 
 	return nil
 }
@@ -57,33 +50,43 @@ func parseLabelLine(line string, lineNum int) error {
 func parse(inFile *os.File) ([]Instruction, error) {
 
 	instructions := make([]Instruction, 0)
-	lineNum := 0
+
+	fileLineNum := 0
+	programLineNum := 0
 
 	scanner := bufio.NewScanner(inFile)
 	for scanner.Scan() {
+
 		line := strings.Trim(scanner.Text(), " ")
+
+		// always increment the file line number
+		fileLineNum++
 
 		if isEmptyOrCommentLine(line) {
 			continue
 		}
 
-		if isLabelLine(line) {
-			err := parseLabelLine(line, lineNum)
+		ins := Instruction{
+			getInstructionType(line),
+			fileLineNum,
+			programLineNum,
+			line,
+			"",
+		}
+
+		if isLabelLine(ins) {
+			err := parseLabelLine(ins)
 			if err != nil {
 				return nil, err
 			}
 			continue
 		}
 
-		ins := Instruction{
-			getInstructionType(line),
-			lineNum,
-			line,
-			"",
-		}
-
 		instructions = append(instructions, ins)
-		lineNum++
+
+		// only increment the program line number if
+		// comment/whitespace/label checks pass
+		programLineNum++
 	}
 
 	return instructions, nil

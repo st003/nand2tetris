@@ -2,7 +2,21 @@ package main
 
 import "testing"
 
-func TestIsInvalidInstructionEmptyLine(t *testing.T) {
+func TestGetInstructionType_A(t *testing.T) {
+	actual := getInstructionType("@256")
+	if actual != A_INS {
+		t.Fatalf("Actual value: %v does not equal expected value true", actual)
+	}
+}
+
+func TestGetInstructionType_C(t *testing.T) {
+	actual := getInstructionType("0;JMP")
+	if actual != C_INS {
+		t.Fatalf("Actual value: %v does not equal expected value false", actual)
+	}
+}
+
+func TestIsisEmptyOrCommentLine_EmptyLine(t *testing.T) {
 	expected := true
 	actual := isEmptyOrCommentLine("")
 	if actual != expected {
@@ -10,7 +24,7 @@ func TestIsInvalidInstructionEmptyLine(t *testing.T) {
 	}
 }
 
-func TestIsInvalidInstructionComments(t *testing.T) {
+func TestIsisEmptyOrCommentLine_Comment(t *testing.T) {
 	expected := true
 	actual := isEmptyOrCommentLine("// comment line")
 	if actual != expected {
@@ -18,51 +32,35 @@ func TestIsInvalidInstructionComments(t *testing.T) {
 	}
 }
 
-func TestIsLabelLineIsLabel(t *testing.T) {
+func TestIsLabelLine_IsLabel(t *testing.T) {
+	input := Instruction{-1, 1, 0, "(LABEL)", ""}
 	expected := true
-	actual := isLabelLine("(LABEL)")
+	actual := isLabelLine(input)
 	if actual != expected {
 		t.Fatalf("Actual value: %v does not equal expected value: %v", actual, expected)
 	}
 }
-func TestIsLabelLineIsNotLabel(t *testing.T) {
+func TestIsLabelLine_IsNotLabel(t *testing.T) {
+	input := Instruction{-1, 1, 0, "@LABEL", ""}
 	expected := false
-	actual := isLabelLine("@LABEL")
+	actual := isLabelLine(input)
 	if actual != expected {
 		t.Fatalf("Actual value: %v does not equal expected value: %v", actual, expected)
 	}
 }
 
-func TestParseLabelLineMissingParenthesis(t *testing.T) {
-	err := parseLabelLine("(LABEL", 0)
+func TestParseLabelLine_MissingParenthesis(t *testing.T) {
+	input := Instruction{-1, 1, 0, "(LABEL", ""}
+	err := parseLabelLine(input)
 	if err == nil {
 		t.Fatalf("Expected error when none was received")
 	}
 }
 
-func TestParseLabelLineLowercase(t *testing.T) {
-	err := parseLabelLine("(label)", 0)
-	if err == nil {
-		t.Fatalf("Expected error when none was received")
-	}
-}
-func TestParseLabelLineSuccess(t *testing.T) {
-	err := parseLabelLine("(LABEL)", 0)
+func TestParseLabelLine_Success(t *testing.T) {
+	input := Instruction{-1, 1, 0, "(LABEL)", ""}
+	err := parseLabelLine(input)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
-	}
-}
-
-func TestGetInstructionTypeA(t *testing.T) {
-	actual := getInstructionType("@256")
-	if actual != A_INS {
-		t.Fatalf("Actual value: %v does not equal expected value true", actual)
-	}
-}
-
-func TestGetInstructionTypeC(t *testing.T) {
-	actual := getInstructionType("0;JMP")
-	if actual != C_INS {
-		t.Fatalf("Actual value: %v does not equal expected value false", actual)
 	}
 }

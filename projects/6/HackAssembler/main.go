@@ -45,7 +45,7 @@ func main() {
 		os.Exit(4)
 	}
 
-	executionTime := float64(end.UnixMilli()-start.UnixMilli()) / float64(1000)
-	fmt.Printf("\nDone. Assembly time: %v seconds\n", executionTime)
+	executionTime := float64(end.UnixMicro()-start.UnixMicro()) / float64(1000000)
+	fmt.Printf("\nDone. Assembly time: %.5f seconds\n", executionTime)
 	os.Exit(0)
 }

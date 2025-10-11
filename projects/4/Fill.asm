@@ -3,9 +3,9 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/4/Fill.asm
 
-// Runs an infinite loop that listens to the keyboard input. 
+// Runs an infinite loop that listens to the keyboard input.
 // When a key is pressed (any key), the program blackens the screen,
-// i.e. writes "black" in every pixel. When no key is pressed, 
+// i.e. writes "black" in every pixel. When no key is pressed,
 // the screen should be cleared.
 
 // Keyboard:
@@ -54,8 +54,8 @@
     @i
     M=1
 
-    // set total number of iterations. In this case 32x255
-    @8160
+    // set total number of iterations. In this case 32x256 (0-indexed)
+    @8192
     D=A
     @len
     M=D

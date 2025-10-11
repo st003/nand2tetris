@@ -20,7 +20,7 @@
 // 32 "columns" (also know as word) of 16-bit numbers make up a single row
 // The decimal value of -1 is the same as all 16-bits being set to 1
 // @SCREEN is the start address for the display map
-// memory address of "world" = (32 * row) + col / 16
+// memory address of "word" = (32 * row) + col / 16
 // where row is 0-255 and col is 0-512
 //
 // To set a specific bit in a word, do col % 16 to figure out what value to be

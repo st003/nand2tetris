@@ -7,7 +7,7 @@ Project 6 contains the source code for an assembler and several programs for tes
 The contents of Project 6 are as follows:
 
 * **HackAssembler** - An assembler for Nand2Tetris' Hack ASM written in Go
-* **tests** - Programs written in Nand2Tetris' Hack ASM. Used for testing the assembler
+* **test_files** - Programs written in Nand2Tetris' Hack ASM. Used for testing the assembler
 
 ## Authors
 

@@ -16,7 +16,7 @@ Install the minimum required Go version and download the repository.
 
 ### Build
 
-Navigate into the root of the HackAssembler directory and run the command:
+Navigate into src directory and run the command:
 
 ```
 go build
@@ -35,7 +35,7 @@ Linux/MacOS
 
 ## Running the tests
 
-Navigate into the root of the HackAssembler directory and run the command:
+Navigate into the src directory and run the command:
 
 ```
 go test

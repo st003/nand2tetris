@@ -2,7 +2,7 @@ import sys
 import traceback
 
 from exceptions import VMTranslatorError
-from utils import is_valid_vm_file
+from utils import clean_input_lines, is_valid_vm_file
 
 def main():
 
@@ -17,9 +17,12 @@ def main():
 
         is_valid_vm_file(input_file_name)
 
+        vm_commands: list[str] = []
+        with open(input_file_name, 'r') as vm_file:
+            lines = vm_file.readlines()
+            vm_commands = clean_input_lines(lines)
+
         # TODO:
-        # load file into memory
-        # parse input lines, removing comments & whitespace
         # translate into Hack ASM
         # write output to .asm file of the same name
 

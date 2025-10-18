@@ -11,7 +11,7 @@ _Note: Python used to simplify the assignment submission proccess. I would have 
 To verifiy the minimum supported version, install 'mypy', navigate to the src directory and run the command:
 
 ```
-mypy --python-version 3.9 .
+mypy --check-untyped-defs --python-version 3.9 .
 ```
 
 ## Usage

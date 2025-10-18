@@ -2,7 +2,7 @@
 
 A VM translator for Nand2Tetris' stack-based VM instructions written in the Python programming language.
 
-_Note: Python used to simplify the assignment submission proccess. I would have prefered to write this in Go._
+_Note: Python used to simplify the assignment submission proccess. I would have preferred to write this in Go._
 
 ## Prerequisites
 

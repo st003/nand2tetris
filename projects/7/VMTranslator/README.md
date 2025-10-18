@@ -25,7 +25,11 @@ python VMTranslator.py
 
 ## Running the tests
 
-There are no tests at this time.
+From the src directory, run the command:
+
+```
+python -m unittest tests.py
+```
 
 ## Authors
 

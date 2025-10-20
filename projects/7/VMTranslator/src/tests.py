@@ -1,5 +1,6 @@
 import unittest
 
+import instructions as ins
 from exceptions import ParseError, VMTranslatorError
 from parser import parse_instruction
 from translator import skip_line
@@ -8,9 +9,59 @@ from utils import get_vm_file_name
 class TestParser(unittest.TestCase):
 
     def test_parse_instruction_two_parts(self):
-        """The instruction has two parts"""
+        """The instruction has two parts."""
         with self.assertRaises(ParseError):
             parse_instruction(1, 'one two')
+
+    def test_parse_instruction_invalid_single_command(self):
+        """Invalid arithmetic/logical instruction."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'fake')
+
+    def test_parse_instruction_add(self):
+        """Test add command"""
+        output = parse_instruction(1, 'add')
+        self.assertIsInstance(output, ins.AddInstruction)
+
+    def test_parse_instruction_sub(self):
+        """Test sub command"""
+        output = parse_instruction(1, 'sub')
+        self.assertIsInstance(output, ins.SubInstruction)
+
+    def test_parse_instruction_neg(self):
+        """Test neg command"""
+        output = parse_instruction(1, 'neg')
+        self.assertIsInstance(output, ins.NegInstruction)
+
+    def test_parse_instruction_eq(self):
+        """Test eq command"""
+        output = parse_instruction(1, 'eq')
+        self.assertIsInstance(output, ins.EqInstruction)
+
+    def test_parse_instruction_gt(self):
+        """Test gt command"""
+        output = parse_instruction(1, 'gt')
+        self.assertIsInstance(output, ins.GtInstruction)
+
+    def test_parse_instruction_lt(self):
+        """Test lt command"""
+        output = parse_instruction(1, 'lt')
+        self.assertIsInstance(output, ins.LtInstruction)
+
+    def test_parse_instruction_and(self):
+        """Test and command"""
+        output = parse_instruction(1, 'and')
+        self.assertIsInstance(output, ins.AndInstruction)
+
+    def test_parse_instruction_or(self):
+        """Test or command"""
+        output = parse_instruction(1, 'or')
+        self.assertIsInstance(output, ins.OrInstruction)
+
+    def test_parse_instruction_not(self):
+        """Test not command"""
+        output = parse_instruction(1, 'not')
+        self.assertIsInstance(output, ins.NotInstruction)
 
 class TestTranslator(unittest.TestCase):
 
@@ -31,6 +82,8 @@ class TestTranslator(unittest.TestCase):
         input = '// comment'.strip().lower()
         output = skip_line(input)
         self.assertTrue(output)
+
+    # TODO: add translator tests
 
 class TestUtils(unittest.TestCase):
 

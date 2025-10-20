@@ -1,0 +1,16 @@
+from parser import parse_instruction
+
+def skip_line(line: str) -> bool:
+    """Determines if a line should be parsed."""
+    if (not len(line)) or (line[0] == '/'):
+        return True
+    return False
+
+def translate(lines: list[str]) -> list[str]:
+
+    for line in lines:
+        clean_line = line.strip().lower()
+        if skip_line(clean_line):
+            continue
+
+    return []

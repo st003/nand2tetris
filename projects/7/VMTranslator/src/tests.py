@@ -1,28 +1,42 @@
 import unittest
 
 from exceptions import VMTranslatorError
-from utils import clean_input_lines, is_valid_vm_file
+from translator import skip_line
+from utils import get_vm_file_name
+
+class TestTranslator(unittest.TestCase):
+
+    def test_skip_line_no_skip(self):
+        """No skip."""
+        input = 'push constant 1'.strip().lower()
+        output = skip_line(input)
+        self.assertFalse(output)
+
+    def test_skip_line_empty(self):
+        """Test lines with no content."""
+        input = '\n'.strip().lower()
+        output = skip_line(input)
+        self.assertTrue(output)
+
+    def test_skip_line_comment(self):
+        """Test comment line."""
+        input = '// comment'.strip().lower()
+        output = skip_line(input)
+        self.assertTrue(output)
 
 class TestUtils(unittest.TestCase):
 
-    def test_clean_input_lines(self):
-        """."""
-        lines = ['\n', '// comment', ' push CONSTANT 1 // inline comment ']
-        expected = ['push constant 1 // inline comment']
-        output = clean_input_lines(lines)
-        self.assertEqual(expected, output)
-
-    def test_is_valid_vm_file_success(self):
+    def test_iget_vm_file_name_success(self):
         """Correct result with valid input."""
-        result = is_valid_vm_file('test.vm')
-        self.assertIsNone(result)
+        result = get_vm_file_name('test.vm')
+        self.assertEqual(result, 'test')
 
-    def test_is_valid_vm_file_missing_extension(self):
+    def test_get_vm_file_name_missing_extension(self):
         """Missing file extension."""
         with self.assertRaises(VMTranslatorError):
-            is_valid_vm_file('test')
+            get_vm_file_name('test')
 
-    def test_is_valid_vm_file_wrong_extension(self):
+    def test_get_vm_file_name_wrong_extension(self):
         """Incorrect file extension."""
         with self.assertRaises(VMTranslatorError):
-            is_valid_vm_file('test.asm')
+            get_vm_file_name('test.asm')

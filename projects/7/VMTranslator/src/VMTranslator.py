@@ -2,7 +2,8 @@ import sys
 import traceback
 
 from exceptions import VMTranslatorError
-from utils import clean_input_lines, is_valid_vm_file
+from translator import translate
+from utils import get_vm_file_name
 
 def main():
 
@@ -13,18 +14,18 @@ def main():
         sys.exit(1)
 
     try:
-        input_file_name = args[1]
+        input_file_path = args[1]
 
-        is_valid_vm_file(input_file_name)
+        file_name = get_vm_file_name(input_file_path)
 
-        vm_commands: list[str] = []
-        with open(input_file_name, 'r') as vm_file:
-            lines = vm_file.readlines()
-            vm_commands = clean_input_lines(lines)
+        input_lines: list[str] = []
+        with open(input_file_path, 'r') as vm_file:
+            input_lines = vm_file.readlines()
 
-        # TODO:
-        # translate into Hack ASM
-        # write output to .asm file of the same name
+        asm_lines = translate(input_lines)
+
+        with open(f'{file_name}.asm', 'w') as asm_file:
+            asm_file.writelines(asm_lines)
 
     except VMTranslatorError as error:
         print(f'Error: {error}')

@@ -1,8 +1,16 @@
 import unittest
 
-from exceptions import VMTranslatorError
+from exceptions import ParseError, VMTranslatorError
+from parser import parse_instruction
 from translator import skip_line
 from utils import get_vm_file_name
+
+class TestParser(unittest.TestCase):
+
+    def test_parse_instruction_two_parts(self):
+        """The instruction has two parts"""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'one two')
 
 class TestTranslator(unittest.TestCase):
 

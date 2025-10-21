@@ -23,6 +23,6 @@ def translate(lines: list[str]) -> list[str]:
 
     asm: list[str] = []
     for ins in instructions:
-        asm.extend(ins.to_asm())
+        asm.append(ins.to_asm())
 
     return asm

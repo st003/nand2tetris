@@ -6,6 +6,8 @@ class BaseInstruction():
     def to_asm(self) -> list[str]:
         return []
 
+# arithmetic/logical instructions
+
 class AddInstruction(BaseInstruction):
     pass
 
@@ -31,4 +33,12 @@ class OrInstruction(BaseInstruction):
     pass
 
 class NotInstruction(BaseInstruction):
+    pass
+
+# memory instructions
+
+class PushInstruction(BaseInstruction):
+    pass
+
+class PopInstruction(BaseInstruction):
     pass

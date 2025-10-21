@@ -13,11 +13,6 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(ParseError):
             parse_instruction(1, 'one two')
 
-    def test_parse_instruction_invalid_single_command(self):
-        """Invalid arithmetic/logical instruction."""
-        with self.assertRaises(ParseError):
-            parse_instruction(1, 'fake')
-
     def test_parse_instruction_add(self):
         """Test add command"""
         output = parse_instruction(1, 'add')
@@ -62,6 +57,41 @@ class TestParser(unittest.TestCase):
         """Test not command"""
         output = parse_instruction(1, 'not')
         self.assertIsInstance(output, ins.NotInstruction)
+
+    def test_parse_instruction_invalid_single_command(self):
+        """Invalid arithmetic/logical instruction."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'fake')
+
+    def test_parse_instruction_push(self):
+        """Test push command"""
+        output = parse_instruction(1, 'push static 1')
+        self.assertIsInstance(output, ins.PushInstruction)
+
+    def test_parse_instruction_pop(self):
+        """Test pop command"""
+        output = parse_instruction(1, 'pop static 1')
+        self.assertIsInstance(output, ins.PopInstruction)
+
+    def test_parse_instruction_invalid_memory_command(self):
+        """Invalid memory instruction."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'fake static 1')
+
+    def test_parse_instruction_invalid_memory_segment(self):
+        """Invalid memory segment."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'push fake 1')
+
+    def test_parse_instruction_invalid_offset_character(self):
+        """Invalid offset character."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'push fake a')
+
+    def test_parse_instruction_invalid_offset_number(self):
+        """Invalid offset character number."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'push fake 0')
 
 class TestTranslator(unittest.TestCase):
 

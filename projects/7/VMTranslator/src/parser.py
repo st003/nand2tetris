@@ -23,10 +23,10 @@ def parse_instruction(line_num: int, line: str) -> ins.BaseInstruction:
 
             try:
                 offset = int(parts[2])
-                if offset <= 0:
-                    raise ValueError(f'{offset} is not greater than 0')
+                if offset < 0:
+                    raise ValueError(f'{offset} is less than 0')
             except ValueError:
-                raise ParseError(f'Invalid vm instruction "{line}" at line {line_num}. "{parts[2]}" is not a postive integer.')
+                raise ParseError(f'Invalid vm instruction "{line}" at line {line_num}. "{parts[2]}" is not a valid offset.')
 
             return MEMORY_INS_MAP[parts[0]](line_num, parts[:3])
         else:

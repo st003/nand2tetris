@@ -21,5 +21,8 @@ def translate(lines: list[str]) -> list[str]:
         ins = parse_instruction(line_num, clean_line)
         instructions.append(ins)
 
-    # TODO: TEMP
-    return []
+    asm: list[str] = []
+    for ins in instructions:
+        asm.extend(ins.to_asm())
+
+    return asm

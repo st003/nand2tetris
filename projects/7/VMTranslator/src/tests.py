@@ -91,7 +91,7 @@ class TestParser(unittest.TestCase):
     def test_parse_instruction_invalid_offset_number(self):
         """Invalid offset character number."""
         with self.assertRaises(ParseError):
-            parse_instruction(1, 'push fake 0')
+            parse_instruction(1, 'push constant -1')
 
 class TestTranslator(unittest.TestCase):
 

@@ -24,5 +24,6 @@ def translate(lines: list[str]) -> list[str]:
     asm: list[str] = []
     for ins in instructions:
         asm.append(ins.to_asm())
+        # TODO: Add inifite loop at end of program
 
     return asm

@@ -14,12 +14,10 @@ class AddInstruction(BaseInstruction):
         self._asm = [
             '// add',
             '@SP',
-            'A=M-1', # select the last value in stack
-            'D=M', # make copy of top of stack
-            'A=M-1', # TODO: select the second to last value on the stack
-            'M=D+M', # add top two values of stack and store in stack
-            '@SP', # move the stack-pointer down
-            'M=M-1'
+            'AM=M-1', # deincrement stack-pointer & select new stack location
+            'D=M', # copy value at stack-pointer
+            'A=A-1', # select position stack-pointer - 1
+            'M=D+M' # update value with sum
         ]
 
 class SubInstruction(BaseInstruction):

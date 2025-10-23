@@ -9,7 +9,7 @@ class BaseInstruction():
 # arithmetic/logical instructions
 
 class AddInstruction(BaseInstruction):
-
+    """Generates the Hack ASM for an add command."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// add',
@@ -17,11 +17,20 @@ class AddInstruction(BaseInstruction):
             'AM=M-1', # deincrement stack-pointer & select new stack location
             'D=M', # copy value at stack-pointer
             'A=A-1', # select position stack-pointer - 1
-            'M=D+M' # update value with sum
+            'M=D+M' # update stack with sum of both values
         ]
 
 class SubInstruction(BaseInstruction):
-    pass
+    """Generates the Hack ASM for a sub command."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// sub',
+            '@SP',
+            'AM=M-1', # deincrement stack-pointer & select new stack location
+            'D=M', # copy value at stack-pointer
+            'A=A-1', # select position stack-pointer - 1
+            'M=M-D' # update stack with difference of both values
+        ]
 
 class NegInstruction(BaseInstruction):
     pass

@@ -5,3 +5,7 @@ class VMTranslatorError(Exception):
 class ParseError(VMTranslatorError):
     """Errors thrown by the parser"""
     pass
+
+class TranslationError(VMTranslatorError):
+    """Errors thrown by the translator"""
+    pass

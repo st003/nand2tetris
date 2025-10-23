@@ -74,7 +74,7 @@ class PushInstruction(BaseInstruction):
         self._asm = [
             self.get_comment(),
             self.get_value_from_segment(),
-            # This asm is the same for memory segements
+            # This asm is the same for all memory segements
             '@SP', # select top of stack
             'A=M',
             'M=D', # set constant value to top of stack
@@ -94,6 +94,20 @@ class PushInstruction(BaseInstruction):
         """Generates a comment line of the original VM instruction."""
         return '// ' + ' '.join(self._parts)
 
+    def get_static(self) -> str:
+        """
+        Get value from static memory segment.
+
+        The specification says static occupies addresses 16-255, but as
+        the 0-index for the stack is implementation specific, we do not
+        have static-overflow checking
+        """
+        asm = [
+            f'@static.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
+            'D=M' # get the value stored at that address
+        ]
+        return '\n'.join(asm)
+
     def get_constant(self) -> str:
         """Selects a constant value."""
         asm = [
@@ -106,7 +120,9 @@ class PushInstruction(BaseInstruction):
         """Selects the correct segment asm method."""
         seg = self.get_memory_segment()
 
-        if seg == 'constant':
+        if seg == 'static':
+            return self.get_static()
+        elif seg == 'constant':
             return self.get_constant()
         else:
             raise TranslationError(f'Memory segement "{seg}" not recognized')

@@ -86,7 +86,16 @@ class OrInstruction(BaseInstruction):
         ]
 
 class NotInstruction(BaseInstruction):
-    pass
+    """Generates the Hack ASM for the 'not' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// not',
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
+            'M=!M', # flip the sign
+            '@SP', # move the stack-pointer back to the top of the stack
+            'M=M+1'
+        ]
 
 # memory instructions
 

@@ -42,11 +42,9 @@ class NegInstruction(BaseInstruction):
     def __init__(self, line_num, parts):
         self._asm = [
             '// neg',
-            '@0', # get 0 for use later
-            'D=M',
             '@SP', # deincrement stack-pointer & select new stack location
             'AM=M-1',
-            'M=D-M', # flip the sign by subtracting the value from 0
+            'M=-M', # flip the sign
             '@SP', # move the stack-pointer back to the top of the stack
             'M=M+1'
         ]

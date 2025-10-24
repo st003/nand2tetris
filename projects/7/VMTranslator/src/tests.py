@@ -6,6 +6,26 @@ from parser import parse_instruction
 from translator import skip_line
 from utils import get_vm_file_name
 
+class TestInstructions(unittest.TestCase):
+
+    def test_get_memory_segment(self):
+        """Verify the memory segment is selected."""
+        bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
+        output = bi.get_memory_segment()
+        self.assertEqual(output, 'constant')
+
+    def test_get_offset(self):
+        """Verify the offset is selected."""
+        bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
+        output = bi.get_offset()
+        self.assertEqual(output, '1')
+
+    def test_get_comment(self):
+        """Verify the comment is correct."""
+        bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
+        output = bi.get_comment()
+        self.assertEqual(output, '// push constant 1')
+
 class TestParser(unittest.TestCase):
 
     def test_parse_instruction_two_parts(self):
@@ -112,8 +132,6 @@ class TestTranslator(unittest.TestCase):
         input = '// comment'.strip().lower()
         output = skip_line(input)
         self.assertTrue(output)
-
-    # TODO: add translator tests
 
 class TestUtils(unittest.TestCase):
 

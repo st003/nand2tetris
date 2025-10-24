@@ -3,7 +3,7 @@ from exceptions import TranslationError
 class BaseInstruction():
     """Abstract class for all instructions."""
 
-    def __init__(self, line_num, parts):
+    def __init__(self, line_num: int, parts: list[str]):
         self._line_num = line_num
         self._parts = parts
         self._asm = []

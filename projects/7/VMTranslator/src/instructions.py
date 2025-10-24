@@ -1,8 +1,11 @@
 from exceptions import TranslationError
 
 class BaseInstruction():
+    """Abstract class for all instructions."""
 
     def __init__(self, line_num, parts):
+        self._line_num = line_num
+        self._parts = parts
         self._asm = []
 
     def to_asm(self) -> str:
@@ -62,9 +65,22 @@ class NotInstruction(BaseInstruction):
 
 # memory instructions
 
-# TODO: create abstract class for memory instructions?
+class MemoryInstruction(BaseInstruction):
+    """Abstract class for memory instructions."""
 
-class PushInstruction(BaseInstruction):
+    def get_memory_segment(self) -> str:
+        """Returns the memory segment name."""
+        return self._parts[1]
+
+    def get_offset(self) -> str:
+        """Returns the offset value."""
+        return self._parts[2]
+
+    def get_comment(self) -> str:
+        """Generates a comment line of the original VM instruction."""
+        return '// ' + ' '.join(self._parts)
+
+class PushInstruction(MemoryInstruction):
     """Generates the Hack ASM for a push command."""
 
     def __init__(self, line_num, parts):
@@ -81,18 +97,6 @@ class PushInstruction(BaseInstruction):
             '@SP', # move the stack-pointer up
             'M=M+1'
         ]
-
-    def get_memory_segment(self) -> str:
-        """Returns the memory segment name."""
-        return self._parts[1]
-
-    def get_offset(self) -> str:
-        """Returns the offset value."""
-        return self._parts[2]
-
-    def get_comment(self) -> str:
-        """Generates a comment line of the original VM instruction."""
-        return '// ' + ' '.join(self._parts)
 
     def get_static(self) -> str:
         """
@@ -127,5 +131,5 @@ class PushInstruction(BaseInstruction):
         else:
             raise TranslationError(f'Memory segement "{seg}" not recognized')
 
-class PopInstruction(BaseInstruction):
+class PopInstruction(MemoryInstruction):
     pass

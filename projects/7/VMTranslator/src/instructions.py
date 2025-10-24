@@ -11,10 +11,10 @@ class BaseInstruction():
     def to_asm(self) -> str:
         return '\n'.join(self._asm) + '\n'
 
-# arithmetic/logical instructions
+# arithmetic instructions
 
 class AddInstruction(BaseInstruction):
-    """Generates the Hack ASM for an add command."""
+    """Generates the Hack ASM for an add instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// add',
@@ -26,7 +26,7 @@ class AddInstruction(BaseInstruction):
         ]
 
 class SubInstruction(BaseInstruction):
-    """Generates the Hack ASM for a sub command."""
+    """Generates the Hack ASM for a sub instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// sub',
@@ -38,7 +38,7 @@ class SubInstruction(BaseInstruction):
         ]
 
 class NegInstruction(BaseInstruction):
-    """Generates the Hack ASM for a neg command."""
+    """Generates the Hack ASM for a neg instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// neg',
@@ -49,6 +49,7 @@ class NegInstruction(BaseInstruction):
             'M=M+1'
         ]
 
+# logical instructions
 # TODO: numerical values represent true/false. Has to be @1 and @0, right?
 
 class EqInstruction(BaseInstruction):
@@ -60,10 +61,17 @@ class GtInstruction(BaseInstruction):
 class LtInstruction(BaseInstruction):
     pass
 
-# TODO: should just be able to use the &, |, ! operations
-
 class AndInstruction(BaseInstruction):
-    pass
+    """Generates the Hack ASM for an and instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// and',
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
+            'D=M', # copy value at stack-pointer
+            'A=A-1', # select position below stack-pointer
+            'M=D&M' # update stack with the result of &
+        ]
 
 class OrInstruction(BaseInstruction):
     pass
@@ -89,7 +97,7 @@ class MemoryInstruction(BaseInstruction):
         return '// ' + ' '.join(self._parts)
 
 class PushInstruction(MemoryInstruction):
-    """Generates the Hack ASM for a push command."""
+    """Generates the Hack ASM for a push instruction."""
 
     def __init__(self, line_num, parts):
         self._line_num = line_num
@@ -140,7 +148,7 @@ class PushInstruction(MemoryInstruction):
             raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')
 
 class PopInstruction(MemoryInstruction):
-    """Generates the Hack ASM for a pop command."""
+    """Generates the Hack ASM for a pop instruction."""
 
     def __init__(self, line_num, parts):
         self._line_num = line_num

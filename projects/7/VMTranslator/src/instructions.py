@@ -6,7 +6,7 @@ class BaseInstruction():
     def __init__(self, line_num: int, parts: list[str]):
         self._line_num = line_num
         self._parts = parts
-        self._asm = []
+        self._asm: list[str] = []
 
     def to_asm(self) -> str:
         return '\n'.join(self._asm) + '\n'
@@ -14,7 +14,7 @@ class BaseInstruction():
 # arithmetic instructions
 
 class AddInstruction(BaseInstruction):
-    """Generates the Hack ASM for an add instruction."""
+    """Generates the Hack ASM for the 'add' instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// add',
@@ -26,7 +26,7 @@ class AddInstruction(BaseInstruction):
         ]
 
 class SubInstruction(BaseInstruction):
-    """Generates the Hack ASM for a sub instruction."""
+    """Generates the Hack ASM for the 'sub' instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// sub',
@@ -38,7 +38,7 @@ class SubInstruction(BaseInstruction):
         ]
 
 class NegInstruction(BaseInstruction):
-    """Generates the Hack ASM for a neg instruction."""
+    """Generates the Hack ASM for the 'neg' instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// neg',
@@ -62,7 +62,7 @@ class LtInstruction(BaseInstruction):
     pass
 
 class AndInstruction(BaseInstruction):
-    """Generates the Hack ASM for an and instruction."""
+    """Generates the Hack ASM for the 'and' instruction."""
     def __init__(self, line_num, parts):
         self._asm = [
             '// and',
@@ -74,7 +74,16 @@ class AndInstruction(BaseInstruction):
         ]
 
 class OrInstruction(BaseInstruction):
-    pass
+    """Generates the Hack ASM for the 'or' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// or',
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
+            'D=M', # copy value at stack-pointer
+            'A=A-1', # select position below stack-pointer
+            'M=D|M' # update stack with the result of |
+        ]
 
 class NotInstruction(BaseInstruction):
     pass

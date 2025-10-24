@@ -18,8 +18,8 @@ class AddInstruction(BaseInstruction):
     def __init__(self, line_num, parts):
         self._asm = [
             '// add',
-            '@SP',
-            'AM=M-1', # deincrement stack-pointer & select new stack location
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
             'D=M', # copy value at stack-pointer
             'A=A-1', # select position below stack-pointer
             'M=D+M' # update stack with sum of both values
@@ -30,16 +30,26 @@ class SubInstruction(BaseInstruction):
     def __init__(self, line_num, parts):
         self._asm = [
             '// sub',
-            '@SP',
-            'AM=M-1', # deincrement stack-pointer & select new stack location
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
             'D=M', # copy value at stack-pointer
             'A=A-1', # select position below stack-pointer
             'M=M-D' # update stack with difference of both values
         ]
 
 class NegInstruction(BaseInstruction):
-    # TODO: zero minus value should flip the sign
-    pass
+    """Generates the Hack ASM for a neg command."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// neg',
+            '@0', # get 0 for use later
+            'D=M',
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
+            'M=D-M', # flip the sign by subtracting the value from 0
+            '@SP', # move the stack-pointer back to the top of the stack
+            'M=M+1'
+        ]
 
 # TODO: numerical values represent true/false. Has to be @1 and @0, right?
 

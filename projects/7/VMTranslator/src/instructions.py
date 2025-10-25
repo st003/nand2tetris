@@ -107,16 +107,23 @@ class LtInstruction(BaseInstruction):
             '@SP', # deincrement stack-pointer & select new stack location
             'AM=M-1',
             'D=M', # copy value at stack-pointer
-            'A=A-1', # select position below stack-pointer
+            '@SP', # deincrement stack-pointer again & select new stack location
+            'AM=M-1',
             'D=M-D', # diff selected values
             f'@TRUE.{line_num}', # if D is less-than 0, jump to true
             'D;JLT',
-            'M=0', # else, set to false and jump to end
+            '@SP', # else, set to false and jump to end
+            'A=M',
+            'M=0',
             f'@END.{line_num}',
             '0;JMP',
             f'(TRUE.{line_num})', # set to true
+            '@SP',
+            'A=M',
             'M=-1',
-            f'(END.{line_num})'
+            f'(END.{line_num})', # increment the stack-pointer
+            '@SP', # move the stack-pointer back to the top of the stack
+            'M=M+1'
         ]
 
 class AndInstruction(BaseInstruction):

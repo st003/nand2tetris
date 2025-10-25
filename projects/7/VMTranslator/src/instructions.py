@@ -199,24 +199,10 @@ class PushInstruction(MemoryInstruction):
             # This asm is the same for all memory segements
             '@SP', # select top of stack
             'A=M',
-            'M=D', # set constant value to top of stack
-            '@SP', # move the stack-pointer up
+            'M=D', # set selected value to top of stack
+            '@SP', # increment the stack-pointer
             'M=M+1'
         ]
-
-    def get_static(self) -> str:
-        """
-        Get value from static memory segment.
-
-        The specification says static occupies addresses 16-255, but as
-        the 0-index for the stack is implementation specific, we do not
-        have static-overflow checking
-        """
-        asm = [
-            f'@static.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
-            'D=M' # get the value stored at that address
-        ]
-        return '\n'.join(asm)
 
     def get_constant(self) -> str:
         """Selects a constant value."""
@@ -226,14 +212,47 @@ class PushInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
+    def get_local(self):
+        """
+        Selects a value from local.
+
+        The specification says local occupies addresses 5-12, but as
+        the 0-index for the stack is implementation specific, we do not
+        have local-overflow checking.
+        """
+        asm = [
+            f'@{self.get_offset()}', # get the offset as a literal number
+            'D=A',
+            '@LCL', # select value at local + offset
+            'A=D+M',
+            'D=M' # copy value from local + offset
+        ]
+        return '\n'.join(asm)
+
+    def get_static(self) -> str:
+        """
+        Get value from static memory segment.
+
+        The specification says static occupies addresses 16-255, but as
+        the 0-index for the stack is implementation specific, we do not
+        have static-overflow checking.
+        """
+        asm = [
+            f'@static.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
+            'D=M' # get the value stored at that address
+        ]
+        return '\n'.join(asm)
+
     def get_value_from_segment(self):
         """Selects the correct segment asm method."""
         seg = self.get_memory_segment()
 
-        if seg == 'static':
-            return self.get_static()
-        elif seg == 'constant':
+        if seg == 'constant':
             return self.get_constant()
+        elif seg == 'local':
+            return self.get_local()
+        elif seg == 'static':
+            return self.get_static()
         else:
             raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')
 
@@ -246,13 +265,34 @@ class PopInstruction(MemoryInstruction):
 
         self._asm = [
             self.get_comment(),
+            self.get_segement_address(),
             '@SP',
             'AM=M-1', # deincrement stack-pointer & select new stack location
-            'D=M', # make copy of selected value in the stack
-            self.set_value_in_segment()
+            'D=M', # make copy of selected value from the stack
+            '@R13', # select segment address stored at R13
+            'A=M',
+            'M=D' # store value from stack into memory segment
         ]
 
-    def set_static(self) -> str:
+    def get_local(self):
+        """
+        Get address for local memory segment.
+
+        The specification says local occupies addresses 5-12, but as
+        the 0-index for the stack is implementation specific, we do not
+        have local-overflow checking.
+        """
+        asm = [
+            f'@{self.get_offset()}', # get the offset as a literal number
+            'D=A',
+            '@LCL', # calculate addr = local + offset
+            'D=D+M',
+            '@R13', # store addr in R13 (non-reserved register)
+            'M=D'
+        ]
+        return '\n'.join(asm)
+
+    def get_static(self) -> str:
         """
         Get address for static memory segment.
 
@@ -262,15 +302,19 @@ class PopInstruction(MemoryInstruction):
         """
         asm = [
             f'@static.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
-            'M=D' # get the value stored at that address
+            'D=A', # copy that address in R13
+            '@R13',
+            'M=D'
         ]
         return '\n'.join(asm)
 
-    def set_value_in_segment(self):
+    def get_segement_address(self):
         """Selects the correct segment asm method."""
         seg = self.get_memory_segment()
 
-        if seg == 'static':
-            return self.set_static()
+        if seg == 'local':
+            return self.get_local()
+        elif seg == 'static':
+            return self.get_static()
         else:
             raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')

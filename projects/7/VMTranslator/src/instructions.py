@@ -50,10 +50,27 @@ class NegInstruction(BaseInstruction):
         ]
 
 # logical instructions
-# TODO: numerical values represent true/false. Has to be @1 and @0, right?
+# NOTE: Hack ASM uses -1 as true and 0 as false
 
 class EqInstruction(BaseInstruction):
-    pass
+    """Generates the Hack ASM for the 'eq' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// eq',
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
+            'D=M', # copy value at stack-pointer
+            'A=A-1', # select position below stack-pointer
+            'D=M-D', # diff selected values
+            f'@{line_num}.TRUE', # if diff is 0, jump to true
+            'D;JEQ',
+            'M=0', # else, set to false and jump to end
+            f'@{line_num}.END',
+            '0;JMP',
+            f'({line_num}.TRUE)', # set to true
+            'M=-1',
+            f'({line_num}.END)'
+        ]
 
 class GtInstruction(BaseInstruction):
     pass

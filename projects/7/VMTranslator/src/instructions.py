@@ -174,6 +174,14 @@ class NotInstruction(BaseInstruction):
 class MemoryInstruction(BaseInstruction):
     """Abstract class for memory instructions."""
 
+    symbols = {
+        'argument': 'ARG',
+        'local': 'LCL',
+        'temp': 'TEMP',
+        'this': 'THIS',
+        'that': 'THAT'
+    }
+
     def get_memory_segment(self) -> str:
         """Returns the memory segment name."""
         return self._parts[1]
@@ -212,23 +220,6 @@ class PushInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
-    def get_local(self):
-        """
-        Selects a value from local.
-
-        The specification says local occupies addresses 5-12, but as
-        the 0-index for the stack is implementation specific, we do not
-        have local-overflow checking.
-        """
-        asm = [
-            f'@{self.get_offset()}', # get the offset as a literal number
-            'D=A',
-            '@LCL', # select value at local + offset
-            'A=D+M',
-            'D=M' # copy value from local + offset
-        ]
-        return '\n'.join(asm)
-
     def get_static(self) -> str:
         """
         Get value from static memory segment.
@@ -243,14 +234,25 @@ class PushInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
+    def get_value_by_segment_name(self):
+        """Get value from memory segment."""
+        asm = [
+            f'@{self.get_offset()}', # get the offset as a literal number
+            'D=A',
+            f'@{self.symbols[self.get_memory_segment()]}', # select value at segment 0-index + offset
+            'A=D+M',
+            'D=M' # copy value from segment 0-index + offset
+        ]
+        return '\n'.join(asm)
+
     def get_value_from_segment(self):
         """Selects the correct segment asm method."""
         seg = self.get_memory_segment()
 
-        if seg == 'constant':
+        if seg in self.symbols:
+            return self.get_value_by_segment_name()
+        elif seg == 'constant':
             return self.get_constant()
-        elif seg == 'local':
-            return self.get_local()
         elif seg == 'static':
             return self.get_static()
         else:
@@ -274,18 +276,12 @@ class PopInstruction(MemoryInstruction):
             'M=D' # store value from stack into memory segment
         ]
 
-    def get_local(self):
-        """
-        Get address for local memory segment.
-
-        The specification says local occupies addresses 5-12, but as
-        the 0-index for the stack is implementation specific, we do not
-        have local-overflow checking.
-        """
+    def get_address_by_segment_name(self):
+        """Get address for memory segment."""
         asm = [
             f'@{self.get_offset()}', # get the offset as a literal number
             'D=A',
-            '@LCL', # calculate addr = local + offset
+            f'@{self.symbols[self.get_memory_segment()]}', # calculate addr = symbol + offset
             'D=D+M',
             '@R13', # store addr in R13 (non-reserved register)
             'M=D'
@@ -312,8 +308,8 @@ class PopInstruction(MemoryInstruction):
         """Selects the correct segment asm method."""
         seg = self.get_memory_segment()
 
-        if seg == 'local':
-            return self.get_local()
+        if seg in self.symbols:
+            return self.get_address_by_segment_name()
         elif seg == 'static':
             return self.get_static()
         else:

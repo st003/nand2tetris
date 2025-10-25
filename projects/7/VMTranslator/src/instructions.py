@@ -82,7 +82,7 @@ class GtInstruction(BaseInstruction):
             'D=M', # copy value at stack-pointer
             'A=A-1', # select position below stack-pointer
             'D=M-D', # diff selected values
-            f'@{line_num}.TRUE', # if D is greater than 0, jump to true
+            f'@{line_num}.TRUE', # if D is greater-than 0, jump to true
             'D;JGT',
             'M=0', # else, set to false and jump to end
             f'@{line_num}.END',
@@ -93,7 +93,24 @@ class GtInstruction(BaseInstruction):
         ]
 
 class LtInstruction(BaseInstruction):
-    pass
+    """Generates the Hack ASM for the 'lt' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// lt',
+            '@SP', # deincrement stack-pointer & select new stack location
+            'AM=M-1',
+            'D=M', # copy value at stack-pointer
+            'A=A-1', # select position below stack-pointer
+            'D=M-D', # diff selected values
+            f'@{line_num}.TRUE', # if D is less-than 0, jump to true
+            'D;JLT',
+            'M=0', # else, set to false and jump to end
+            f'@{line_num}.END',
+            '0;JMP',
+            f'({line_num}.TRUE)', # set to true
+            'M=-1',
+            f'({line_num}.END)'
+        ]
 
 class AndInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'and' instruction."""

@@ -60,16 +60,23 @@ class EqInstruction(BaseInstruction):
             '@SP', # deincrement stack-pointer & select new stack location
             'AM=M-1',
             'D=M', # copy value at stack-pointer
-            'A=A-1', # select position below stack-pointer
+            '@SP', # deincrement stack-pointer again & select new stack location
+            'AM=M-1',
             'D=M-D', # diff selected values
-            f'@{line_num}.TRUE', # if diff is 0, jump to true
+            f'@TRUE.{line_num}', # if diff is 0, jump to true
             'D;JEQ',
-            'M=0', # else, set to false and jump to end
-            f'@{line_num}.END',
+            '@SP', # else, set to false and jump to end
+            'A=M',
+            'M=0',
+            f'@END.{line_num}',
             '0;JMP',
-            f'({line_num}.TRUE)', # set to true
+            f'(TRUE.{line_num})', # set to true
+            '@SP',
+            'A=M',
             'M=-1',
-            f'({line_num}.END)'
+            f'(END.{line_num})', # increment the stack-pointer
+            '@SP', # move the stack-pointer back to the top of the stack
+            'M=M+1'
         ]
 
 class GtInstruction(BaseInstruction):
@@ -82,14 +89,14 @@ class GtInstruction(BaseInstruction):
             'D=M', # copy value at stack-pointer
             'A=A-1', # select position below stack-pointer
             'D=M-D', # diff selected values
-            f'@{line_num}.TRUE', # if D is greater-than 0, jump to true
+            f'@TRUE.{line_num}', # if D is greater-than 0, jump to true
             'D;JGT',
             'M=0', # else, set to false and jump to end
-            f'@{line_num}.END',
+            f'@END.{line_num}',
             '0;JMP',
-            f'({line_num}.TRUE)', # set to true
+            f'(TRUE.{line_num})', # set to true
             'M=-1',
-            f'({line_num}.END)'
+            f'(END.{line_num})'
         ]
 
 class LtInstruction(BaseInstruction):
@@ -102,14 +109,14 @@ class LtInstruction(BaseInstruction):
             'D=M', # copy value at stack-pointer
             'A=A-1', # select position below stack-pointer
             'D=M-D', # diff selected values
-            f'@{line_num}.TRUE', # if D is less-than 0, jump to true
+            f'@TRUE.{line_num}', # if D is less-than 0, jump to true
             'D;JLT',
             'M=0', # else, set to false and jump to end
-            f'@{line_num}.END',
+            f'@END.{line_num}',
             '0;JMP',
-            f'({line_num}.TRUE)', # set to true
+            f'(TRUE.{line_num})', # set to true
             'M=-1',
-            f'({line_num}.END)'
+            f'(END.{line_num})'
         ]
 
 class AndInstruction(BaseInstruction):

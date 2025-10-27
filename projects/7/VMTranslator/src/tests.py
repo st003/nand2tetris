@@ -1,7 +1,7 @@
 import unittest
 
 import instructions as ins
-from exceptions import ParseError, VMTranslatorError
+from exceptions import ParseError, TranslationError, VMTranslatorError
 from parser import parse_instruction
 from translator import skip_line
 from utils import get_vm_file_name
@@ -25,6 +25,11 @@ class TestInstructions(unittest.TestCase):
         bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
         output = bi.get_comment()
         self.assertEqual(output, '// push constant 1')
+
+    def test_get_pointer_push_invalid_offset(self):
+        """Verify error checking in push pointer."""
+        with self.assertRaises(TranslationError):
+            ins.PushInstruction(1, ['push', 'pointer', '5'])
 
 class TestParser(unittest.TestCase):
 

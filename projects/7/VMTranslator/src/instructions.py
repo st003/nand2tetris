@@ -256,8 +256,8 @@ class PushInstruction(MemoryInstruction):
             raise TranslationError(f'at line {self._line_num}. Offset may not be greater than {self.POINTER_MAX} for pointer')
 
         asm = [
-            f'@{self.POINTER_MAP[offset]}',
-            'D=M'
+            f'@{self.POINTER_MAP[offset]}', # select THIS or THAT
+            'D=M' # copy the value stored in THIS or THAT
         ]
         return '\n'.join(asm)
 
@@ -343,6 +343,30 @@ class PopInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
+    def get_pointer(self):
+        """
+        Get address for pointer memory segment.
+
+        The specification says the offset maps to either THIS or THAT.
+
+        0 = THIS
+        1 = THAT
+
+        As a result, the offset cannot be greater than 1.
+        """
+        offset = self.get_offset()
+
+        if int(offset) > self.POINTER_MAX:
+            raise TranslationError(f'at line {self._line_num}. Offset may not be greater than {self.POINTER_MAX} for pointer')
+
+        asm = [
+            f'@{self.POINTER_MAP[offset]}', # select THIS or THAT
+            'D=A', # copy the address stored at THIS or THAT
+            '@R13', # and move in into R13 (non-reserved register)
+            'M=D'
+        ]
+        return '\n'.join(asm)
+
     def get_static(self) -> str:
         """
         Get address for static memory segment.
@@ -387,6 +411,8 @@ class PopInstruction(MemoryInstruction):
 
         if seg in self.symbols:
             return self.get_address_by_segment_name()
+        elif seg == 'pointer':
+            return self.get_pointer()
         elif seg == 'static':
             return self.get_static()
         elif seg == 'temp':

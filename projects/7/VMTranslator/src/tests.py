@@ -31,6 +31,11 @@ class TestInstructions(unittest.TestCase):
         with self.assertRaises(TranslationError):
             ins.PushInstruction(1, ['push', 'pointer', '5'])
 
+    def test_get_pointer_pop_invalid_offset(self):
+        """Verify error checking in pop pointer."""
+        with self.assertRaises(TranslationError):
+            ins.PopInstruction(1, ['pop', 'pointer', '5'])
+
 class TestParser(unittest.TestCase):
 
     def test_parse_instruction_two_parts(self):

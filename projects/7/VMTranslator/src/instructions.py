@@ -174,10 +174,12 @@ class NotInstruction(BaseInstruction):
 class MemoryInstruction(BaseInstruction):
     """Abstract class for memory instructions."""
 
+    TEMP_INDEX = 5
+    TEMP_MAX_OFFSET = 8
+
     symbols = {
         'argument': 'ARG',
         'local': 'LCL',
-        'temp': 'TEMP',
         'this': 'THIS',
         'that': 'THAT'
     }
@@ -234,6 +236,27 @@ class PushInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
+    def get_temp(self):
+        """
+        Get value from temp memory segment.
+
+        The specification says temp occupies addresses 5-12
+        """
+
+        offset = self.get_offset()
+
+        if int(offset) > self.TEMP_MAX_OFFSET:
+            raise TranslationError(f'at line {self._line_num}. Offset my not be greater than {self.TEMP_MAX_OFFSET} for temp')
+
+        asm = [
+            f'@{self.get_offset()}', # get the offset as a literal number
+            'D=A',
+            f'@{self.TEMP_INDEX}', # select value at segment temp-index + offset
+            'A=D+A',
+            'D=M' # copy value from segment temp-index + offset
+        ]
+        return '\n'.join(asm)
+
     def get_value_by_segment_name(self):
         """Get value from memory segment."""
         asm = [
@@ -255,8 +278,10 @@ class PushInstruction(MemoryInstruction):
             return self.get_constant()
         elif seg == 'static':
             return self.get_static()
+        elif seg == 'temp':
+            return self.get_temp()
         else:
-            raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')
+            raise TranslationError(f'at line {self._line_num}. Memory segement "{seg}" not recognized')
 
 class PopInstruction(MemoryInstruction):
     """Generates the Hack ASM for a pop instruction."""

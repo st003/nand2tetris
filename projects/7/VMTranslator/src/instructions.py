@@ -214,6 +214,17 @@ class PushInstruction(MemoryInstruction):
             'M=M+1'
         ]
 
+    def get_value_by_segment_name(self):
+        """Get value from memory segment."""
+        asm = [
+            f'@{self.get_offset()}', # get the offset as a literal number
+            'D=A',
+            f'@{self.symbols[self.get_memory_segment()]}', # select value at segment 0-index + offset
+            'A=D+M',
+            'D=M' # copy value from segment 0-index + offset
+        ]
+        return '\n'.join(asm)
+
     def get_constant(self) -> str:
         """Selects a constant value."""
         asm = [
@@ -254,17 +265,6 @@ class PushInstruction(MemoryInstruction):
             f'@{self.TEMP_INDEX}', # select value at segment temp-index + offset
             'A=D+A',
             'D=M' # copy value from segment temp-index + offset
-        ]
-        return '\n'.join(asm)
-
-    def get_value_by_segment_name(self):
-        """Get value from memory segment."""
-        asm = [
-            f'@{self.get_offset()}', # get the offset as a literal number
-            'D=A',
-            f'@{self.symbols[self.get_memory_segment()]}', # select value at segment 0-index + offset
-            'A=D+M',
-            'D=M' # copy value from segment 0-index + offset
         ]
         return '\n'.join(asm)
 
@@ -329,6 +329,28 @@ class PopInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
+    def get_temp(self):
+        """
+        Get address for temp memory segment.
+
+        The specification says temp occupies addresses 5-12
+        """
+
+        offset = self.get_offset()
+
+        if int(offset) > self.TEMP_MAX_OFFSET:
+            raise TranslationError(f'at line {self._line_num}. Offset my not be greater than {self.TEMP_MAX_OFFSET} for temp')
+
+        asm = [
+            f'@{self.get_offset()}', # get the offset as a literal number
+            'D=A',
+            f'@{self.TEMP_INDEX}', # calculate addr = temp-index + offset
+            'D=D+A',
+            '@R13', # store addr in R13 (non-reserved register)
+            'M=D'
+        ]
+        return '\n'.join(asm)
+
     def get_segement_address(self):
         """Selects the correct segment asm method."""
         seg = self.get_memory_segment()
@@ -337,5 +359,7 @@ class PopInstruction(MemoryInstruction):
             return self.get_address_by_segment_name()
         elif seg == 'static':
             return self.get_static()
+        elif seg == 'temp':
+            return self.get_temp()
         else:
             raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')

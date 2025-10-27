@@ -3,12 +3,12 @@ from exceptions import TranslationError
 class BaseInstruction():
     """Abstract class for all instructions."""
 
-    def __init__(self, line_num: int, parts: list[str]):
+    def __init__(self, line_num, parts):
         self._line_num = line_num
         self._parts = parts
-        self._asm: list[str] = []
+        self._asm = []
 
-    def to_asm(self) -> str:
+    def to_asm(self):
         return '\n'.join(self._asm) + '\n'
 
 # arithmetic instructions
@@ -190,15 +190,15 @@ class MemoryInstruction(BaseInstruction):
         'that': 'THAT'
     }
 
-    def get_memory_segment(self) -> str:
+    def get_memory_segment(self):
         """Returns the memory segment name."""
         return self._parts[1]
 
-    def get_offset(self) -> str:
+    def get_offset(self):
         """Returns the offset value."""
         return self._parts[2]
 
-    def get_comment(self) -> str:
+    def get_comment(self):
         """Generates a comment line of the original VM instruction."""
         return '// ' + ' '.join(self._parts)
 
@@ -231,7 +231,7 @@ class PushInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
-    def get_constant(self) -> str:
+    def get_constant(self):
         """Selects a constant value."""
         asm = [
             f'@{self.get_offset()}',
@@ -261,7 +261,7 @@ class PushInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
-    def get_static(self) -> str:
+    def get_static(self):
         """
         Get value from static memory segment.
 
@@ -367,7 +367,7 @@ class PopInstruction(MemoryInstruction):
         ]
         return '\n'.join(asm)
 
-    def get_static(self) -> str:
+    def get_static(self):
         """
         Get address for static memory segment.
 

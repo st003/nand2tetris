@@ -1,18 +1,12 @@
 # VMTranslator
 
-A VM translator for Nand2Tetris' stack-based VM instructions written in the Python programming language.
+A VM translator for Nand2Tetris' stack-based VM instructions written in the Python programming language. This implementation only supports the requirements for project 7. The full implementation can be found in project 8.
 
 _Note: Python used to simplify the assignment submission proccess. I would have preferred to write this in Go._
 
 ## Prerequisites
 
 * Python 3.9+
-
-To verifiy the minimum supported version, install 'mypy', navigate to the src directory and run the command:
-
-```
-mypy --check-untyped-defs --python-version 3.9 .
-```
 
 ## Usage
 

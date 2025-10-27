@@ -2,7 +2,7 @@ import instructions as ins
 from constants import ARITHMETIC_LOGICAL_INS_MAP, MEMORY_INS_MAP, MEMORY_SEGMENTS
 from exceptions import ParseError
 
-def parse_instruction(line_num: int, line: str) -> ins.BaseInstruction:
+def parse_instruction(line_num, line):
     """Parses the line and returns the associated instruction object."""
 
     parts = line.split(' ')

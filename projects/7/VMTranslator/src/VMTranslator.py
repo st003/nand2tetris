@@ -18,7 +18,7 @@ def main():
 
         file_name = get_vm_file_name(input_file_path)
 
-        input_lines: list[str] = []
+        input_lines = []
         with open(input_file_path, 'r') as vm_file:
             input_lines = vm_file.readlines()
 

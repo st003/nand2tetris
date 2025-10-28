@@ -147,8 +147,9 @@ class TestUtils(unittest.TestCase):
 
     def test_iget_vm_file_name_success(self):
         """Correct result with valid input."""
-        result = get_vm_file_name('test.vm')
-        self.assertEqual(result, 'test')
+        result = get_vm_file_name('home/test.vm')
+        self.assertEqual(str(result[0]), 'home')
+        self.assertEqual(result[1], 'test')
 
     def test_get_vm_file_name_missing_extension(self):
         """Missing file extension."""

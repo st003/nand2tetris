@@ -16,7 +16,7 @@ def main():
     try:
         input_file_path = args[1]
 
-        file_name = get_vm_file_name(input_file_path)
+        parent_dirs, file_name = get_vm_file_name(input_file_path)
 
         input_lines = []
         with open(input_file_path, 'r') as vm_file:
@@ -24,7 +24,7 @@ def main():
 
         asm_lines = translate(input_lines)
 
-        with open(f'{file_name}.asm', 'w') as asm_file:
+        with open(f'{parent_dirs}/{file_name}.asm', 'w') as asm_file:
             asm_file.writelines(asm_lines)
 
     except VMTranslatorError as error:

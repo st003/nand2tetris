@@ -6,7 +6,7 @@ _Note: Python used to simplify the assignment submission proccess. I would have 
 
 ## Prerequisites
 
-* Python 3.9+
+* Python 3.6+
 
 ## Usage
 

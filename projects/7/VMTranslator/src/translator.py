@@ -1,4 +1,3 @@
-from instructions import BaseInstruction
 from parser import parse_instruction
 
 def skip_line(line):

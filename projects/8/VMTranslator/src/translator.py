@@ -12,7 +12,7 @@ def translate(lines):
     instructions = []
 
     for line_num, line in enumerate(lines):
-        clean_line = line.strip().lower()
+        clean_line = line.strip()
 
         if skip_line(clean_line):
             continue

@@ -38,10 +38,10 @@ class TestInstructions(unittest.TestCase):
 
 class TestParser(unittest.TestCase):
 
-    def test_parse_instruction_two_parts(self):
-        """The instruction has two parts."""
-        with self.assertRaises(ParseError):
-            parse_instruction(1, 'one two')
+    def test_parse_instruction_inline_comment(self):
+        """Test inline comment"""
+        output = parse_instruction(1, 'add // comment')
+        self.assertIsInstance(output, ins.AddInstruction)
 
     def test_parse_instruction_add(self):
         """Test add command"""

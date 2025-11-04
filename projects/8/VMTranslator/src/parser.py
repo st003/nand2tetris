@@ -1,4 +1,3 @@
-import instructions as ins
 from constants import ARITHMETIC_LOGICAL_INS_MAP, MEMORY_INS_MAP, MEMORY_SEGMENTS
 from exceptions import ParseError
 

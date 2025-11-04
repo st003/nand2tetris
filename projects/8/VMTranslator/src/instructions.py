@@ -419,3 +419,15 @@ class PopInstruction(MemoryInstruction):
             return self.get_temp()
         else:
             raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')
+
+# utility instructions
+
+class EOFInstruction(BaseInstruction):
+    """Infinite loop for the end of the program."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// end of program',
+            '(EOF)',
+            '@EOF',
+            '0;JMP'
+        ]

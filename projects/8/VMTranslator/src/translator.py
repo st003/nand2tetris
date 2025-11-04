@@ -1,3 +1,4 @@
+from instructions import EOFInstruction
 from parser import parse_instruction
 
 def skip_line(line):
@@ -23,8 +24,6 @@ def translate(lines):
     asm = []
     for ins in instructions:
         asm.append(ins.to_asm())
-
-    # add infinite loop at end of program
-    asm.append('// end of program\n(END)\n@END\n0;JMP')
+    asm.append(EOFInstruction.to_asm())
 
     return asm

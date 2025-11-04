@@ -1,6 +1,6 @@
 # Project 7
 
-Project 7 contains the source code for a VM translator.
+Project 7 contains the source code for a VM translator. This implementation only supports the requirements for project 7. The full implementation can be found in project 8.
 
 ## Contents
 

@@ -14,7 +14,7 @@ To use the VM translator, from the src directory, run the command:
 
 Linux/MacOS
 ```
-python VMTranslator.py file.vm
+python VMTranslator.py <file.vm>
 ```
 
 ## Running the tests

@@ -11,7 +11,7 @@ def main():
     args = sys.argv
 
     if (len(args) != 2):
-        print('Usage: python VMTranslator.py')
+        print('Usage: python VMTranslator.py <file.vm>|<path-to-vm-files>')
         sys.exit(1)
 
     try:

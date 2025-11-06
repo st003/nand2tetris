@@ -56,7 +56,8 @@ class GotoInstruction(BaseInstruction):
     def __init__(self, line_num, parts):
         self._asm = [
             '// goto',
-            '// TODO: implement'
+            f'@{parts[1]}', # jump to label
+            '0;JMP'
         ]
 
 class IfGotoInstruction(BaseInstruction):

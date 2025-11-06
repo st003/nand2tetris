@@ -49,33 +49,6 @@ class NegInstruction(BaseInstruction):
             'M=M+1'
         ]
 
-# branching instructions
-
-class GotoInstruction(BaseInstruction):
-    """Generates the Hack ASM for the 'eq' instruction."""
-    def __init__(self, line_num, parts):
-        self._asm = [
-            '// goto',
-            f'@{parts[1]}', # jump to label
-            '0;JMP'
-        ]
-
-class IfGotoInstruction(BaseInstruction):
-    """Generates the Hack ASM for the 'eq' instruction."""
-    def __init__(self, line_num, parts):
-        self._asm = [
-            '// if-goto',
-            '// TODO: implement'
-        ]
-
-class LabelInstruction(BaseInstruction):
-    """Generates the Hack ASM for the 'eq' instruction."""
-    def __init__(self, line_num, parts):
-        self._asm = [
-            '// label',
-            f'({parts[1]})'
-        ]
-
 # logical instructions
 # NOTE: Hack ASM uses -1 as true and 0 as false
 
@@ -194,6 +167,45 @@ class NotInstruction(BaseInstruction):
             'M=!M', # flip the sign
             '@SP', # move the stack-pointer back to the top of the stack
             'M=M+1'
+        ]
+
+# branching instructions
+
+class GotoInstruction(BaseInstruction):
+    """Generates the Hack ASM for the 'goto' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// goto',
+            f'@{parts[1]}', # jump to label
+            '0;JMP'
+        ]
+
+class IfGotoInstruction(BaseInstruction):
+    """
+    Generates the Hack ASM for the 'if-goto' instruction.
+
+    Implementation is jump to the label of the last values in the
+    stack is NOT zero.
+
+    Note: this seems to contradict the lecture which state we should
+    expect a boolean expression immediately before the if-goto
+    """
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// if-goto',
+            '@SP', # deincrement stack-pointer & select new top value in stack
+            'AM=M-1',
+            'D=M', # move it into d for evaluation
+            f'@{parts[1]}',
+            'D;JNE'
+        ]
+
+class LabelInstruction(BaseInstruction):
+    """Generates the Hack ASM for the 'label' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// label',
+            f'({parts[1]})' # write label
         ]
 
 # memory instructions

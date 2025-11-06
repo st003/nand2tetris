@@ -72,7 +72,7 @@ class LabelInstruction(BaseInstruction):
     def __init__(self, line_num, parts):
         self._asm = [
             '// label',
-            '// TODO: implement'
+            f'({parts[1]})'
         ]
 
 # logical instructions

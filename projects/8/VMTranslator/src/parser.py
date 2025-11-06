@@ -1,4 +1,4 @@
-from constants import ARITHMETIC_LOGICAL_INS_MAP, MEMORY_INS_MAP, MEMORY_SEGMENTS
+from constants import ARITHMETIC_LOGICAL_INS_MAP, BRANCH_INS_MAP, MEMORY_INS_MAP, MEMORY_SEGMENTS
 from exceptions import ParseError
 
 def parse_instruction(line_num, line):
@@ -23,8 +23,11 @@ def parse_instruction(line_num, line):
             raise ParseError(f'Invalid vm instruction at line {line_num}:\n\n{line}\n\n"{cmd}" is not a valid arithmetic/logical command.')
 
     elif count == 2:
-        # TODO: implement
-        raise ParseError(f'Invalid vm instruction at line {line_num}:\n\n{line}\n\n2-command instructions not support at this time.')
+        cmd_0 = parts[0]
+        if cmd_0 not in BRANCH_INS_MAP:
+            raise ParseError(f'Invalid vm instruction at line {line_num}:\n\n{line}\n\n"{cmd_0}" is not a valid branching command.')
+
+        return BRANCH_INS_MAP[cmd_0](line_num, parts)
 
     elif count == 3:
         cmd_0 = parts[0].lower()

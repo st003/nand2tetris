@@ -49,6 +49,32 @@ class NegInstruction(BaseInstruction):
             'M=M+1'
         ]
 
+# branching instructions
+
+class GotoInstruction(BaseInstruction):
+    """Generates the Hack ASM for the 'eq' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// goto',
+            '// TODO: implement'
+        ]
+
+class IfGotoInstruction(BaseInstruction):
+    """Generates the Hack ASM for the 'eq' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// if-goto',
+            '// TODO: implement'
+        ]
+
+class LabelInstruction(BaseInstruction):
+    """Generates the Hack ASM for the 'eq' instruction."""
+    def __init__(self, line_num, parts):
+        self._asm = [
+            '// label',
+            '// TODO: implement'
+        ]
+
 # logical instructions
 # NOTE: Hack ASM uses -1 as true and 0 as false
 
@@ -422,12 +448,14 @@ class PopInstruction(MemoryInstruction):
 
 # utility instructions
 
-class EOFInstruction(BaseInstruction):
+class EOFInstruction():
     """Infinite loop for the end of the program."""
-    def __init__(self, line_num, parts):
-        self._asm = [
+    @staticmethod
+    def to_asm():
+        asm = [
             '// end of program',
             '(EOF)',
             '@EOF',
             '0;JMP'
         ]
+        return '\n'.join(asm) + '\n'

@@ -93,6 +93,26 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(ParseError):
             parse_instruction(1, 'fake')
 
+    def test_parse_instruction_goto(self):
+        """Test goto command"""
+        output = parse_instruction(1, 'goto LABEL')
+        self.assertIsInstance(output, ins.GotoInstruction)
+
+    def test_parse_instruction_ifgoto(self):
+        """Test if-goto command"""
+        output = parse_instruction(1, 'if-goto LABEL')
+        self.assertIsInstance(output, ins.IfGotoInstruction)
+
+    def test_parse_instruction_label(self):
+        """Test label command"""
+        output = parse_instruction(1, 'label LABEL')
+        self.assertIsInstance(output, ins.LabelInstruction)
+
+    def test_parse_instruction_invalid_branching_command(self):
+        """Invalid branching instruction."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'fake command')
+
     def test_parse_instruction_push(self):
         """Test push command"""
         output = parse_instruction(1, 'push static 1')

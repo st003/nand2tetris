@@ -12,6 +12,12 @@ ARITHMETIC_LOGICAL_INS_MAP = {
     'not': ins.NotInstruction
 }
 
+BRANCH_INS_MAP = {
+    'goto': ins.GotoInstruction,
+    'if-goto': ins.IfGotoInstruction,
+    'label': ins.LabelInstruction
+}
+
 MEMORY_INS_MAP = {
     'push': ins.PushInstruction,
     'pop': ins.PopInstruction

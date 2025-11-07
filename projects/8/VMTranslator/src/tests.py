@@ -123,6 +123,21 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(ParseError):
             parse_instruction(1, 'fake command')
 
+    def test_parse_instruction_call(self):
+        """Test call command"""
+        output = parse_instruction(1, 'call MyFunc 1')
+        self.assertIsInstance(output, ins.CallInstruction)
+
+    def test_parse_instruction_function(self):
+        """Test function command"""
+        output = parse_instruction(1, 'function MyFunc 2')
+        self.assertIsInstance(output, ins.FunctionInstruction)
+
+    def test_parse_instruction_return(self):
+        """Test return command"""
+        output = parse_instruction(1, 'return')
+        self.assertIsInstance(output, ins.ReturnInstruction)
+
     def test_parse_instruction_push(self):
         """Test push command"""
         output = parse_instruction(1, 'push static 1')

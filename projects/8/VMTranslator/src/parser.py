@@ -30,7 +30,7 @@ def parse_instruction(line_num, line):
             return ARITHMETIC_LOGICAL_INS_MAP[cmd](line_num, parts)
 
         elif cmd in FUNCTION_INS_MAP:
-            return ARITHMETIC_LOGICAL_INS_MAP[cmd](line_num, parts)
+            return FUNCTION_INS_MAP[cmd](line_num, parts)
 
         else:
             raise ParseError(f'Invalid vm instruction at line {line_num}:\n\n{line}\n\n"{cmd}" is not a valid arithmetic/logical command.')

@@ -23,11 +23,10 @@ MEMORY_INS_MAP = {
     'pop': ins.PopInstruction
 }
 
-# TODO: Add correct instructions to map
 FUNCTION_INS_MAP = {
-    'call': ins.BaseInstruction,
-    'function': ins.BaseInstruction,
-    'return': ins.BaseInstruction
+    'call': ins.CallInstruction,
+    'function': ins.FunctionInstruction,
+    'return': ins.ReturnInstruction
 }
 
 MEMORY_SEGMENTS = {

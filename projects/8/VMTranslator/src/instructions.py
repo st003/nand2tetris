@@ -8,10 +8,14 @@ class BaseInstruction():
         self._parts = parts
         self._asm = []
 
+    def get_comment(self):
+        """Generates a comment line of the original VM instruction."""
+        return '// ' + ' '.join(self._parts)
+
     def to_asm(self):
         return '\n'.join(self._asm) + '\n'
 
-# arithmetic instructions
+# ARITHMATIC INSTRUCTIONS
 
 class AddInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'add' instruction."""
@@ -49,7 +53,7 @@ class NegInstruction(BaseInstruction):
             'M=M+1'
         ]
 
-# logical instructions
+# LOGICAL INSTRUCTIONS
 # NOTE: Hack ASM uses -1 as true and 0 as false
 
 class EqInstruction(BaseInstruction):
@@ -169,7 +173,7 @@ class NotInstruction(BaseInstruction):
             'M=M+1'
         ]
 
-# branching instructions
+# BRANCHING INSTRUCTIONS
 
 class GotoInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'goto' instruction."""
@@ -208,7 +212,36 @@ class LabelInstruction(BaseInstruction):
             f'({parts[1]})' # write label
         ]
 
-# memory instructions
+# FUNCTION INSTRUCTIONS
+
+class CallInstruction(BaseInstruction):
+    """Generates Hack ASM for 'call' instructions."""
+    def __init__(self, line_num, parts):
+        self._parts = parts
+        self._asm = [
+            self.get_comment(),
+            '// TODO: implement'
+        ]
+
+class FunctionInstruction(BaseInstruction):
+    """Generates Hack ASM for 'function' instructions."""
+    def __init__(self, line_num, parts):
+        self._parts = parts
+        self._asm = [
+            self.get_comment(),
+            '// TODO: implement'
+        ]
+
+class ReturnInstruction(BaseInstruction):
+    """Generates Hack ASM for 'return' instructions."""
+    def __init__(self, line_num, parts):
+        self._parts = parts
+        self._asm = [
+            self.get_comment(),
+            '// TODO: implement'
+        ]
+
+# MEMORY INSTRUCTIONS
 
 class MemoryInstruction(BaseInstruction):
     """Abstract class for memory instructions."""
@@ -237,9 +270,9 @@ class MemoryInstruction(BaseInstruction):
         """Returns the offset value."""
         return self._parts[2]
 
-    def get_comment(self):
-        """Generates a comment line of the original VM instruction."""
-        return '// ' + ' '.join(self._parts)
+    # def get_comment(self):
+    #     """Generates a comment line of the original VM instruction."""
+    #     return '// ' + ' '.join(self._parts)
 
 class PushInstruction(MemoryInstruction):
     """Generates the Hack ASM for a push instruction."""

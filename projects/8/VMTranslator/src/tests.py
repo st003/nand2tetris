@@ -2,7 +2,7 @@ import unittest
 
 import instructions as ins
 from exceptions import ParseError, TranslationError, VMTranslatorError
-from parser import parse_instruction
+from parser import check_offset, parse_instruction
 from translator import skip_line
 from utils import get_vm_file_name
 
@@ -37,6 +37,16 @@ class TestInstructions(unittest.TestCase):
             ins.PopInstruction(1, ['pop', 'pointer', '5'])
 
 class TestParser(unittest.TestCase):
+
+    def test_check_offset_not_number(self):
+        """Invalid offset value."""
+        with self.assertRaises(ParseError):
+            check_offset(1, 'push constant a', 'a')
+
+    def test_check_offset_negative_number(self):
+        """Negative offset value."""
+        with self.assertRaises(ParseError):
+            check_offset(1, 'push constant -1', '-1')
 
     def test_parse_instruction_inline_comment(self):
         """Test inline comment"""
@@ -142,6 +152,11 @@ class TestParser(unittest.TestCase):
         """Invalid offset character number."""
         with self.assertRaises(ParseError):
             parse_instruction(1, 'push constant -1')
+
+    def test_parse_instruction_function_invalid_offset_number(self):
+        """Invalid function offset character number."""
+        with self.assertRaises(ParseError):
+            parse_instruction(1, 'function myfunction -1')
 
 class TestTranslator(unittest.TestCase):
 

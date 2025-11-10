@@ -1,4 +1,4 @@
-# Project 7
+# Project 8
 
 Project 8 contains the source code for a VM translator.
 

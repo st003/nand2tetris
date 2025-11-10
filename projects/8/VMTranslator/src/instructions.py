@@ -225,12 +225,28 @@ class CallInstruction(BaseInstruction):
 
 class FunctionInstruction(BaseInstruction):
     """Generates Hack ASM for 'function' instructions."""
+
     def __init__(self, line_num, parts):
+        self._line_num = line_num
         self._parts = parts
         self._asm = [
             self.get_comment(),
-            '// TODO: implement'
+            '// set new local pointer',
+            '@SP', # grab the current stack pointer address...
+            'D=M',
+            '@LCL', # copy it to the local pointer and go to the top of the stack
+            'AM=D',
+            self.init_local_segment(), # zero out n-number local variables
+            f'// End {parts[1]} declaration'
         ]
+
+    def init_local_segment(self):
+        """Initialize n zero onto the stack values."""
+        local_segment_asm = [f'// zero-out {self._parts[2]} local variables\n']
+        for i in range(int(self._parts[2])):
+            ins = PushInstruction(self._line_num, ['push', 'constant', '0']).to_asm()
+            local_segment_asm.append(ins)
+        return ''.join(local_segment_asm).rstrip()
 
 class ReturnInstruction(BaseInstruction):
     """Generates Hack ASM for 'return' instructions."""
@@ -269,10 +285,6 @@ class MemoryInstruction(BaseInstruction):
     def get_offset(self):
         """Returns the offset value."""
         return self._parts[2]
-
-    # def get_comment(self):
-    #     """Generates a comment line of the original VM instruction."""
-    #     return '// ' + ' '.join(self._parts)
 
 class PushInstruction(MemoryInstruction):
     """Generates the Hack ASM for a push instruction."""

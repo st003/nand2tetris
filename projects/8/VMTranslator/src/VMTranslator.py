@@ -4,7 +4,7 @@ import traceback
 
 from exceptions import VMTranslatorError
 from translator import translate
-from utils import get_vm_file_name
+from utils import get_vm_files
 
 def main():
 
@@ -17,17 +17,16 @@ def main():
     try:
         start_time = time.perf_counter()
 
-        input_file_path = args[1]
+        input_path = args[1]
 
-        parent_dirs, file_name = get_vm_file_name(input_file_path)
+        vm_files, output_file_path = get_vm_files(input_path)
 
         input_lines = []
-        with open(input_file_path, 'r') as vm_file:
+        with open(input_path, 'r') as vm_file:
             input_lines = vm_file.readlines()
 
         asm_lines = translate(input_lines)
 
-        output_file_path = f'{parent_dirs}/{file_name}.asm'
         with open(output_file_path, 'w') as asm_file:
             asm_file.writelines(asm_lines)
 

@@ -4,7 +4,7 @@ import instructions as ins
 from exceptions import ParseError, TranslationError, VMTranslatorError
 from parser import check_offset, parse_instruction
 from translator import skip_line
-from utils import get_vm_file_name
+from utils import get_vm_files
 
 class TestInstructions(unittest.TestCase):
 
@@ -195,18 +195,25 @@ class TestTranslator(unittest.TestCase):
 
 class TestUtils(unittest.TestCase):
 
-    def test_iget_vm_file_name_success(self):
-        """Correct result with valid input."""
-        result = get_vm_file_name('home/test.vm')
-        self.assertEqual(str(result[0]), 'home')
-        self.assertEqual(result[1], 'test')
+    def test_get_vm_files_success_StaticsTest(self):
+        """Test get_vm_files with StaticsTest."""
+        vm_files, output_file_path = get_vm_files('../../test_files/StaticsTest')
+        self.assertEqual(len(vm_files), 3)
+        self.assertEqual(output_file_path, '../../test_files/StaticsTest.asm')
+
+    def test_get_vm_files_success_BasicLoop(self):
+        """Test get_vm_files with BasicLoop."""
+        vm_files, output_file_path = get_vm_files('../../test_files/BasicLoop.vm')
+        self.assertEqual(len(vm_files), 1)
+        self.assertEqual(str(vm_files[0]), '../../test_files/BasicLoop.vm')
+        self.assertEqual(output_file_path, '../../test_files/BasicLoop.asm')
 
     def test_get_vm_file_name_missing_extension(self):
         """Missing file extension."""
         with self.assertRaises(VMTranslatorError):
-            get_vm_file_name('test')
+            get_vm_files('missing-ext')
 
     def test_get_vm_file_name_wrong_extension(self):
         """Incorrect file extension."""
         with self.assertRaises(VMTranslatorError):
-            get_vm_file_name('test.asm')
+            get_vm_files('wrong-ext.asm')

@@ -214,25 +214,84 @@ class LabelInstruction(BaseInstruction):
 
 # FUNCTION INSTRUCTIONS
 
-class CallInstruction(BaseInstruction):
-    """Generates Hack ASM for 'call' instructions."""
+class FunctionBaseInstruction(BaseInstruction):
+    """Abstract class for function instructions."""
+    calling_function = ''
+
+class CallInstruction(FunctionBaseInstruction):
+    """Generates Hack ASM for 'call' instruction."""
     def __init__(self, line_num, parts):
         self._parts = parts
         self._asm = [
             self.get_comment(),
-            '// TODO: implement'
+            '// start initialization of function call',
+            '// create temp backup of new argument 0',
+            f'@{parts[2]}', # calculate the address of new argument 0
+            'D=A',
+            '@SP',
+            'D=M-D',
+            '@R14', # temp backup of new argument 0
+            'M=D',
+            '// backup return address',
+            f'@{self.calling_function}$RET.{line_num}',
+            'D=A',
+            '@SP',
+            'A=M',
+            'M=D',
+            '// backup local pointer',
+            '@LCL',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'M=D',
+            '// backup argument pointer',
+            '@ARG',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'M=D',
+            '// backup this pointer',
+            '@THIS',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'M=D',
+            '// backup that pointer',
+            '@THAT',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'M=D',
+            '// set new argument 0',
+            '@R14', # get temp backup of new argument 0
+            'D=M',
+            '@ARG',
+            'M=D',
+            '// increment stack-pointer',
+            '@SP',
+            'M=M+1', # stack-pointer should now be pointing to the top of the stack
+            '// jump to function definition',
+            f'@{parts[1]}.DEF',
+            '0;JMP',
+            '// return address for called function',
+            f'({self.calling_function}$RET.{line_num})',
+            '// end initialization of function call'
         ]
 
-class FunctionInstruction(BaseInstruction):
-    """Generates Hack ASM for 'function' instructions."""
+class FunctionInstruction(FunctionBaseInstruction):
+    """Generates Hack ASM for 'function' instruction."""
 
     def __init__(self, line_num, parts):
+        # track the current function scope for generating return labels
+        FunctionBaseInstruction.calling_function = parts[1]
+
         self._line_num = line_num
         self._parts = parts
+
         self._asm = [
             '', # add leading space in asm output
             self.get_comment(),
-            f'({parts[1]}.DEFINITION)',
+            f'({parts[1]}.DEF)',
             '// start local segment initialization',
             '@SP', # grab the current stack pointer address...
             'D=M',
@@ -250,8 +309,8 @@ class FunctionInstruction(BaseInstruction):
             local_segment_asm.append(ins)
         return ''.join(local_segment_asm).rstrip()
 
-class ReturnInstruction(BaseInstruction):
-    """Generates Hack ASM for 'return' instructions."""
+class ReturnInstruction(FunctionBaseInstruction):
+    """Generates Hack ASM for 'return' instruction."""
     def __init__(self, line_num, parts):
         self._line_num = line_num
         self._parts = parts

@@ -231,16 +231,17 @@ class FunctionInstruction(BaseInstruction):
         self._parts = parts
         self._asm = [
             self.get_comment(),
+            f'({parts[1]}.DECLARATION)',
             '// set new local pointer',
             '@SP', # grab the current stack pointer address...
             'D=M',
             '@LCL', # copy it to the local pointer and go to the top of the stack
             'AM=D',
-            self.init_local_segment(), # zero out n-number local variables
+            self.zero_out_local_variables(), # zero out n-number local variables
             f'// End {parts[1]} declaration'
         ]
 
-    def init_local_segment(self):
+    def zero_out_local_variables(self):
         """Initialize n zero onto the stack values."""
         local_segment_asm = [f'// zero-out {self._parts[2]} local variables\n']
         for i in range(int(self._parts[2])):
@@ -251,10 +252,61 @@ class FunctionInstruction(BaseInstruction):
 class ReturnInstruction(BaseInstruction):
     """Generates Hack ASM for 'return' instructions."""
     def __init__(self, line_num, parts):
+        self._line_num = line_num
         self._parts = parts
         self._asm = [
             self.get_comment(),
-            '// TODO: implement'
+            '// copy return value to argument 0',
+            PopInstruction(self._line_num, ['pop', 'argument', '0']).to_asm().rstrip(),
+            '// restore segment pointers for caller function',
+            '@LCL', # move stack-pointer to that local - 1
+            'D=M',
+            '// restore that pointer',
+            '@SP',
+            'AM=D-1',
+            'D=M',
+            '@THAT',
+            'M=D',
+            '// restore this pointer',
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            '@THIS',
+            'M=D',
+            '// restore argument pointer',
+            '// backup current location of argument',
+            '@ARG',
+            'D=M',
+            '@R14', # temp backup of current arg pointer
+            'M=D',
+            '// now restore argument pointer',
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            '@ARG',
+            'M=D',
+            '// restore local pointer',
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            '@LCL',
+            'M=D',
+            '// temp backup return address',
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            '@R15', # temp backup of return address value
+            'M=D',
+            '// clear function working stack',
+            '@R14', # get backup of arg pointer
+            'D=M',
+            '@SP', # move stack-pointer to location just after return value
+            'AM=D+1',
+            '// Jump to return address',
+            '@R15', # get the address stored in R15
+            'A=M',
+            '0;JMP', # and jump to it
+            '// end of return'
         ]
 
 # MEMORY INSTRUCTIONS
@@ -511,7 +563,7 @@ class EOFInstruction():
     @staticmethod
     def to_asm():
         asm = [
-            '// end of program',
+            '// END OF PROGRAM',
             '(EOF)',
             '@EOF',
             '0;JMP'

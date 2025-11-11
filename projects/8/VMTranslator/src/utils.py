@@ -2,6 +2,18 @@ from pathlib import Path
 
 from exceptions import VMTranslatorError
 
+def get_input_lines(paths):
+    """
+    Opens all files in a list of file paths and loads all
+    lines into a flat list.
+    """
+    input_lines = []
+    # TODO: the file order probably matters here
+    for path in paths:
+        with open(path, 'r') as vm_file:
+            input_lines += vm_file.readlines()
+    return input_lines
+
 def get_vm_files(path):
     """
     Evaluates a file or directory and returns:

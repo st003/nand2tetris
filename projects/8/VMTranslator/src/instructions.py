@@ -230,15 +230,16 @@ class FunctionInstruction(BaseInstruction):
         self._line_num = line_num
         self._parts = parts
         self._asm = [
+            '', # add leading space in asm output
             self.get_comment(),
-            f'({parts[1]}.DECLARATION)',
-            '// set new local pointer',
+            f'({parts[1]}.DEFINITION)',
+            '// start local segment initialization',
             '@SP', # grab the current stack pointer address...
             'D=M',
             '@LCL', # copy it to the local pointer and go to the top of the stack
             'AM=D',
             self.zero_out_local_variables(), # zero out n-number local variables
-            f'// End {parts[1]} declaration'
+            '// end local segment initialization'
         ]
 
     def zero_out_local_variables(self):
@@ -305,8 +306,7 @@ class ReturnInstruction(BaseInstruction):
             '// Jump to return address',
             '@R15', # get the address stored in R15
             'A=M',
-            '0;JMP', # and jump to it
-            '// end of return'
+            '0;JMP' # and jump to it
         ]
 
 # MEMORY INSTRUCTIONS
@@ -563,7 +563,7 @@ class EOFInstruction():
     @staticmethod
     def to_asm():
         asm = [
-            '// END OF PROGRAM',
+            '\n// END OF PROGRAM',
             '(EOF)',
             '@EOF',
             '0;JMP'

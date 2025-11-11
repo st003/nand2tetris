@@ -4,7 +4,7 @@ import instructions as ins
 from exceptions import ParseError, TranslationError, VMTranslatorError
 from parser import check_offset, parse_instruction
 from translator import skip_line
-from utils import get_vm_files
+from utils import get_input_lines, get_vm_files
 
 class TestInstructions(unittest.TestCase):
 
@@ -194,6 +194,12 @@ class TestTranslator(unittest.TestCase):
         self.assertTrue(output)
 
 class TestUtils(unittest.TestCase):
+
+    def test_get_input_lines_success_NestedCall(self):
+        """Test get_input_lines returns data from NestedCall/Sys.vm."""
+        paths = ['../../test_files/NestedCall/Sys.vm']
+        lines = get_input_lines(paths)
+        self.assertTrue(len(lines) > 0)
 
     def test_get_vm_files_success_StaticsTest(self):
         """Test get_vm_files with StaticsTest."""

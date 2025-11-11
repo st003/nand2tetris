@@ -4,7 +4,7 @@ import traceback
 
 from exceptions import VMTranslatorError
 from translator import translate
-from utils import get_vm_files
+from utils import get_input_lines, get_vm_files
 
 def main():
 
@@ -20,11 +20,7 @@ def main():
         input_path = args[1]
 
         vm_files, output_file_path = get_vm_files(input_path)
-
-        input_lines = []
-        with open(input_path, 'r') as vm_file:
-            input_lines = vm_file.readlines()
-
+        input_lines = get_input_lines(vm_files)
         asm_lines = translate(input_lines)
 
         with open(output_file_path, 'w') as asm_file:

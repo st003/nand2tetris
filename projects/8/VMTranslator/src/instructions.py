@@ -220,19 +220,14 @@ class FunctionBaseInstruction(BaseInstruction):
 
 class CallInstruction(FunctionBaseInstruction):
     """Generates Hack ASM for 'call' instruction."""
+
     def __init__(self, line_num, parts):
         self._parts = parts
         self._asm = [
             self.get_comment(),
             '// start initialization of function call',
             '// create temp backup of new argument 0',
-            f'@{parts[2]}', # calculate the address of new argument 0
-            'D=A',
-            '@SP',
-            'D=M-D',
-            '@R14', # temp backup of new argument 0
-            'M=D',
-            '// backup return address',
+            self.calculate_new_argument_segment(),
             f'@{self.calling_function}$RET.{line_num}',
             'D=A',
             '@SP',
@@ -277,6 +272,40 @@ class CallInstruction(FunctionBaseInstruction):
             f'({self.calling_function}$RET.{line_num})',
             '// end initialization of function call'
         ]
+
+    def calculate_new_argument_segment(self):
+        """
+        Calculate and store the address for the new argument 0 pointer.
+
+        In the case where the function is called with 0 arguments, create
+        space on the stack for storing the eventual return value so as not
+        to overwrite the return address.
+        """
+
+        if int(self._parts[2]) == 0:
+            asm = [
+                '// handle case where function was called with 0 arguments',
+                '@SP', # increment the stack-pointer
+                'AM=M+1',
+                f'@1', # specify the new empty spot in the stack as your argument 0
+                'D=A',
+                '@SP',
+                'D=M-D',
+                '@R14', # temp backup of new argument 0
+                'M=D'
+            ]
+
+        else:
+            asm = [
+                f'@{self._parts[2]}', # calculate the address of new argument 0
+                'D=A',
+                '@SP',
+                'D=M-D',
+                '@R14', # temp backup of new argument 0
+                'M=D'
+            ]
+
+        return '\n'.join(asm)
 
 class FunctionInstruction(FunctionBaseInstruction):
     """Generates Hack ASM for 'function' instruction."""
@@ -556,8 +585,8 @@ class PopInstruction(MemoryInstruction):
 
         asm = [
             f'@{self.POINTER_MAP[offset]}', # select THIS or THAT
-            'D=A', # copy the address stored at THIS or THAT
-            '@R13', # and move in into R13 (non-reserved register)
+            'D=A', # copy the address for THIS or THAT
+            '@R13', # and backup into R13 (non-reserved register)
             'M=D'
         ]
         return '\n'.join(asm)

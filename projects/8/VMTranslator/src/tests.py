@@ -56,12 +56,12 @@ class TestParser(unittest.TestCase):
     def test_check_offset_not_number(self):
         """Invalid offset value."""
         with self.assertRaises(ParseError):
-            check_offset(1, 'push constant a', 'a')
+            check_offset(Line('test', 'push constant a'), 'a')
 
     def test_check_offset_negative_number(self):
         """Negative offset value."""
         with self.assertRaises(ParseError):
-            check_offset(1, 'push constant -1', '-1')
+            check_offset(Line('test', 'push constant -1'), '-1')
 
     def test_parse_instruction_inline_comment(self):
         """Test inline comment"""

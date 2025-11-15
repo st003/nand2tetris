@@ -14,14 +14,14 @@ def tokenize(raw_line):
     tokens = [t for t in tokens if t != '']
     return tokens
 
-def check_offset(line_num, line, cmd_2):
+def check_offset(line, cmd_2):
     """Checks that an offset meets implementation requirements."""
     try:
         offset = int(cmd_2.lower())
         if offset < 0:
             raise ValueError(f'{offset} is less than 0')
     except ValueError:
-        raise ParseError(f'Invalid vm instruction at line {line_num}:\n\n{line}\n\n"{cmd_2}" is not a valid offset.')
+        raise ParseError(f'Invalid vm instruction at line {line.line_num}:\n\n{line}\n\n"{cmd_2}" is not a valid offset.')
 
 def parse_instruction(line):
     """Parses the line and returns the associated instruction object."""
@@ -58,12 +58,12 @@ def parse_instruction(line):
             if cmd_1 not in MEMORY_SEGMENTS:
                 raise ParseError(f'Invalid vm instruction at line {line.line_num}":\n\n{line}\n\n"{cmd_1}" is not a valid memory segment.')
 
-            check_offset(line.line_num, line.raw_line, line.tokens[2])
+            check_offset(line, line.tokens[2])
 
             return MEMORY_INS_MAP[cmd_0](line.line_num, line.tokens)
 
         elif cmd_0 in FUNCTION_INS_MAP:
-            check_offset(line.line_num, line.raw_line, line.tokens[2])
+            check_offset(line, line.tokens[2])
             return FUNCTION_INS_MAP[cmd_0](line.line_num, line.tokens)
 
         else:

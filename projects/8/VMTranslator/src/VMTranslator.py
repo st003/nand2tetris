@@ -3,8 +3,8 @@ import time
 import traceback
 
 from exceptions import VMTranslatorError
+from file_util import get_input_lines, get_vm_files
 from translator import translate
-from utils import get_input_lines, get_vm_files
 
 def main():
 

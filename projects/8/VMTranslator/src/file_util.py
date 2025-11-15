@@ -2,16 +2,36 @@ from pathlib import Path
 
 from exceptions import VMTranslatorError
 
+class Line():
+    """Class for containing a line and its meta-data."""
+    def __init__(self, file_name, raw_line):
+        self.file_name = file_name
+        self.raw_line = raw_line.strip()
+        self.line_num = 0
+        self.tokens = None
+
+    def is_empty(self):
+        """Indicates if a line is empty."""
+        return len(self.raw_line) == 0
+
+    def is_comment(self):
+        """Indicates if a line contains only a comment."""
+        return self.raw_line[0] == '/'
+
+    def __str__(self):
+        return self.raw_line
+
 def get_input_lines(paths):
     """
-    Opens all files in a list of file paths and loads all
-    lines into a flat list.
+    Opens all files in a and loads the content into a list
+    of Line objects
     """
     input_lines = []
     # TODO: the file order probably matters here
     for path in paths:
         with open(path, 'r') as vm_file:
-            input_lines += vm_file.readlines()
+            for line in vm_file.readlines():
+                input_lines.append(Line(path.stem, line))
     return input_lines
 
 def get_vm_files(path):

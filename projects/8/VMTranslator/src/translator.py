@@ -1,24 +1,18 @@
 from instructions import EOFInstruction
 from parser import parse_instruction
 
-def skip_line(line):
-    """Determines if a line should be parsed."""
-    if (not len(line)) or (line[0] == '/'):
-        return True
-    return False
-
-def translate(lines):
+def translate(input_lines):
     """Parses and converts Jack VM commands into Hack ASM."""
 
     instructions = []
 
-    for line_num, line in enumerate(lines):
-        clean_line = line.strip()
+    for i, line in enumerate(input_lines):
 
-        if skip_line(clean_line):
+        if line.is_empty() or line.is_comment():
             continue
 
-        ins = parse_instruction(line_num, clean_line)
+        line.line_num = i
+        ins = parse_instruction(line)
         instructions.append(ins)
 
     asm = []

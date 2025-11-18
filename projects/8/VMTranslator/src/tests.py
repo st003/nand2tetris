@@ -8,33 +8,21 @@ from parser import check_offset, parse_instruction, tokenize
 
 class TestInstructions(unittest.TestCase):
 
-    def test_get_memory_segment(self):
-        """Verify the memory segment is selected."""
-        bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
-        output = bi.get_memory_segment()
-        self.assertEqual(output, 'constant')
-
-    def test_get_offset(self):
-        """Verify the offset is selected."""
-        bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
-        output = bi.get_offset()
-        self.assertEqual(output, '1')
-
     def test_get_comment(self):
         """Verify the comment is correct."""
-        bi = ins.MemoryInstruction(1, ['push', 'constant', '1'])
+        bi = parse_instruction(Line('test', 'push constant 1'))
         output = bi.get_comment()
         self.assertEqual(output, '// push constant 1')
 
     def test_get_pointer_push_invalid_offset(self):
         """Verify error checking in push pointer."""
         with self.assertRaises(TranslationError):
-            ins.PushInstruction(1, ['push', 'pointer', '5'])
+            parse_instruction(Line('test', 'push pointer 5'))
 
     def test_get_pointer_pop_invalid_offset(self):
         """Verify error checking in pop pointer."""
         with self.assertRaises(TranslationError):
-            ins.PopInstruction(1, ['pop', 'pointer', '5'])
+            parse_instruction(Line('test', 'pop pointer 5'))
 
 class TestParser(unittest.TestCase):
 
@@ -44,13 +32,18 @@ class TestParser(unittest.TestCase):
         self.assertTrue(len(tokens) == 3)
 
     def test_tokenize_inline_comment(self):
-        """Test tokenize."""
+        """Test tokenize inline comments."""
         tokens = tokenize('add // inline')
         self.assertTrue(len(tokens) == 1)
 
     def test_tokenize_whitespace(self):
         """Test line with extra whitespace in between tokens."""
         tokens = tokenize('label  TEST')
+        self.assertTrue(len(tokens) == 2)
+
+    def test_tokenize_tabs(self):
+        """Test line with tabs."""
+        tokens = tokenize('label\tTEST')
         self.assertTrue(len(tokens) == 2)
 
     def test_check_offset_not_number(self):

@@ -1,16 +1,28 @@
 from exceptions import TranslationError
+from file_util import Line
 
 class BaseInstruction():
     """Abstract class for all instructions."""
 
-    def __init__(self, line_num, parts):
-        self._line_num = line_num
-        self._parts = parts
+    def __init__(self, line):
+        self._line = line
         self._asm = []
+
+    def get_file_name(self):
+        return self._line.file_name
+
+    def get_raw_line(self):
+        return self._line.raw_line
+
+    def get_line_num(self):
+        return self._line.line_num
+
+    def get_tokens(self):
+        return self._line.tokens
 
     def get_comment(self):
         """Generates a comment line of the original VM instruction."""
-        return '// ' + ' '.join(self._parts)
+        return '// ' + ' '.join(self.get_tokens())
 
     def to_asm(self):
         return '\n'.join(self._asm) + '\n'
@@ -19,7 +31,8 @@ class BaseInstruction():
 
 class AddInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'add' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// add',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -31,7 +44,8 @@ class AddInstruction(BaseInstruction):
 
 class SubInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'sub' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// sub',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -43,7 +57,8 @@ class SubInstruction(BaseInstruction):
 
 class NegInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'neg' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// neg',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -58,7 +73,8 @@ class NegInstruction(BaseInstruction):
 
 class EqInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'eq' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// eq',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -67,25 +83,26 @@ class EqInstruction(BaseInstruction):
             '@SP', # deincrement stack-pointer again & select new stack location
             'AM=M-1',
             'D=M-D', # diff selected values
-            f'@TRUE.{line_num}', # if diff is 0, jump to true
+            f'@TRUE.{self.get_line_num()}', # if diff is 0, jump to true
             'D;JEQ',
             '@SP', # else, set to false and jump to end
             'A=M',
             'M=0',
-            f'@END.{line_num}',
+            f'@END.{self.get_line_num()}',
             '0;JMP',
-            f'(TRUE.{line_num})', # set to true
+            f'(TRUE.{self.get_line_num()})', # set to true
             '@SP',
             'A=M',
             'M=-1',
-            f'(END.{line_num})', # increment the stack-pointer
+            f'(END.{self.get_line_num()})', # increment the stack-pointer
             '@SP',
             'M=M+1'
         ]
 
 class GtInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'gt' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// gt',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -94,25 +111,26 @@ class GtInstruction(BaseInstruction):
             '@SP', # deincrement stack-pointer again & select new stack location
             'AM=M-1',
             'D=M-D', # diff selected values
-            f'@TRUE.{line_num}', # if D is greater-than 0, jump to true
+            f'@TRUE.{self.get_line_num()}', # if D is greater-than 0, jump to true
             'D;JGT',
             '@SP', # else, set to false and jump to end
             'A=M',
             'M=0',
-            f'@END.{line_num}',
+            f'@END.{self.get_line_num()}',
             '0;JMP',
-            f'(TRUE.{line_num})', # set to true
+            f'(TRUE.{self.get_line_num()})', # set to true
             '@SP',
             'A=M',
             'M=-1',
-            f'(END.{line_num})', # increment the stack-pointer
+            f'(END.{self.get_line_num()})', # increment the stack-pointer
             '@SP',
             'M=M+1'
         ]
 
 class LtInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'lt' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// lt',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -121,25 +139,26 @@ class LtInstruction(BaseInstruction):
             '@SP', # deincrement stack-pointer again & select new stack location
             'AM=M-1',
             'D=M-D', # diff selected values
-            f'@TRUE.{line_num}', # if D is less-than 0, jump to true
+            f'@TRUE.{self.get_line_num()}', # if D is less-than 0, jump to true
             'D;JLT',
             '@SP', # else, set to false and jump to end
             'A=M',
             'M=0',
-            f'@END.{line_num}',
+            f'@END.{self.get_line_num()}',
             '0;JMP',
-            f'(TRUE.{line_num})', # set to true
+            f'(TRUE.{self.get_line_num()})', # set to true
             '@SP',
             'A=M',
             'M=-1',
-            f'(END.{line_num})', # increment the stack-pointer
+            f'(END.{self.get_line_num()})', # increment the stack-pointer
             '@SP',
             'M=M+1'
         ]
 
 class AndInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'and' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// and',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -151,7 +170,8 @@ class AndInstruction(BaseInstruction):
 
 class OrInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'or' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// or',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -163,7 +183,8 @@ class OrInstruction(BaseInstruction):
 
 class NotInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'not' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// not',
             '@SP', # deincrement stack-pointer & select new stack location
@@ -177,10 +198,11 @@ class NotInstruction(BaseInstruction):
 
 class GotoInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'goto' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// goto',
-            f'@{parts[1]}', # jump to label
+            f'@{self.get_tokens()[1]}', # jump to label
             '0;JMP'
         ]
 
@@ -194,22 +216,24 @@ class IfGotoInstruction(BaseInstruction):
     Note: this seems to contradict the lecture which state we should
     expect a boolean expression immediately before the if-goto
     """
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// if-goto',
             '@SP', # deincrement stack-pointer & select new top value in stack
             'AM=M-1',
             'D=M', # move it into d for evaluation
-            f'@{parts[1]}',
+            f'@{self.get_tokens()[1]}',
             'D;JNE'
         ]
 
 class LabelInstruction(BaseInstruction):
     """Generates the Hack ASM for the 'label' instruction."""
-    def __init__(self, line_num, parts):
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             '// label',
-            f'({parts[1]})' # write label
+            f'({self.get_tokens()[1]})' # write label
         ]
 
 # FUNCTION INSTRUCTIONS
@@ -221,14 +245,14 @@ class FunctionBaseInstruction(BaseInstruction):
 class CallInstruction(FunctionBaseInstruction):
     """Generates Hack ASM for 'call' instruction."""
 
-    def __init__(self, line_num, parts):
-        self._parts = parts
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             self.get_comment(),
             '// start initialization of function call',
             '// create temp backup of new argument 0',
             self.calculate_new_argument_segment(),
-            f'@{self.calling_function}$RET.{line_num}',
+            f'@{self.calling_function}$RET.{self.get_line_num()}',
             'D=A',
             '@SP',
             'A=M',
@@ -266,10 +290,10 @@ class CallInstruction(FunctionBaseInstruction):
             '@SP',
             'M=M+1', # stack-pointer should now be pointing to the top of the stack
             '// jump to function definition',
-            f'@{parts[1]}.DEF',
+            f'@{self.get_tokens()[1]}.DEF',
             '0;JMP',
             '// return address for called function',
-            f'({self.calling_function}$RET.{line_num})',
+            f'({self.calling_function}$RET.{self.get_line_num()})',
             '// end initialization of function call'
         ]
 
@@ -282,7 +306,7 @@ class CallInstruction(FunctionBaseInstruction):
         to overwrite the return address.
         """
 
-        if int(self._parts[2]) == 0:
+        if int(self.get_tokens()[2]) == 0:
             asm = [
                 '// handle case where function was called with 0 arguments',
                 '@SP', # increment the stack-pointer
@@ -297,7 +321,7 @@ class CallInstruction(FunctionBaseInstruction):
 
         else:
             asm = [
-                f'@{self._parts[2]}', # calculate the address of new argument 0
+                f'@{self.get_tokens()[2]}', # calculate the address of new argument 0
                 'D=A',
                 '@SP',
                 'D=M-D',
@@ -310,17 +334,16 @@ class CallInstruction(FunctionBaseInstruction):
 class FunctionInstruction(FunctionBaseInstruction):
     """Generates Hack ASM for 'function' instruction."""
 
-    def __init__(self, line_num, parts):
-        # track the current function scope for generating return labels
-        FunctionBaseInstruction.calling_function = parts[1]
+    def __init__(self, line):
+        super().__init__(line)
 
-        self._line_num = line_num
-        self._parts = parts
+        # track the current function scope for generating return labels
+        FunctionBaseInstruction.calling_function = self.get_tokens()[1]
 
         self._asm = [
             '', # add leading space in asm output
             self.get_comment(),
-            f'({parts[1]}.DEF)',
+            f'({self.get_tokens()[1]}.DEF)',
             '// start local segment initialization',
             '@SP', # grab the current stack pointer address...
             'D=M',
@@ -332,21 +355,32 @@ class FunctionInstruction(FunctionBaseInstruction):
 
     def zero_out_local_variables(self):
         """Initialize n zero onto the stack values."""
-        local_segment_asm = [f'// zero-out {self._parts[2]} local variables\n']
-        for i in range(int(self._parts[2])):
-            ins = PushInstruction(self._line_num, ['push', 'constant', '0']).to_asm()
+        local_segment_asm = [f'// zero-out {self.get_tokens()[2]} local variables\n']
+
+        for i in range(int(self.get_tokens()[2])):
+
+            line = Line(self.get_file_name(), 'push constant 0')
+            line.line_num = self.get_line_num()
+            line.tokens = ['push', 'constant', '0']
+
+            ins = PushInstruction(line).to_asm()
             local_segment_asm.append(ins)
+
         return ''.join(local_segment_asm).rstrip()
 
 class ReturnInstruction(FunctionBaseInstruction):
     """Generates Hack ASM for 'return' instruction."""
-    def __init__(self, line_num, parts):
-        self._line_num = line_num
-        self._parts = parts
+    def __init__(self, line):
+        super().__init__(line)
+
+        pop_ins = Line(self.get_file_name(), 'pop argument 0')
+        pop_ins.line_num = self.get_line_num()
+        pop_ins.tokens = ['pop', 'argument', '0']
+
         self._asm = [
             self.get_comment(),
             '// copy return value to argument 0',
-            PopInstruction(self._line_num, ['pop', 'argument', '0']).to_asm().rstrip(),
+            PopInstruction(pop_ins).to_asm().rstrip(),
             '// restore segment pointers for caller function',
             '@LCL', # move stack-pointer to that local - 1
             'D=M',
@@ -420,19 +454,17 @@ class MemoryInstruction(BaseInstruction):
 
     def get_memory_segment(self):
         """Returns the memory segment name."""
-        return self._parts[1]
+        return self.get_tokens()[1]
 
     def get_offset(self):
         """Returns the offset value."""
-        return self._parts[2]
+        return self.get_tokens()[2]
 
 class PushInstruction(MemoryInstruction):
     """Generates the Hack ASM for a push instruction."""
 
-    def __init__(self, line_num, parts):
-        self._line_num = line_num
-        self._parts = parts
-
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             self.get_comment(),
             self.get_value_from_segment(),
@@ -477,7 +509,7 @@ class PushInstruction(MemoryInstruction):
         offset = self.get_offset()
 
         if int(offset) > self.POINTER_MAX:
-            raise TranslationError(f'at line {self._line_num}. Offset may not be greater than {self.POINTER_MAX} for pointer')
+            raise TranslationError(f'at line {self.get_line_num()}. Offset may not be greater than {self.POINTER_MAX} for pointer')
 
         asm = [
             f'@{self.POINTER_MAP[offset]}', # select THIS or THAT
@@ -509,7 +541,7 @@ class PushInstruction(MemoryInstruction):
         offset = self.get_offset()
 
         if int(offset) > self.TEMP_MAX_OFFSET:
-            raise TranslationError(f'at line {self._line_num}. Offset may not be greater than {self.TEMP_MAX_OFFSET} for temp')
+            raise TranslationError(f'at line {self.get_line_num()}. Offset may not be greater than {self.TEMP_MAX_OFFSET} for temp')
 
         asm = [
             f'@{self.get_offset()}', # get the offset as a literal number
@@ -535,15 +567,13 @@ class PushInstruction(MemoryInstruction):
         elif seg == 'temp':
             return self.get_temp()
         else:
-            raise TranslationError(f'at line {self._line_num}. Memory segement "{seg}" not recognized')
+            raise TranslationError(f'at line {self.get_line_num()}. Memory segement "{seg}" not recognized')
 
 class PopInstruction(MemoryInstruction):
     """Generates the Hack ASM for a pop instruction."""
 
-    def __init__(self, line_num, parts):
-        self._line_num = line_num
-        self._parts = parts
-
+    def __init__(self, line):
+        super().__init__(line)
         self._asm = [
             self.get_comment(),
             self.get_segement_address(),
@@ -581,7 +611,7 @@ class PopInstruction(MemoryInstruction):
         offset = self.get_offset()
 
         if int(offset) > self.POINTER_MAX:
-            raise TranslationError(f'at line {self._line_num}. Offset may not be greater than {self.POINTER_MAX} for pointer')
+            raise TranslationError(f'at line {self.get_line_num()}. Offset may not be greater than {self.POINTER_MAX} for pointer')
 
         asm = [
             f'@{self.POINTER_MAP[offset]}', # select THIS or THAT
@@ -617,7 +647,7 @@ class PopInstruction(MemoryInstruction):
         offset = self.get_offset()
 
         if int(offset) > self.TEMP_MAX_OFFSET:
-            raise TranslationError(f'at line {self._line_num}. Offset may not be greater than {self.TEMP_MAX_OFFSET} for temp')
+            raise TranslationError(f'at line {self.get_line_num()}. Offset may not be greater than {self.TEMP_MAX_OFFSET} for temp')
 
         asm = [
             f'@{self.get_offset()}', # get the offset as a literal number
@@ -642,7 +672,7 @@ class PopInstruction(MemoryInstruction):
         elif seg == 'temp':
             return self.get_temp()
         else:
-            raise TranslationError(f'Error at line {self._line_num}. Memory segement "{seg}" not recognized')
+            raise TranslationError(f'Error at line {self.get_line_num()}. Memory segement "{seg}" not recognized')
 
 # utility instructions
 

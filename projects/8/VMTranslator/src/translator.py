@@ -11,7 +11,7 @@ def translate(input_lines):
         if line.is_empty() or line.is_comment():
             continue
 
-        line.line_num = i
+        line.line_num = i + 1
         ins = parse_instruction(line)
         instructions.append(ins)
 

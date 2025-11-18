@@ -526,7 +526,7 @@ class PushInstruction(MemoryInstruction):
         have static-overflow checking.
         """
         asm = [
-            f'@static.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
+            f'@{self.get_file_name()}.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
             'D=M' # get the value stored at that address
         ]
         return '\n'.join(asm)
@@ -630,7 +630,7 @@ class PopInstruction(MemoryInstruction):
         have static-overflow checking
         """
         asm = [
-            f'@static.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
+            f'@{self.get_file_name()}.{self.get_offset()}', # create asm variable called "static.i" (and selected it)
             'D=A', # copy that address in R13
             '@R13',
             'M=D'

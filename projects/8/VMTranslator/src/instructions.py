@@ -196,17 +196,28 @@ class NotInstruction(BaseInstruction):
 
 # BRANCHING INSTRUCTIONS
 
-class GotoInstruction(BaseInstruction):
+class BranchingBaseInstruction(BaseInstruction):
+    """Base instruction for Branching instructions."""
+    def make_label_name(self):
+
+        func_name = self.get_file_name()
+        if FunctionBaseInstruction.calling_function:
+            func_name = FunctionBaseInstruction.calling_function
+
+        label_name = self.get_tokens()[1]
+        return f'{func_name}${label_name}'
+
+class GotoInstruction(BranchingBaseInstruction):
     """Generates the Hack ASM for the 'goto' instruction."""
     def __init__(self, line):
         super().__init__(line)
         self._asm = [
             '// goto',
-            f'@{self.get_tokens()[1]}', # jump to label
+            f'@{self.make_label_name()}', # jump to label
             '0;JMP'
         ]
 
-class IfGotoInstruction(BaseInstruction):
+class IfGotoInstruction(BranchingBaseInstruction):
     """
     Generates the Hack ASM for the 'if-goto' instruction.
 
@@ -223,17 +234,17 @@ class IfGotoInstruction(BaseInstruction):
             '@SP', # deincrement stack-pointer & select new top value in stack
             'AM=M-1',
             'D=M', # move it into d for evaluation
-            f'@{self.get_tokens()[1]}',
+            f'@{self.make_label_name()}',
             'D;JNE'
         ]
 
-class LabelInstruction(BaseInstruction):
+class LabelInstruction(BranchingBaseInstruction):
     """Generates the Hack ASM for the 'label' instruction."""
     def __init__(self, line):
         super().__init__(line)
         self._asm = [
             '// label',
-            f'({self.get_tokens()[1]})' # write label
+            f'({self.make_label_name()})' # write label
         ]
 
 # FUNCTION INSTRUCTIONS

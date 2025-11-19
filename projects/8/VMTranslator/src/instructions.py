@@ -263,6 +263,7 @@ class CallInstruction(FunctionBaseInstruction):
             '// start initialization of function call',
             '// create temp backup of new argument 0',
             self.calculate_new_argument_segment(),
+            '// store return address',
             f'@{self.calling_function}$ret.{self.get_line_num()}',
             'D=A',
             '@SP',
@@ -309,37 +310,15 @@ class CallInstruction(FunctionBaseInstruction):
         ]
 
     def calculate_new_argument_segment(self):
-        """
-        Calculate and store the address for the new argument 0 pointer.
-
-        In the case where the function is called with 0 arguments, create
-        space on the stack for storing the eventual return value so as not
-        to overwrite the return address.
-        """
-
-        if int(self.get_tokens()[2]) == 0:
-            asm = [
-                '// handle case where function was called with 0 arguments',
-                '@SP', # increment the stack-pointer
-                'AM=M+1',
-                f'@1', # specify the new empty spot in the stack as your argument 0
-                'D=A',
-                '@SP',
-                'D=M-D',
-                '@R14', # temp backup of new argument 0
-                'M=D'
-            ]
-
-        else:
-            asm = [
-                f'@{self.get_tokens()[2]}', # calculate the address of new argument 0
-                'D=A',
-                '@SP',
-                'D=M-D',
-                '@R14', # temp backup of new argument 0
-                'M=D'
-            ]
-
+        """Calculate and store the address for the new argument 0 pointer."""
+        asm = [
+            f'@{self.get_tokens()[2]}', # calculate the address of new argument 0
+            'D=A',
+            '@SP',
+            'D=M-D',
+            '@R14', # temp backup of new argument 0
+            'M=D'
+        ]
         return '\n'.join(asm)
 
 class FunctionInstruction(FunctionBaseInstruction):
@@ -390,6 +369,17 @@ class ReturnInstruction(FunctionBaseInstruction):
 
         self._asm = [
             self.get_comment(),
+            # Make temp backup of return address first because and argument 0 will
+            # occupy the same position on the stack if the function is called with
+            # 0 arguments
+            '// temp backup return address',
+            '@5', # return address is stored in LCL addr - 5
+            'D=A',
+            '@LCL',
+            'A=M-D',
+            'D=M',
+            '@R15',
+            'M=D',
             '// copy return value to argument 0',
             PopInstruction(pop_ins).to_asm().rstrip(),
             '// restore segment pointers for caller function',
@@ -424,12 +414,6 @@ class ReturnInstruction(FunctionBaseInstruction):
             'AM=M-1',
             'D=M',
             '@LCL',
-            'M=D',
-            '// temp backup return address',
-            '@SP',
-            'AM=M-1',
-            'D=M',
-            '@R15', # temp backup of return address value
             'M=D',
             '// clear function working stack',
             '@R14', # get backup of arg pointer

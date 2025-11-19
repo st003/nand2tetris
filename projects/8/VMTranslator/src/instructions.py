@@ -673,17 +673,26 @@ class PopInstruction(MemoryInstruction):
 
 class BootstrapInstruction():
     """Code for booting the program."""
+
     def to_asm(self):
+        # there technically is no calling function
+        FunctionBaseInstruction.calling_function = 'bootstrap'
+
+        # must use a vm call instruction so function call stack
+        # frame backup will occur
+        call_ins = Line('bootstrap', 'call Sys.init 0')
+        call_ins.line_num = 0 # technically no line number
+        call_ins.tokens = ['call', 'Sys.init', '0']
+
         asm = [
-            '// bootstrap code',
+            '// start bootstrap code',
             '// set the base stack-pointer to 256',
             '@256',
             'D=A',
             '@SP',
             'M=D',
-            '// jump to Sys.init function',
-            '@Sys.init',
-            '0;JMP'
+            CallInstruction(call_ins).to_asm().rstrip(),
+            '// end bootstrap code'
         ]
         return '\n'.join(asm) + '\n'
 

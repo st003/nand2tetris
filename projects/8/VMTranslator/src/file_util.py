@@ -23,16 +23,16 @@ class Line():
 
 def get_input_lines(paths):
     """
-    Opens all files in a and loads the content into a list
-    of Line objects
+    Opens all files specified in a list and loads
+    their contents into a list of Line objects
     """
+    file_count = len(paths)
     input_lines = []
-    # TODO: the file order probably matters here
     for path in paths:
         with open(path, 'r') as vm_file:
             for line in vm_file.readlines():
                 input_lines.append(Line(path.stem, line))
-    return input_lines
+    return input_lines, file_count
 
 def get_vm_files(path):
     """

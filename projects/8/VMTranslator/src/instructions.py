@@ -687,10 +687,25 @@ class PopInstruction(MemoryInstruction):
 
 # utility instructions
 
+class BootstrapInstruction():
+    """Code for booting the program."""
+    def to_asm(self):
+        asm = [
+            '// bootstrap code',
+            '// set the base stack-pointer to 256',
+            '@256',
+            'D=A',
+            '@SP',
+            'M=D',
+            '// jump to Sys.init function',
+            '@Sys.init',
+            '0;JMP'
+        ]
+        return '\n'.join(asm) + '\n'
+
 class EOFInstruction():
     """Infinite loop for the end of the program."""
-    @staticmethod
-    def to_asm():
+    def to_asm(self):
         asm = [
             '\n// END OF PROGRAM',
             '(EOF)',

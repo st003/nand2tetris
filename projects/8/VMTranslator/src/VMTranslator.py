@@ -20,8 +20,8 @@ def main():
         input_path = args[1]
 
         vm_files, output_file_path = get_vm_files(input_path)
-        input_lines = get_input_lines(vm_files)
-        asm_lines = translate(input_lines)
+        input_lines, file_count = get_input_lines(vm_files)
+        asm_lines = translate(input_lines, file_count)
 
         with open(output_file_path, 'w') as asm_file:
             asm_file.writelines(asm_lines)

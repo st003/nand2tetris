@@ -196,8 +196,9 @@ class TestFileUtil(unittest.TestCase):
     def test_get_input_lines_success_NestedCall(self):
         """Test get_input_lines returns data from NestedCall/Sys.vm."""
         paths = [Path('../../test_files/NestedCall/Sys.vm')]
-        lines = get_input_lines(paths)
+        lines, count = get_input_lines(paths)
         self.assertTrue(len(lines) > 0)
+        self.assertTrue(count == 1)
 
     def test_get_vm_files_success_StaticsTest(self):
         """Test get_vm_files with StaticsTest."""

@@ -263,7 +263,7 @@ class CallInstruction(FunctionBaseInstruction):
             '// start initialization of function call',
             '// create temp backup of new argument 0',
             self.calculate_new_argument_segment(),
-            f'@{self.calling_function}$RET.{self.get_line_num()}',
+            f'@{self.calling_function}$ret.{self.get_line_num()}',
             'D=A',
             '@SP',
             'A=M',
@@ -301,10 +301,10 @@ class CallInstruction(FunctionBaseInstruction):
             '@SP',
             'M=M+1', # stack-pointer should now be pointing to the top of the stack
             '// jump to function definition',
-            f'@{self.get_tokens()[1]}.DEF',
+            f'@{self.get_tokens()[1]}',
             '0;JMP',
             '// return address for called function',
-            f'({self.calling_function}$RET.{self.get_line_num()})',
+            f'({self.calling_function}$ret.{self.get_line_num()})',
             '// end initialization of function call'
         ]
 
@@ -354,7 +354,7 @@ class FunctionInstruction(FunctionBaseInstruction):
         self._asm = [
             '', # add leading space in asm output
             self.get_comment(),
-            f'({self.get_tokens()[1]}.DEF)',
+            f'({self.get_tokens()[1]})',
             '// start local segment initialization',
             '@SP', # grab the current stack pointer address...
             'D=M',

@@ -9,6 +9,7 @@ from translator import translate
 def main():
 
     args = sys.argv
+    print('DEBUG - argv:', sys.argv)
 
     if (len(args) != 2):
         print('Usage: python VMTranslator.py <file.vm>|<path-to-vm-files>')

@@ -46,11 +46,14 @@ def get_vm_files(path):
     path = Path(path)
 
     vm_files = []
+    output_file_path = ''
 
     if (path.is_dir()):
         for file in path.iterdir():
             if file.suffix == '.vm':
                 vm_files.append(file)
+
+        output_file_path = f'{path.parent}/{path.stem}/{path.stem}.asm'
 
     else:
         if (not path.suffix):
@@ -59,7 +62,6 @@ def get_vm_files(path):
             raise VMTranslatorError(f'{path.suffix} is an invalid file extension')
 
         vm_files.append(path)
-
-    output_file_path = f'{path.parent}/{path.stem}/{path.stem}.asm'
+        output_file_path = f'{path.parent}/{path.stem}.asm'
 
     return vm_files, output_file_path

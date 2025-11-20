@@ -4,6 +4,7 @@ from exceptions import VMTranslatorError
 
 class Line():
     """Class for containing a line and its meta-data."""
+
     def __init__(self, file_name, raw_line):
         self.file_name = file_name
         self.raw_line = raw_line.strip()
@@ -59,6 +60,6 @@ def get_vm_files(path):
 
         vm_files.append(path)
 
-    output_file_path = f'{path.parent}/{path.stem}.asm'
+    output_file_path = f'{path.parent}/{path.stem}/{path.stem}.asm'
 
     return vm_files, output_file_path

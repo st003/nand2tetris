@@ -204,14 +204,14 @@ class TestFileUtil(unittest.TestCase):
         """Test get_vm_files with StaticsTest."""
         vm_files, output_file_path = get_vm_files('../../test_files/StaticsTest')
         self.assertEqual(len(vm_files), 3)
-        self.assertEqual(output_file_path, '../../test_files/StaticsTest.asm')
+        self.assertEqual(output_file_path, '../../test_files/StaticsTest/StaticsTest.asm')
 
     def test_get_vm_files_success_BasicLoop(self):
         """Test get_vm_files with BasicLoop."""
-        vm_files, output_file_path = get_vm_files('../../test_files/BasicLoop.vm')
+        vm_files, output_file_path = get_vm_files('../../test_files/BasicLoop')
         self.assertEqual(len(vm_files), 1)
-        self.assertEqual(str(vm_files[0]), '../../test_files/BasicLoop.vm')
-        self.assertEqual(output_file_path, '../../test_files/BasicLoop.asm')
+        self.assertEqual(str(vm_files[0]), '../../test_files/BasicLoop/BasicLoop.vm')
+        self.assertEqual(output_file_path, '../../test_files/BasicLoop/BasicLoop.asm')
 
     def test_get_vm_file_name_missing_extension(self):
         """Missing file extension."""

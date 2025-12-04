@@ -1,10 +1,36 @@
 class Pong {
 
     // classes with a constructor must have at least 1 field
+
+    static char QUIT;
+
     field boolean is_running;
+    field int playerScore;
+    field int cpuScore;
 
     constructor Pong new() {
-        let is_running = true;
+
+        let QUIT = 113; // key-code for 'q'
+
+        let playerScore = 0;
+        let cpuScore = 0;
+
+        // player score
+        do Output.moveCursor(1, 1);
+        do Output.printInt(playerScore);
+
+        // title
+        do Output.moveCursor(1, 30);
+        do Output.printString("PONG");
+
+        // cpu score
+        do Output.moveCursor(1, 62);
+        do Output.printInt(cpuScore);
+
+        // header border
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 32, 511, 32);
+
         return this;
     }
 
@@ -16,29 +42,35 @@ class Pong {
     method void run() {
 
         // you must do all variable declarations before assignment
-        var char EXIT;
         var char key;
         var int counter;
 
-        let EXIT = 113;
+        let is_running = true;
         let counter = 0;
 
         // game loop
         while(is_running) {
-
-            do Output.printInt(counter);
-            do Output.println();
-
-            let counter = counter + 1;
-            do Sys.wait(1000);
-
             let key = Keyboard.keyPressed();
-            if (key = EXIT) {
+
+            if (key = QUIT) {
                 let is_running = false;
-                do Output.printString("Exit");
-                do Output.println();
             }
         }
+
+        do Screen.clearScreen();
+        return;
+    }
+
+    /** Updates the scores in the header */
+    function void updateScores(int playerScore, int cpuScore) {
+
+        // player score
+        do Output.moveCursor(1, 1);
+        do Output.printInt(playerScore);
+
+        // cpu score
+        do Output.moveCursor(1, 62);
+        do Output.printInt(cpuScore);
 
         return;
     }

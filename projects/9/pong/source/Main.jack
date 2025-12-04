@@ -1,0 +1,7 @@
+class Main {
+
+    /** Method from which the entire program will start */
+    function void main() {
+        return;
+    }
+}

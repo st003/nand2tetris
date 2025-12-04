@@ -2,6 +2,10 @@ class Main {
 
     /** Method from which the entire program will start */
     function void main() {
+        var Pong pong;
+        let pong = Pong.new();
+        do pong.run();
+        do pong.dispose();
         return;
     }
 }

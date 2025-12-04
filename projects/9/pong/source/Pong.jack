@@ -1,0 +1,45 @@
+class Pong {
+
+    // classes with a constructor must have at least 1 field
+    field boolean is_running;
+
+    constructor Pong new() {
+        let is_running = true;
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void run() {
+
+        // you must do all variable declarations before assignment
+        var char EXIT;
+        var char key;
+        var int counter;
+
+        let EXIT = 113;
+        let counter = 0;
+
+        // game loop
+        while(is_running) {
+
+            do Output.printInt(counter);
+            do Output.println();
+
+            let counter = counter + 1;
+            do Sys.wait(1000);
+
+            let key = Keyboard.keyPressed();
+            if (key = EXIT) {
+                let is_running = false;
+                do Output.printString("Exit");
+                do Output.println();
+            }
+        }
+
+        return;
+    }
+}

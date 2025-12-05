@@ -2,6 +2,7 @@ class Main {
 
     /** Method from which the entire program will start */
     function void main() {
+        // you must do all variable declarations before assignment
         var Pong pong;
         let pong = Pong.new();
         do pong.run();

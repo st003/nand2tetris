@@ -1,0 +1,49 @@
+class ScoreBoard {
+
+    field int playerScore;
+    field int cpuScore;
+
+    constructor ScoreBoard new() {
+        let playerScore = 0;
+        let cpuScore = 0;
+
+        // draw title and header once (redraws of printString() cause heap overflows)
+        // draw title
+        do Output.moveCursor(1, 30);
+        do Output.printString("PONG");
+
+        // header border
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 32, 511, 32);
+
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void incrementPlayerScore() {
+        let playerScore = playerScore + 1;
+        return;
+    }
+
+    method void incrementCpuScore() {
+        let cpuScore = cpuScore + 1;
+        return;
+    }
+
+    method void draw() {
+
+        // player score
+        do Output.moveCursor(1, 1);
+        do Output.printInt(playerScore);
+
+        // cpu score
+        do Output.moveCursor(1, 62);
+        do Output.printInt(cpuScore);
+
+        return;
+    }
+}

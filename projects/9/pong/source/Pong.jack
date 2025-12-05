@@ -5,73 +5,49 @@ class Pong {
     static char QUIT;
 
     field boolean is_running;
-    field int playerScore;
-    field int cpuScore;
+    field ScoreBoard scoreBoard;
 
     constructor Pong new() {
 
-        let QUIT = 113; // key-code for 'q'
+        // key bindings
+        let QUIT = 113; // 'q'
 
-        let playerScore = 0;
-        let cpuScore = 0;
-
-        // player score
-        do Output.moveCursor(1, 1);
-        do Output.printInt(playerScore);
-
-        // title
-        do Output.moveCursor(1, 30);
-        do Output.printString("PONG");
-
-        // cpu score
-        do Output.moveCursor(1, 62);
-        do Output.printInt(cpuScore);
-
-        // header border
-        do Screen.setColor(true);
-        do Screen.drawLine(0, 32, 511, 32);
+        // entities
+        let is_running = false;
+        let scoreBoard = ScoreBoard.new();
 
         return this;
     }
 
     method void dispose() {
+        do scoreBoard.dispose();
         do Memory.deAlloc(this);
         return;
     }
 
     method void run() {
 
-        // you must do all variable declarations before assignment
         var char key;
-        var int counter;
 
         let is_running = true;
-        let counter = 0;
 
         // game loop
         while(is_running) {
+
+            // read player input
             let key = Keyboard.keyPressed();
 
             if (key = QUIT) {
                 let is_running = false;
             }
+
+            // TODO: update game state
+
+            // draw
+            do scoreBoard.draw();
         }
 
         do Screen.clearScreen();
-        return;
-    }
-
-    /** Updates the scores in the header */
-    function void updateScores(int playerScore, int cpuScore) {
-
-        // player score
-        do Output.moveCursor(1, 1);
-        do Output.printInt(playerScore);
-
-        // cpu score
-        do Output.moveCursor(1, 62);
-        do Output.printInt(cpuScore);
-
         return;
     }
 }

@@ -6,21 +6,28 @@ class Pong {
 
     field boolean is_running;
     field ScoreBoard scoreBoard;
+    field Paddle player;
 
     constructor Pong new() {
+
+        let is_running = false;
 
         // key bindings
         let QUIT = 113; // 'q'
 
         // entities
-        let is_running = false;
         let scoreBoard = ScoreBoard.new();
+        let player = Paddle.new();
 
         return this;
     }
 
     method void dispose() {
+
+        // clean up entities
         do scoreBoard.dispose();
+        do player.dispose();
+
         do Memory.deAlloc(this);
         return;
     }
@@ -45,6 +52,7 @@ class Pong {
 
             // draw
             do scoreBoard.draw();
+            do player.draw();
         }
 
         do Screen.clearScreen();

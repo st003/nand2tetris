@@ -36,6 +36,8 @@ class ScoreBoard {
 
     method void draw() {
 
+        do Screen.setColor(true);
+
         // player score
         do Output.moveCursor(1, 1);
         do Output.printInt(playerScore);

@@ -1,0 +1,30 @@
+class Paddle {
+
+    field int width;
+    field int height;
+    field int x;
+    field int y;
+
+    constructor Paddle new() {
+
+        let width = 4;
+        let height = 32;
+        let x = 16;
+        let y = 128;
+
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void draw() {
+
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, (x + width), (y + height));
+
+        return;
+    }
+}

@@ -41,6 +41,8 @@ class Pong {
         // game loop
         while(is_running) {
 
+            do Sys.wait(17);
+
             // read player input
             let key = Keyboard.keyPressed();
 
@@ -48,7 +50,8 @@ class Pong {
                 let is_running = false;
             }
 
-            // TODO: update game state
+            // update game state
+            do player.update(key);
 
             // draw
             do scoreBoard.draw();
@@ -56,6 +59,9 @@ class Pong {
         }
 
         do Screen.clearScreen();
+        do Output.moveCursor(12, 30);
+        do Output.printString("Quit");
+
         return;
     }
 }

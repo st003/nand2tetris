@@ -1,16 +1,25 @@
 class Paddle {
 
+    static char UP;
+    static char DOWN;
+
     field int width;
     field int height;
     field int x;
     field int y;
+    field int speed;
 
     constructor Paddle new() {
+
+        // key bindings
+        let UP = 119; // 'w'
+        let DOWN = 115; // 's'
 
         let width = 4;
         let height = 32;
         let x = 16;
         let y = 128;
+        let speed = 3;
 
         return this;
     }
@@ -20,7 +29,30 @@ class Paddle {
         return;
     }
 
+    method void update(char key) {
+
+        if (key = UP) {
+            // collision detection for score board
+            if (y > 32) {
+                let y = y - speed;
+            }
+        }
+
+        if (key = DOWN) {
+            // collision detection for bottom of screen
+            if ((y + height) < 255) {
+                let y = y + speed;
+            }
+        }
+
+        return;
+    }
+
     method void draw() {
+
+        // TODO:
+        // draw over last position with white
+        // then draw new position with black
 
         do Screen.setColor(true);
         do Screen.drawRectangle(x, y, (x + width), (y + height));

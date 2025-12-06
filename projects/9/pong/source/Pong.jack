@@ -16,7 +16,7 @@ class Pong {
     constructor Pong new() {
 
         // key bindings
-        let QUIT_KEY = 113; // 'q'
+        let QUIT_KEY = 140; // 'esc'
         let START_KEY = 32; // 'space'
 
         let START_STATE = 1;
@@ -30,7 +30,15 @@ class Pong {
         let scoreBoard = ScoreBoard.new();
         let player = PlayerPaddle.new();
 
-        do Instructions.display();
+        // display Instructions
+        do Output.moveCursor(9, 24);
+        do Output.printString("SPACE - Start Game");
+        do Output.moveCursor(10, 24);
+        do Output.printString("W - Move up");
+        do Output.moveCursor(11, 24);
+        do Output.printString("S - Move down");
+        do Output.moveCursor(12, 24);
+        do Output.printString("ESC - Quit Game");
 
         return this;
     }
@@ -45,9 +53,15 @@ class Pong {
         return;
     }
 
+    method void clearPlayArea() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(0, 32, 511, 255);
+        return;
+    }
+
     method void quit() {
 
-        do player.clear();
+        do clearPlayArea();
 
         do Output.moveCursor(12, 30);
         do Output.printString("Quit");
@@ -78,7 +92,7 @@ class Pong {
 
             if (game_state = START_STATE) {
                 if (key = START_KEY) {
-                    do Instructions.clear();
+                    do clearPlayArea();
                     let game_state = PLAY_STATE;
                 }
             }

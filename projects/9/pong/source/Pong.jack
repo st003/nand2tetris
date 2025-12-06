@@ -6,7 +6,7 @@ class Pong {
 
     field boolean is_running;
     field ScoreBoard scoreBoard;
-    field Paddle player;
+    field PlayerPaddle player;
 
     constructor Pong new() {
 
@@ -17,7 +17,7 @@ class Pong {
 
         // entities
         let scoreBoard = ScoreBoard.new();
-        let player = Paddle.new();
+        let player = PlayerPaddle.new();
 
         return this;
     }
@@ -41,7 +41,10 @@ class Pong {
         // game loop
         while(is_running) {
 
-            do Sys.wait(17);
+            // lack of system clock method means be cannot calculate
+            // real frame times or dealta time for animation. must
+            // simulate framerate
+            do Sys.wait(16); // ~60fps
 
             // read player input
             let key = Keyboard.keyPressed();

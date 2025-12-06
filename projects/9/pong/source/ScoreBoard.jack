@@ -14,7 +14,7 @@ class ScoreBoard {
 
         // header border
         do Screen.setColor(true);
-        do Screen.drawLine(0, 32, 511, 32);
+        do Screen.drawLine(0, 31, 511, 31);
 
         return this;
     }

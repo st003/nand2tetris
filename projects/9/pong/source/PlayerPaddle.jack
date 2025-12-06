@@ -1,7 +1,7 @@
 class PlayerPaddle {
 
-    static char UP;
-    static char DOWN;
+    static char UP_KEY;
+    static char DOWN_KEY;
 
     field int width;
     field int height;
@@ -12,8 +12,8 @@ class PlayerPaddle {
     constructor PlayerPaddle new() {
 
         // key bindings
-        let UP = 119; // 'w'
-        let DOWN = 115; // 's'
+        let UP_KEY = 119; // 'w'
+        let DOWN_KEY = 115; // 's'
 
         let width = 4;
         let height = 32;
@@ -35,11 +35,9 @@ class PlayerPaddle {
         // because we are not redrawing the whole frame each
         // iteration we need to clear the paddle from the
         // previous frame before calculating the update
+        do clear();
 
-        do Screen.setColor(false);
-        do Screen.drawRectangle(x, y, (x + width), (y + height));
-
-        if (key = UP) {
+        if (key = UP_KEY) {
             // collision detection for score board
             if (y - speed > 32) {
                 let y = y - speed;
@@ -48,7 +46,7 @@ class PlayerPaddle {
             }
         }
 
-        if (key = DOWN) {
+        if (key = DOWN_KEY) {
             // collision detection for bottom of screen
             if (y + height < 255) {
                 let y = y + speed;
@@ -57,6 +55,12 @@ class PlayerPaddle {
             }
         }
 
+        return;
+    }
+
+    method void clear() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, (x + width), (y + height));
         return;
     }
 

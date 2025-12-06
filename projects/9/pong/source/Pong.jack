@@ -3,23 +3,34 @@ class Pong {
     // classes with a constructor must have at least 1 field
 
     static char QUIT_KEY;
+    static char START_KEY;
+
+    static int START_STATE;
+    static int PLAY_STATE;
 
     field boolean is_running;
+    field int game_state;
     field ScoreBoard scoreBoard;
     field PlayerPaddle player;
 
     constructor Pong new() {
 
-        let is_running = false;
-
         // key bindings
         let QUIT_KEY = 113; // 'q'
+        let START_KEY = 32; // 'space'
+
+        let START_STATE = 1;
+        let PLAY_STATE = 2;
 
         do Screen.clearScreen();
+        let is_running = false;
+        let game_state = START_STATE;
 
         // entities
         let scoreBoard = ScoreBoard.new();
         let player = PlayerPaddle.new();
+
+        do Instructions.display();
 
         return this;
     }
@@ -65,12 +76,22 @@ class Pong {
                 let is_running = false;
             }
 
-            // update game state
-            do player.update(key);
+            if (game_state = START_STATE) {
+                if (key = START_KEY) {
+                    do Instructions.clear();
+                    let game_state = PLAY_STATE;
+                }
+            }
 
-            // draw
-            do scoreBoard.draw();
-            do player.draw();
+            if (game_state = PLAY_STATE) {
+
+                // update game state
+                do player.update(key);
+
+                // draw
+                do scoreBoard.draw();
+                do player.draw();
+            }
         }
 
         do quit();

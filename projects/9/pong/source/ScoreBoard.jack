@@ -4,16 +4,26 @@ class ScoreBoard {
     field int cpuScore;
 
     constructor ScoreBoard new() {
+
         let playerScore = 0;
         let cpuScore = 0;
+
+        do Screen.setColor(true);
+
+        // player score
+        do Output.moveCursor(1, 1);
+        do Output.printInt(playerScore);
 
         // draw title and header once (redraws of printString() cause heap overflows)
         // draw title
         do Output.moveCursor(1, 30);
         do Output.printString("PONG");
 
+        // cpu score
+        do Output.moveCursor(1, 62);
+        do Output.printInt(cpuScore);
+
         // header border
-        do Screen.setColor(true);
         do Screen.drawLine(0, 31, 511, 31);
 
         return this;

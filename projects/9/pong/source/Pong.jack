@@ -12,6 +12,7 @@ class Pong {
     field int game_state;
     field ScoreBoard scoreBoard;
     field PlayerPaddle player;
+    field CpuPaddle cpu;
 
     constructor Pong new() {
 
@@ -29,6 +30,7 @@ class Pong {
         // entities
         let scoreBoard = ScoreBoard.new();
         let player = PlayerPaddle.new();
+        let cpu = CpuPaddle.new();
 
         // display Instructions
         do Output.moveCursor(9, 24);
@@ -48,6 +50,7 @@ class Pong {
         // clean up entities
         do scoreBoard.dispose();
         do player.dispose();
+        do cpu.dispose();
 
         do Memory.deAlloc(this);
         return;
@@ -105,6 +108,7 @@ class Pong {
                 // draw
                 do scoreBoard.draw();
                 do player.draw();
+                do cpu.draw();
             }
         }
 

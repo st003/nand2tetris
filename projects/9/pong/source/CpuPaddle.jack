@@ -1,0 +1,47 @@
+class CpuPaddle {
+
+    field int width;
+    field int height;
+    field int x;
+    field int y;
+    field int speed;
+
+    constructor CpuPaddle new() {
+
+        let width = 4;
+        let height = 32;
+        let x = 495 - width;
+        let y = 128;
+        let speed = 3;
+
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void update(char key) {
+
+        // ideally this would be done in the draw method but
+        // because we are not redrawing the whole frame each
+        // iteration we need to clear the paddle from the
+        // previous frame before calculating the update
+        do clear();
+
+        return;
+    }
+
+    method void clear() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, (x + width), (y + height));
+        return;
+    }
+
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, (x + width), (y + height));
+        return;
+    }
+}

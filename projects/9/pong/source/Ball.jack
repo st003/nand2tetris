@@ -1,4 +1,4 @@
-class CpuPaddle {
+class Ball {
 
     field int width;
     field int height;
@@ -6,12 +6,12 @@ class CpuPaddle {
     field int y;
     field int speed;
 
-    constructor CpuPaddle new() {
+    constructor Ball new() {
 
-        let width = 4;
-        let height = 32;
-        let x = 495 - width;
-        let y = 128;
+        let width = 6;
+        let height = 6;
+        let x = 253;
+        let y = 128 + height;
         let speed = 3;
 
         return this;
@@ -22,6 +22,7 @@ class CpuPaddle {
         return;
     }
 
+    // TODO: can we pass in each paddle?
     method void update() {
 
         // ideally this would be done in the draw method but

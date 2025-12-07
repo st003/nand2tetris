@@ -13,6 +13,7 @@ class Pong {
     field ScoreBoard scoreBoard;
     field PlayerPaddle player;
     field CpuPaddle cpu;
+    field Ball ball;
 
     constructor Pong new() {
 
@@ -31,6 +32,7 @@ class Pong {
         let scoreBoard = ScoreBoard.new();
         let player = PlayerPaddle.new();
         let cpu = CpuPaddle.new();
+        let ball = Ball.new();
 
         // display Instructions
         do Output.moveCursor(9, 24);
@@ -51,6 +53,7 @@ class Pong {
         do scoreBoard.dispose();
         do player.dispose();
         do cpu.dispose();
+        do ball.dispose();
 
         do Memory.deAlloc(this);
         return;
@@ -109,6 +112,7 @@ class Pong {
                 do scoreBoard.draw();
                 do player.draw();
                 do cpu.draw();
+                do ball.draw();
             }
         }
 

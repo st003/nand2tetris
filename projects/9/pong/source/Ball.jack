@@ -4,6 +4,7 @@ class Ball {
     field int height;
     field int x;
     field int y;
+    field int baseSpeed;
     field int speed;
 
     constructor Ball new() {
@@ -12,7 +13,8 @@ class Ball {
         let height = 6;
         let x = 253;
         let y = 128 + height;
-        let speed = 3;
+        let baseSpeed = 3;
+        let speed = baseSpeed;
 
         return this;
     }
@@ -22,8 +24,7 @@ class Ball {
         return;
     }
 
-    // TODO: can we pass in each paddle?
-    method void update() {
+    method void update(ScoreBoard scoreBoard) {
 
         // ideally this would be done in the draw method but
         // because we are not redrawing the whole frame each
@@ -33,11 +34,30 @@ class Ball {
 
         let x = x + speed;
 
-        // score on cpu
-        if (x + width > 511) {
-            let x = 511 - width;
+        // score on player
+        if (x < 0) {
+            do scoreBoard.incrementCpuScore();
+            do reset(1);
         }
 
+        // score on cpu
+        if (x + width > 511) {
+            do scoreBoard.incrementPlayerScore();
+            do reset(-1);
+        }
+
+        return;
+    }
+
+    /**
+    *  Resets the ball to the center and flips its direction
+    *  left = -1
+    *  right = 1
+    */
+    method void reset(int direction) {
+        let x = 253;
+        let y = 128 + height;
+        let speed = baseSpeed * direction;
         return;
     }
 

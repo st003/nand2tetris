@@ -31,6 +31,13 @@ class Ball {
         // previous frame before calculating the update
         do clear();
 
+        let x = x + speed;
+
+        // score on cpu
+        if (x + width > 511) {
+            let x = 511 - width;
+        }
+
         return;
     }
 

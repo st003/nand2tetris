@@ -107,6 +107,7 @@ class Pong {
 
                 // update game state
                 do player.update(key);
+                do ball.update();
 
                 // draw
                 do scoreBoard.draw();

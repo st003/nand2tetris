@@ -1,9 +1,13 @@
 class ScoreBoard {
 
+    static int maxScore;
+
     field int playerScore;
     field int cpuScore;
 
     constructor ScoreBoard new() {
+
+        let maxScore = 1; // TODO: set final score
 
         let playerScore = 0;
         let cpuScore = 0;
@@ -32,6 +36,20 @@ class ScoreBoard {
     method void dispose() {
         do Memory.deAlloc(this);
         return;
+    }
+
+    method boolean playerWon() {
+        if (playerScore < maxScore) {
+            return false;
+        }
+        return true;
+    }
+
+    method boolean cpuWon() {
+        if (cpuScore < maxScore) {
+            return false;
+        }
+        return true;
     }
 
     method void incrementPlayerScore() {

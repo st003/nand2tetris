@@ -65,6 +65,18 @@ class Pong {
         return;
     }
 
+    method void win(boolean playerWon) {
+        do clearPlayArea();
+        if (playerWon) {
+            do Output.moveCursor(12, 27);
+            do Output.printString("Player Wins!");
+        } else {
+            do Output.moveCursor(12, 28);
+            do Output.printString("CPU Wins!");
+        }
+        return;
+    }
+
     method void quit() {
 
         do clearPlayArea();
@@ -77,7 +89,11 @@ class Pong {
 
     method void run() {
 
+        // variable declarations must occur at the top scope of
+        // a function or method
         var char key;
+        var boolean playerWon;
+        var boolean cpuWon;
 
         let is_running = true;
 
@@ -93,7 +109,8 @@ class Pong {
             let key = Keyboard.keyPressed();
 
             if (key = QUIT_KEY) {
-                let is_running = false;
+                do quit();
+                return;
             }
 
             if (game_state = START_STATE) {
@@ -109,6 +126,13 @@ class Pong {
                 do player.update(key);
                 do ball.update(scoreBoard);
 
+                let playerWon = scoreBoard.playerWon();
+                let cpuWon = scoreBoard.cpuWon();
+                if (playerWon | cpuWon) {
+                    do win(playerWon);
+                    return;
+                }
+
                 // draw
                 do scoreBoard.draw();
                 do player.draw();
@@ -117,7 +141,6 @@ class Pong {
             }
         }
 
-        do quit();
         return;
     }
 }

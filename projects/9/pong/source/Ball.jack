@@ -4,8 +4,10 @@ class Ball {
     field int height;
     field int x;
     field int y;
-    field int baseSpeed;
-    field int speed;
+    field int baseXSpeed;
+    field int baseYSpeed;
+    field int xSpeed;
+    field int ySpeed;
 
     constructor Ball new() {
 
@@ -13,8 +15,10 @@ class Ball {
         let height = 6;
         let x = 253;
         let y = 128 + height;
-        let baseSpeed = 3;
-        let speed = baseSpeed;
+        let baseXSpeed = 3;
+        let baseYSpeed = 0; // TODO: set this initial value "randomly"?
+        let xSpeed = baseXSpeed;
+        let ySpeed = baseYSpeed;
 
         return this;
     }
@@ -32,7 +36,8 @@ class Ball {
         // previous frame before calculating the update
         do clear();
 
-        let x = x + speed;
+        let x = x + xSpeed;
+        let y = y + ySpeed;
 
         // score on player
         if (x < 0) {
@@ -46,6 +51,18 @@ class Ball {
             do reset(-1);
         }
 
+        // top of screen
+        if (y < 32) {
+            let y = 32;
+            let ySpeed = ySpeed * -1;
+        }
+
+        // bottom of screen
+        if (y + height > 255) {
+            let y = 255 - height;
+            let ySpeed = ySpeed * -1;
+        }
+
         return;
     }
 
@@ -57,7 +74,8 @@ class Ball {
     method void reset(int direction) {
         let x = 253;
         let y = 128 + height;
-        let speed = baseSpeed * direction;
+        let xSpeed = baseXSpeed * direction;
+        // TODO: set ySpeed
         return;
     }
 

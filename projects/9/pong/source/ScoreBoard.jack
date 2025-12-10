@@ -7,7 +7,7 @@ class ScoreBoard {
 
     constructor ScoreBoard new() {
 
-        let maxScore = 1; // TODO: set final score
+        let maxScore = 3; // TODO: set final score
 
         let playerScore = 0;
         let cpuScore = 0;

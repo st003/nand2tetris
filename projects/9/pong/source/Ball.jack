@@ -5,7 +5,6 @@ class Ball {
     field int x;
     field int y;
     field int baseXSpeed;
-    field int baseYSpeed;
     field int xSpeed;
     field int ySpeed;
 
@@ -16,15 +15,19 @@ class Ball {
         let x = 253;
         let y = 128 + height;
         let baseXSpeed = 3;
-        let baseYSpeed = 0; // TODO: set this initial value "randomly"?
         let xSpeed = baseXSpeed;
-        let ySpeed = baseYSpeed;
+        let ySpeed = 0;
 
         return this;
     }
 
     method void dispose() {
         do Memory.deAlloc(this);
+        return;
+    }
+
+    method void randYSpeed(char key) {
+        let ySpeed = Ball.randomY(key);
         return;
     }
 
@@ -71,11 +74,16 @@ class Ball {
     *  left = -1
     *  right = 1
     */
-    method void reset(int direction) {
+    method void reset(int xDirection) {
+        var int temp;
+        let temp = y;
+
         let x = 253;
         let y = 128 + height;
-        let xSpeed = baseXSpeed * direction;
-        // TODO: set ySpeed
+
+        let xSpeed = baseXSpeed * xDirection;
+        let ySpeed = Ball.randomY(temp);
+
         return;
     }
 
@@ -89,5 +97,24 @@ class Ball {
         do Screen.setColor(true);
         do Screen.drawRectangle(x, y, (x + width), (y + height));
         return;
+    }
+
+    // takes a seed and returns a number between -3 and 3 (not 0)
+    function int randomY(int seed) {
+
+        var int y;
+        var int range;
+        var int flip;
+
+        let y = seed;
+        let flip = 1;
+        let range = 3;
+
+        while (y - range > 0) {
+            let y = y - range;
+            let flip = flip * -1;
+        }
+
+        return y * flip;
     }
 }

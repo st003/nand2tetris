@@ -3,7 +3,6 @@ class Pong {
     // classes with a constructor must have at least 1 field
 
     static char QUIT_KEY;
-    static char START_KEY;
 
     static int START_STATE;
     static int PLAY_STATE;
@@ -19,7 +18,6 @@ class Pong {
 
         // key bindings
         let QUIT_KEY = 140; // 'esc'
-        let START_KEY = 32; // 'space'
 
         let START_STATE = 1;
         let PLAY_STATE = 2;
@@ -36,13 +34,13 @@ class Pong {
 
         // display Instructions
         do Output.moveCursor(9, 24);
-        do Output.printString("SPACE - Start Game");
+        do Output.printString("ESC - Quit Game");
         do Output.moveCursor(10, 24);
         do Output.printString("W - Move up");
         do Output.moveCursor(11, 24);
         do Output.printString("S - Move down");
-        do Output.moveCursor(12, 24);
-        do Output.printString("ESC - Quit Game");
+        do Output.moveCursor(13, 18);
+        do Output.printString("Press any Key to Start Game");
 
         return this;
     }
@@ -114,9 +112,10 @@ class Pong {
             }
 
             if (game_state = START_STATE) {
-                if (key = START_KEY) {
+                if (key > 0) {
                     do clearPlayArea();
                     let game_state = PLAY_STATE;
+                    do ball.randYSpeed(key);
                 }
             }
 

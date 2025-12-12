@@ -13,8 +13,8 @@ class Ball {
         let width = 6;
         let height = 6;
         let x = 253;
-        let y = 128 + height;
-        let baseXSpeed = 3;
+        let y = 134;
+        let baseXSpeed = 1;
         let xSpeed = baseXSpeed;
         let ySpeed = 0;
 
@@ -31,7 +31,37 @@ class Ball {
         return;
     }
 
-    method void update(ScoreBoard scoreBoard) {
+    method boolean collides(int altX, int altWidth, int altY, int altHeight) {
+
+        // first, check to see if the left edge of either is farther to the right
+        // than the right edge of the other
+
+        if (x > altX + altWidth) {
+            return false;
+        }
+
+        if (altX > x + width) {
+            return false;
+        }
+
+        // then check to see if the bottom edge of either is higher than the top
+        // edge of the other
+
+        if (y > altY + altHeight) {
+            return false;
+        }
+
+        if (altY > y + height) {
+            return false;
+        }
+
+        // if the above aren't true, they're overlapping
+        return true;
+    }
+
+    method void update(ScoreBoard sb, PlayerPaddle p) {
+
+        var boolean collidedWithPaddle;
 
         // ideally this would be done in the draw method but
         // because we are not redrawing the whole frame each
@@ -42,16 +72,11 @@ class Ball {
         let x = x + xSpeed;
         let y = y + ySpeed;
 
-        // score on player
-        if (x < 0) {
-            do scoreBoard.incrementCpuScore();
-            do reset(1);
-        }
-
-        // score on cpu
-        if (x + width > 511) {
-            do scoreBoard.incrementPlayerScore();
-            do reset(-1);
+        // player paddle
+        let collidedWithPaddle = collides(16, 4, 128, 32); // TODO: why is this returning true!!!??
+        if (collidedWithPaddle) {
+            let x = p.getX() + p.getWidth();
+            // TODO: what to do to the ball?
         }
 
         // top of screen
@@ -64,6 +89,20 @@ class Ball {
         if (y + height > 255) {
             let y = 255 - height;
             let ySpeed = ySpeed * -1;
+        }
+
+        // score on player
+        if (x < 0) {
+            do sb.incrementCpuScore();
+            do reset(1);
+            return;
+        }
+
+        // score on cpu
+        if (x + width > 511) {
+            do sb.incrementPlayerScore();
+            do reset(-1);
+            return;
         }
 
         return;

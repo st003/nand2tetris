@@ -15,7 +15,9 @@ class ScoreBoard {
         do Screen.setColor(true);
 
         // player score
-        do Output.moveCursor(1, 1);
+        do Output.moveCursor(1, 2);
+        do Output.printString("Player");
+        do Output.moveCursor(1, 9);
         do Output.printInt(playerScore);
 
         // draw title and header once (redraws of printString() cause heap overflows)
@@ -24,7 +26,9 @@ class ScoreBoard {
         do Output.printString("PONG");
 
         // cpu score
-        do Output.moveCursor(1, 62);
+        do Output.moveCursor(1, 57);
+        do Output.printString("CPU");
+        do Output.moveCursor(1, 61);
         do Output.printInt(cpuScore);
 
         // header border
@@ -67,11 +71,11 @@ class ScoreBoard {
         do Screen.setColor(true);
 
         // player score
-        do Output.moveCursor(1, 1);
+        do Output.moveCursor(1, 9);
         do Output.printInt(playerScore);
 
         // cpu score
-        do Output.moveCursor(1, 62);
+        do Output.moveCursor(1, 61);
         do Output.printInt(cpuScore);
 
         return;

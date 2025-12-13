@@ -55,7 +55,7 @@ class PlayerPaddle {
 
         if (key = UP_KEY) {
             // collision detection for score board
-            if (y - speed > 32) {
+            if ((y - speed) > 32) {
                 let y = y - speed;
             } else {
                 let y = 32;
@@ -64,7 +64,7 @@ class PlayerPaddle {
 
         if (key = DOWN_KEY) {
             // collision detection for bottom of screen
-            if (y + height < 255) {
+            if ((y + height + speed) < 255) {
                 let y = y + speed;
             } else {
                 let y = 255 - height;

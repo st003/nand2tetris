@@ -17,7 +17,7 @@ class Pong {
     constructor Pong new() {
 
         var int maxScore;
-        let maxScore = 3; // TODO: set to 5
+        let maxScore = 5;
 
         // key bindings
         let QUIT_KEY = 140; // 'esc'
@@ -129,6 +129,7 @@ class Pong {
 
                 // update game state
                 do player.update(key);
+                do cpu.update(ball);
                 do ball.update(scoreBoard, player, cpu);
 
                 let playerWon = scoreBoard.playerWon();

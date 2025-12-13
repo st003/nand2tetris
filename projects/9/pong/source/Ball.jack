@@ -26,6 +26,26 @@ class Ball {
         return;
     }
 
+    method int getWidth() {
+        return width;
+    }
+
+    method int getHeight() {
+        return height;
+    }
+
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
+    method int getXSpeed() {
+        return xSpeed;
+    }
+
     method void randYSpeed(char key) {
         let ySpeed = Ball.randomY(key);
         return;

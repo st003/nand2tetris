@@ -38,13 +38,45 @@ class CpuPaddle {
         return y;
     }
 
-    method void update() {
+    method void update(Ball b) {
+
+        var boolean ballIsMovingRight;
+        var boolean ballIsCloseEnough;
+        var int paddleCenter;
 
         // ideally this would be done in the draw method but
         // because we are not redrawing the whole frame each
         // iteration we need to clear the paddle from the
         // previous frame before calculating the update
         do clear();
+
+        let ballIsMovingRight = b.getXSpeed() > 0;
+        let ballIsCloseEnough = (b.getX() + b.getWidth()) > 255; // higher number makes the cpu worse
+
+        if (ballIsMovingRight & ballIsCloseEnough) {
+
+            let paddleCenter = y + (height / 2);
+
+            // move up
+            if (b.getY() < paddleCenter) {
+                // collision detection for score board
+                if ((y - speed) > 32) {
+                    let y = y - speed;
+                } else {
+                    let y = 32;
+                }
+            }
+
+            // move down
+            if (b.getY() > paddleCenter) {
+                // collision detection for bottom of screen
+                if ((y + height + speed) < 255) {
+                    let y = y + speed;
+                } else {
+                    let y = 255 - height;
+                }
+            }
+        }
 
         return;
     }

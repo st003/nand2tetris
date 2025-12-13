@@ -31,27 +31,39 @@ class Ball {
         return;
     }
 
+    method void increaseXSpeed() {
+        if (xSpeed > 0) {
+            let xSpeed = xSpeed + 1;
+        }
+
+        if (xSpeed < 0) {
+            let xSpeed = xSpeed - 1;
+        }
+
+        return;
+    }
+
     method boolean collides(int altX, int altWidth, int altY, int altHeight) {
 
         // first, check to see if the left edge of either is farther to the right
         // than the right edge of the other
 
-        if (x > altX + altWidth) {
+        if (x > (altX + altWidth)) {
             return false;
         }
 
-        if (altX > x + width) {
+        if (altX > (x + width)) {
             return false;
         }
 
         // then check to see if the bottom edge of either is higher than the top
         // edge of the other
 
-        if (y > altY + altHeight) {
+        if (y > (altY + altHeight)) {
             return false;
         }
 
-        if (altY > y + height) {
+        if (altY > (y + height)) {
             return false;
         }
 
@@ -60,8 +72,6 @@ class Ball {
     }
 
     method void update(ScoreBoard sb, PlayerPaddle p) {
-
-        var boolean collidedWithPaddle;
 
         // ideally this would be done in the draw method but
         // because we are not redrawing the whole frame each
@@ -73,10 +83,10 @@ class Ball {
         let y = y + ySpeed;
 
         // player paddle
-        let collidedWithPaddle = collides(16, 4, 128, 32); // TODO: why is this returning true!!!??
-        if (collidedWithPaddle) {
+        if (collides(p.getX(), p.getWidth(), p.getY(), p.getHeight())) {
             let x = p.getX() + p.getWidth();
-            // TODO: what to do to the ball?
+            let xSpeed = xSpeed * -1;
+            do increaseXSpeed();
         }
 
         // top of screen

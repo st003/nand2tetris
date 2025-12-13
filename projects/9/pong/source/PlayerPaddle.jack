@@ -16,9 +16,9 @@ class PlayerPaddle {
         let DOWN_KEY = 115; // 's'
 
         let width = 4;
-        let height = 32;
+        let height = 36;
         let x = 16;
-        let y = 128;
+        let y = 124;
         let speed = 3;
 
         return this;

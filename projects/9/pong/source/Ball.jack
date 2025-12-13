@@ -10,10 +10,10 @@ class Ball {
 
     constructor Ball new() {
 
-        let width = 6;
-        let height = 6;
-        let x = 253;
-        let y = 134;
+        let width = 4;
+        let height = 4;
+        let x = 252;
+        let y = 133;
         let baseXSpeed = 2;
         let xSpeed = baseXSpeed;
         let ySpeed = 0;

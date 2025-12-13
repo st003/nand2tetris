@@ -5,9 +5,9 @@ class ScoreBoard {
     field int playerScore;
     field int cpuScore;
 
-    constructor ScoreBoard new() {
+    constructor ScoreBoard new(int score) {
 
-        let maxScore = 3; // TODO: set final score
+        let maxScore = score;
 
         let playerScore = 0;
         let cpuScore = 0;

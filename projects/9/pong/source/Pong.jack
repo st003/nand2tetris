@@ -16,6 +16,9 @@ class Pong {
 
     constructor Pong new() {
 
+        var int maxScore;
+        let maxScore = 3; // TODO: set to 5
+
         // key bindings
         let QUIT_KEY = 140; // 'esc'
 
@@ -27,7 +30,7 @@ class Pong {
         let game_state = START_STATE;
 
         // entities
-        let scoreBoard = ScoreBoard.new();
+        let scoreBoard = ScoreBoard.new(maxScore);
         let player = PlayerPaddle.new();
         let cpu = CpuPaddle.new();
         let ball = Ball.new();
@@ -39,7 +42,10 @@ class Pong {
         do Output.printString("W - Move up");
         do Output.moveCursor(11, 24);
         do Output.printString("S - Move down");
-        do Output.moveCursor(13, 18);
+        do Output.moveCursor(13, 24);
+        do Output.printInt(maxScore);
+        do Output.printString(" Points to win");
+        do Output.moveCursor(15, 18);
         do Output.printString("Press any Key to Start Game");
 
         return this;
@@ -128,6 +134,7 @@ class Pong {
                 let playerWon = scoreBoard.playerWon();
                 let cpuWon = scoreBoard.cpuWon();
                 if (playerWon | cpuWon) {
+                    do scoreBoard.draw();
                     do win(playerWon);
                     return;
                 }

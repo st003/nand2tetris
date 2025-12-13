@@ -7,6 +7,7 @@ Project 9 contains the source code for pong written in the Jack programming lang
 The contents of Project 9 are as follows:
 
 * **source** - Source code
+* **Pong.vm** - Compiled VM code of the source using the Nand2Tetris ide jack compiler
 
 ## Building
 

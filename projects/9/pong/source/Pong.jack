@@ -1,6 +1,5 @@
+/** Global state and logic for the game */
 class Pong {
-
-    // classes with a constructor must have at least 1 field
 
     static char QUIT_KEY;
 
@@ -35,7 +34,7 @@ class Pong {
         let cpu = CpuPaddle.new();
         let ball = Ball.new();
 
-        // display Instructions
+        // display start instructions
         do Output.moveCursor(9, 24);
         do Output.printString("ESC - Quit Game");
         do Output.moveCursor(10, 24);
@@ -63,12 +62,14 @@ class Pong {
         return;
     }
 
+    /** Clears out the area below the score board */
     method void clearPlayArea() {
         do Screen.setColor(false);
         do Screen.drawRectangle(0, 32, 511, 255);
         return;
     }
 
+    /** Called when the player or cpu has won */
     method void win(boolean playerWon) {
         do clearPlayArea();
         if (playerWon) {
@@ -81,6 +82,7 @@ class Pong {
         return;
     }
 
+    /** Called when the player quits */
     method void quit() {
 
         do clearPlayArea();
@@ -91,10 +93,9 @@ class Pong {
         return;
     }
 
+    /** Core game logic */
     method void run() {
 
-        // variable declarations must occur at the top scope of
-        // a function or method
         var char key;
         var boolean playerWon;
         var boolean cpuWon;
@@ -102,11 +103,15 @@ class Pong {
         let is_running = true;
 
         // game loop
+        // Follows the basic design of:
+        // (1) collect user input
+        // (2) update game entities
+        // (3) Draw entities
         while(is_running) {
 
-            // lack of system clock method means be cannot calculate
-            // real frame times or dealta time for animation. must
-            // simulate framerate
+            // lack of system clock method means we cannot calculate
+            // real frame times or delta time for animation. must
+            // simulate the framerate
             do Sys.wait(16); // ~60fps
 
             // read player input
@@ -132,6 +137,7 @@ class Pong {
                 do cpu.update(ball);
                 do ball.update(scoreBoard, player, cpu);
 
+                // check for a winner
                 let playerWon = scoreBoard.playerWon();
                 let cpuWon = scoreBoard.cpuWon();
                 if (playerWon | cpuWon) {

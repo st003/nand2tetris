@@ -1,3 +1,4 @@
+/** The player's paddle entity*/
 class PlayerPaddle {
 
     static char UP_KEY;
@@ -45,6 +46,7 @@ class PlayerPaddle {
         return y;
     }
 
+    /** Takes player input and moves the paddle up or down */
     method void update(char key) {
 
         // ideally this would be done in the draw method but

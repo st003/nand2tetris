@@ -1,3 +1,4 @@
+/** The cpu's paddle entity*/
 class CpuPaddle {
 
     field int width;
@@ -53,6 +54,8 @@ class CpuPaddle {
         let ballIsMovingRight = b.getXSpeed() > 0;
         let ballIsCloseEnough = (b.getX() + b.getWidth()) > 255; // higher number makes the cpu worse
 
+        // "AI" for cpu. Cpu "reaction time" is based on what direction and where the
+        // ball currently is
         if (ballIsMovingRight & ballIsCloseEnough) {
 
             let paddleCenter = y + (height / 2);

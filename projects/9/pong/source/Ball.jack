@@ -1,3 +1,4 @@
+/** The ball entity*/
 class Ball {
 
     field int width;
@@ -46,6 +47,7 @@ class Ball {
         return xSpeed;
     }
 
+    /** Sets the Y speed to a random value based on a seed */
     method void randYSpeed(char key) {
         let ySpeed = Ball.randomY(key);
         return;
@@ -63,6 +65,7 @@ class Ball {
         return;
     }
 
+    /** Standard 2D collision algorithm */
     method boolean collides(int altX, int altWidth, int altY, int altHeight) {
 
         // first, check to see if the left edge of either is farther to the right
@@ -102,27 +105,27 @@ class Ball {
         let x = x + xSpeed;
         let y = y + ySpeed;
 
-        // player paddle
+        // player paddle collision
         if (collides(p.getX(), p.getWidth(), p.getY(), p.getHeight())) {
             let x = p.getX() + p.getWidth();
             let xSpeed = xSpeed * -1;
             do increaseXSpeed();
         }
 
-        // cpu paddle
+        // cpu paddle collision
         if (collides(c.getX(), c.getWidth(), c.getY(), c.getHeight())) {
             let x = c.getX() - width;
             let xSpeed = xSpeed * -1;
             do increaseXSpeed();
         }
 
-        // top of screen
+        // top of screen collision
         if (y < 32) {
             let y = 32;
             let ySpeed = ySpeed * -1;
         }
 
-        // bottom of screen
+        // bottom of screen collision
         if (y + height > 255) {
             let y = 255 - height;
             let ySpeed = ySpeed * -1;

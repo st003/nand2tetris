@@ -1,3 +1,4 @@
+/** Entity for the score board */
 class ScoreBoard {
 
     static int maxScore;
@@ -69,6 +70,9 @@ class ScoreBoard {
     method void draw() {
 
         do Screen.setColor(true);
+
+        // we only redraw the score because redrawing the text on each
+        // loop resulted in a heap-overflow.
 
         // player score
         do Output.moveCursor(1, 9);

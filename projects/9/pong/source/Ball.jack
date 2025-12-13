@@ -14,7 +14,7 @@ class Ball {
         let height = 6;
         let x = 253;
         let y = 134;
-        let baseXSpeed = 1;
+        let baseXSpeed = 2;
         let xSpeed = baseXSpeed;
         let ySpeed = 0;
 
@@ -71,7 +71,7 @@ class Ball {
         return true;
     }
 
-    method void update(ScoreBoard sb, PlayerPaddle p) {
+    method void update(ScoreBoard sb, PlayerPaddle p, CpuPaddle c) {
 
         // ideally this would be done in the draw method but
         // because we are not redrawing the whole frame each
@@ -85,6 +85,13 @@ class Ball {
         // player paddle
         if (collides(p.getX(), p.getWidth(), p.getY(), p.getHeight())) {
             let x = p.getX() + p.getWidth();
+            let xSpeed = xSpeed * -1;
+            do increaseXSpeed();
+        }
+
+        // cpu paddle
+        if (collides(c.getX(), c.getWidth(), c.getY(), c.getHeight())) {
+            let x = c.getX() - width;
             let xSpeed = xSpeed * -1;
             do increaseXSpeed();
         }
@@ -148,7 +155,7 @@ class Ball {
         return;
     }
 
-    // takes a seed and returns a number between -3 and 3 (not 0)
+    // takes a seed and returns a number between -2 and 2 (not 0)
     function int randomY(int seed) {
 
         var int y;
@@ -157,7 +164,7 @@ class Ball {
 
         let y = seed;
         let flip = 1;
-        let range = 3;
+        let range = 2;
 
         while (y - range > 0) {
             let y = y - range;

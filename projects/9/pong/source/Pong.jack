@@ -123,7 +123,7 @@ class Pong {
 
                 // update game state
                 do player.update(key);
-                do ball.update(scoreBoard, player);
+                do ball.update(scoreBoard, player, cpu);
 
                 let playerWon = scoreBoard.playerWon();
                 let cpuWon = scoreBoard.cpuWon();

@@ -22,6 +22,22 @@ class CpuPaddle {
         return;
     }
 
+    method int getWidth() {
+        return width;
+    }
+
+    method int getHeight() {
+        return height;
+    }
+
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
     method void update() {
 
         // ideally this would be done in the draw method but

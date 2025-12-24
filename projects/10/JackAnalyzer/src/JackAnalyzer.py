@@ -7,10 +7,13 @@ from CompilationEngine import CompilationEngine
 from exceptions import JackAnalyzerError
 from file_util import is_jack_file
 
+DEBUG = True # comment out before submission
+
 def main():
 
     args = sys.argv
 
+    # TODO: add support for single files or directories of files
     if (len(args) != 2):
         print('Usage: python JackAnalyzer.py <path-to-jack-files-directory>')
         sys.exit(1)
@@ -21,7 +24,7 @@ def main():
         src_dir = Path(args[1])
         for file_path in src_dir.iterdir():
             if is_jack_file(file_path):
-                ce = CompilationEngine(file_path)
+                ce = CompilationEngine(file_path, DEBUG)
                 ce.compile()
 
         end_time: float = time.perf_counter()

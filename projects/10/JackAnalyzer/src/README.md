@@ -14,7 +14,7 @@ To use the analyzer, from the src directory, run the command:
 
 Linux/MacOS
 ```
-python JackAnalyzer.py <path-to-jack-files-directory>
+python JackAnalyzer.py <file.jack>|<path-to-jack-files-directory>
 ```
 
 ## Running the tests

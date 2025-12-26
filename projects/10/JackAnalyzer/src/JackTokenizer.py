@@ -1,4 +1,6 @@
-import uuid
+import xml.etree.ElementTree as ET
+
+from exceptions import JackTokenizerError
 
 class JackTokenizer():
 
@@ -11,14 +13,23 @@ class JackTokenizer():
         self.current_token = None
         self.token_type = None
 
+        self.xml_root = ET.Element('tokens')
+
         with open(jack_file_path, 'r', encoding='utf-8') as jack_file:
             self.raw_source_code = jack_file.read()
 
-    def get_output_file_name(self):
+    def get_output_file_path(self):
         if self.debug:
-            new_uuid = uuid.uuid4()
-            return f'{self.parent_dir}/{self.file_name}T_{str(new_uuid)[:8]}.xml'
+            return f'{self.parent_dir}/{self.file_name}T_DEBUG.xml'
         return f'{self.parent_dir}/{self.file_name}T.xml'
+
+    def write_xml(self):
+        xml_tree = ET.ElementTree(self.xml_root)
+        try:
+            with open(self.get_output_file_path(), 'wb') as output_file:
+                xml_tree.write(output_file, encoding='utf-8')
+        except IOError as error:
+            raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
     def hasMoreTokens():
         # TODO: implement

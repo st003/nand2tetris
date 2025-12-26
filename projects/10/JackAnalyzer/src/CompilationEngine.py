@@ -1,5 +1,3 @@
-import uuid
-
 from JackTokenizer import JackTokenizer
 
 class CompilationEngine():
@@ -12,9 +10,9 @@ class CompilationEngine():
 
     def get_output_file_name(self):
         if self.debug:
-            new_uuid = uuid.uuid4()
-            return f'{self.parent_dir}/{self.file_name}_{str(new_uuid)[:8]}.xml'
+            return f'{self.parent_dir}/{self.file_name}_DEBUG.xml'
         return f'{self.parent_dir}/{self.file_name}.xml'
 
     def compile(self):
         tokenizer = JackTokenizer(self.jack_file_path, self.debug)
+        tokenizer.write_xml()

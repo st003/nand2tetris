@@ -18,4 +18,3 @@ class CompilationEngine():
 
     def compile(self):
         tokenizer = JackTokenizer(self.jack_file_path, self.debug)
-        print(self.get_output_file_name())

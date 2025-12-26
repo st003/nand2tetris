@@ -3,12 +3,16 @@ import uuid
 class JackTokenizer():
 
     def __init__(self, jack_file_path, debug = False):
-        self.jack_file_path = jack_file_path
+
         self.parent_dir = jack_file_path.parent
         self.file_name = jack_file_path.stem
         self.debug = debug
 
-        print(self.get_output_file_name())
+        self.current_token = None
+        self.token_type = None
+
+        with open(jack_file_path, 'r', encoding='utf-8') as jack_file:
+            self.raw_source_code = jack_file.read()
 
     def get_output_file_name(self):
         if self.debug:
@@ -25,5 +29,4 @@ class JackTokenizer():
         pass
 
     def tokenType():
-        # TODO: implement
-        pass
+        return self.token_type

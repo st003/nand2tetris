@@ -10,13 +10,14 @@ class JackTokenizer():
         self.file_name = jack_file_path.stem
         self.debug = debug
 
+        self.cursor = 0
         self.current_token = None
-        self.token_type = None
 
         self.xml_root = ET.Element('tokens')
 
         with open(jack_file_path, 'r', encoding='utf-8') as jack_file:
             self.raw_source_code = jack_file.read()
+            self.raw_course_code_char_count = len(self.raw_source_code)
 
     def get_output_file_path(self):
         if self.debug:
@@ -31,13 +32,23 @@ class JackTokenizer():
         except IOError as error:
             raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
-    def hasMoreTokens():
+    def hasMoreTokens(self):
         # TODO: implement
         return False
 
-    def advance():
+    def advance(self):
+        cursor_backup = self.cursor
+        # TODO: not sure of the -1 is correct
+        while self.cursor < self.raw_course_code_char_count - 1:
+            self.cursor += 1
+            # TODO: recognize additional whitespace chars and strip leading whitespace too
+            if self.raw_source_code[self.cursor] == ' ':
+                self.current_token = self.raw_source_code[cursor_backup:self.cursor]
+                new_token = ET.SubElement(self.xml_root, 'token')
+                new_token.text = self.current_token
+                new_token.tail = '\n' # TODO: investigate alternatives to pretty-printing
+                break
+
+    def tokenType(self):
         # TODO: implement
         pass
-
-    def tokenType():
-        return self.token_type

@@ -15,7 +15,6 @@ class CompilationEngine():
 
     def compile(self):
         tokenizer = JackTokenizer(self.jack_file_path, self.debug)
-        # TODO: use tokenizer.hasMoreTokens() here
-        for i in range(10):
+        while tokenizer.hasMoreTokens():
             tokenizer.advance()
         tokenizer.write_xml()

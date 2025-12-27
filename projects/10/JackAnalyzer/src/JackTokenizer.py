@@ -33,21 +33,37 @@ class JackTokenizer():
             raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
     def hasMoreTokens(self):
-        # TODO: implement
-        return False
+        return self.cursor < self.raw_course_code_char_count
 
     def advance(self):
-        cursor_backup = self.cursor
-        # TODO: not sure of the -1 is correct
-        while self.cursor < self.raw_course_code_char_count - 1:
+
+        scanning_token = False
+        token_start = 0
+
+        while self.hasMoreTokens():
+
+            if not scanning_token:
+
+                # start token scan
+                if self.raw_source_code[self.cursor] != ' ': # TODO: change for all whitespace chars
+                    scanning_token = True
+                    token_start = self.cursor
+
+            else:
+
+                # complete token scan
+                if self.raw_source_code[self.cursor] == ' ': # TODO: change for all whitespace chars
+                    self.current_token = self.raw_source_code[token_start:self.cursor]
+
+                    new_token = ET.SubElement(self.xml_root, 'token')
+                    new_token.text = self.current_token
+                    new_token.tail = '\n' # TODO: investigate alternatives to pretty-printing
+
+                    scanning_token = False
+                    # exit loop so only a single token is captured
+                    break
+
             self.cursor += 1
-            # TODO: recognize additional whitespace chars and strip leading whitespace too
-            if self.raw_source_code[self.cursor] == ' ':
-                self.current_token = self.raw_source_code[cursor_backup:self.cursor]
-                new_token = ET.SubElement(self.xml_root, 'token')
-                new_token.text = self.current_token
-                new_token.tail = '\n' # TODO: investigate alternatives to pretty-printing
-                break
 
     def tokenType(self):
         # TODO: implement

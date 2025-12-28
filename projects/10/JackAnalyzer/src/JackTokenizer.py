@@ -32,6 +32,12 @@ class JackTokenizer():
         except IOError as error:
             raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
+    def char_is_skippable(self):
+        return self.raw_source_code[self.cursor].isspace()
+
+    def char_terminates_token(self):
+        return self.char_is_skippable()
+
     def hasMoreTokens(self):
         return self.cursor < self.raw_course_code_char_count
 
@@ -45,14 +51,14 @@ class JackTokenizer():
             if not scanning_token:
 
                 # start token scan
-                if self.raw_source_code[self.cursor] != ' ': # TODO: change for all whitespace chars
+                if not self.char_is_skippable():
                     scanning_token = True
                     token_start = self.cursor
 
             else:
 
                 # complete token scan
-                if self.raw_source_code[self.cursor] == ' ': # TODO: change for all whitespace chars
+                if self.char_terminates_token():
                     self.current_token = self.raw_source_code[token_start:self.cursor]
 
                     new_token = ET.SubElement(self.xml_root, 'token')

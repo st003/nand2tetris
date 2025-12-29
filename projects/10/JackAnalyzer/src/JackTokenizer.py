@@ -12,6 +12,8 @@ class JackTokenizer():
 
         self.cursor = 0
         self.current_token = None
+        self.is_single_line_comment = False
+        self.is_multi_line_comment = False
 
         self.xml_root = ET.Element('tokens')
 
@@ -33,7 +35,35 @@ class JackTokenizer():
             raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
     def char_is_skippable(self):
-        return self.raw_source_code[self.cursor].isspace()
+
+        # check for comment start
+        if (not self.is_single_line_comment
+            and not self.is_multi_line_comment
+            and self.cursor < (self.raw_course_code_char_count - 2)
+        ):
+            potential_comment = self.raw_source_code[self.cursor:(self.cursor + 2)]
+            if potential_comment == '//':
+                self.is_single_line_comment = True
+            elif potential_comment == '/*':
+                self.is_multi_line_comment = True
+
+        # check for comment end
+        if self.is_single_line_comment:
+            if self.raw_source_code[self.cursor] == '\n':
+                self.is_single_line_comment = False
+
+        elif self.is_multi_line_comment and self.cursor < (self.raw_course_code_char_count - 2):
+            if self.raw_source_code[self.cursor:(self.cursor + 2)] == '*/':
+                self.is_multi_line_comment = False
+                self.cursor += 2
+
+        if self.is_single_line_comment or self.is_multi_line_comment:
+            return True
+
+        if self.raw_source_code[self.cursor].isspace():
+            return True
+
+        return False
 
     def char_terminates_token(self):
         return self.char_is_skippable()

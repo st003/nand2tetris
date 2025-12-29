@@ -92,8 +92,8 @@ class JackTokenizer():
                     self.current_token = self.raw_source_code[token_start:self.cursor]
 
                     new_token = ET.SubElement(self.xml_root, 'token')
-                    new_token.text = self.current_token
-                    new_token.tail = '\n' # TODO: investigate alternatives to pretty-printing
+                    new_token.text = f' {self.current_token} '
+                    new_token.tail = '\n' # TODO: investigate alternatives to pretty-printing?
 
                     scanning_token = False
                     # exit loop so only a single token is captured

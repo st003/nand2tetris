@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 
 from exceptions import JackTokenizerError
+from xml_formatter import make_pretty
 
 class JackTokenizer():
 
@@ -28,10 +29,11 @@ class JackTokenizer():
 
     def write_xml(self):
         xml_tree = ET.ElementTree(self.xml_root)
+        xml_text = make_pretty(xml_tree, indent=0)
         try:
-            with open(self.get_output_file_path(), 'wb') as output_file:
-                xml_tree.write(output_file, encoding='utf-8')
-        except IOError as error:
+            with open(self.get_output_file_path(), 'w') as output_file:
+                output_file.write(xml_text)
+        except Exception as error:
             raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
     def char_is_skippable(self):
@@ -93,7 +95,6 @@ class JackTokenizer():
 
                     new_token = ET.SubElement(self.xml_root, 'token')
                     new_token.text = f' {self.current_token} '
-                    new_token.tail = '\n' # TODO: investigate alternatives to pretty-printing?
 
                     scanning_token = False
                     # exit loop so only a single token is captured

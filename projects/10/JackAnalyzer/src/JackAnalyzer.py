@@ -47,6 +47,7 @@ def main():
 
     except JackAnalyzerError as error:
         print(f'Error: {error}')
+        print(traceback.format_exc())
         sys.exit(1)
 
     except Exception:

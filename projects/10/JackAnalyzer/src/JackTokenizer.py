@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 
 from exceptions import JackTokenizerError
+from lexical_elements import get_token
 from xml_formatter import make_pretty
 
 class JackTokenizer():
@@ -91,10 +92,10 @@ class JackTokenizer():
 
                 # complete token scan
                 if self.char_terminates_token():
-                    self.current_token = self.raw_source_code[token_start:self.cursor]
+                    self.current_token = get_token(self.raw_source_code[token_start:self.cursor])
 
-                    new_token = ET.SubElement(self.xml_root, 'token')
-                    new_token.text = f' {self.current_token} '
+                    new_token = ET.SubElement(self.xml_root, self.current_token.type)
+                    new_token.text = self.current_token.get_xml_value()
 
                     scanning_token = False
                     # exit loop so only a single token is captured

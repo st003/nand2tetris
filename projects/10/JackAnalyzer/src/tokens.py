@@ -14,3 +14,9 @@ class KeywordToken(BaseToken):
     def __init__(self, value):
         self.value = value
         self.type = 'keyword'
+
+class SymbolToken(BaseToken):
+
+    def __init__(self, value):
+        self.value = value
+        self.type = 'symbol'

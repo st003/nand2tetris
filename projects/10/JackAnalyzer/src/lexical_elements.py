@@ -22,7 +22,7 @@ KEYWORDS_AND_SYMBOLS = {
     'else': T.KeywordToken('else'),
     'while': T.KeywordToken('while'),
     'return': T.KeywordToken('return'),
-    #'(': None,
+    '(': T.SymbolToken('('),
     #')': None,
     #'{': None,
     #'}': None,
@@ -39,7 +39,7 @@ KEYWORDS_AND_SYMBOLS = {
     #'|': None,
     #'<': None,
     #'>': None,
-    #'=': None,
+    '=': T.SymbolToken('='),
     #'~': None
 }
 

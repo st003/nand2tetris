@@ -1,47 +1,57 @@
 import tokens as T
 
-KEYWORDS_AND_SYMBOLS = {
-    'class': T.KeywordToken('class'),
-    'constructor': T.KeywordToken('constructor'),
-    'function': T.KeywordToken('function'),
-    'method': T.KeywordToken('method'),
-    'field': T.KeywordToken('field'),
-    'static': T.KeywordToken('static'),
-    'var': T.KeywordToken('var'),
-    'int': T.KeywordToken('int'),
-    'char': T.KeywordToken('char'),
-    'boolean': T.KeywordToken('boolean'),
-    'void': T.KeywordToken('void'),
-    'true': T.KeywordToken('true'),
-    'false': T.KeywordToken('false'),
-    'null': T.KeywordToken('null'),
-    'this': T.KeywordToken('this'),
-    'let': T.KeywordToken('let'),
-    'do': T.KeywordToken('do'),
-    'if': T.KeywordToken('if'),
-    'else': T.KeywordToken('else'),
-    'while': T.KeywordToken('while'),
-    'return': T.KeywordToken('return'),
-    '(': T.SymbolToken('('),
-    ')': T.SymbolToken(')'),
-    '{': T.SymbolToken('{'),
-    '}': T.SymbolToken('}'),
-    '[': T.SymbolToken('['),
-    ']': T.SymbolToken(']'),
-    '.': T.SymbolToken('.'),
-    ',': T.SymbolToken(','),
-    ';': T.SymbolToken(';'),
-    '+': T.SymbolToken('+'),
-    '-': T.SymbolToken('-'),
-    '*': T.SymbolToken('*'),
-    '/': T.SymbolToken('/'),
-    '&': T.SymbolToken('&'),
-    '|': T.SymbolToken('|'),
-    '<': T.SymbolToken('<'),
-    '>': T.SymbolToken('>'),
-    '=': T.SymbolToken('='),
-    '~': T.SymbolToken('~')
+KEYWORDS = {
+    'class',
+    'constructor',
+    'function',
+    'method',
+    'field',
+    'static',
+    'var',
+    'int',
+    'char',
+    'boolean',
+    'void',
+    'true',
+    'false',
+    'null',
+    'this',
+    'let',
+    'do',
+    'if',
+    'else',
+    'while',
+    'return'
+}
+
+SYMBOLS = {
+    '(',
+    ')',
+    '{',
+    '}',
+    '[',
+    ']',
+    '.',
+    ',',
+    ';',
+    '+',
+    '-',
+    '*',
+    '/',
+    '&',
+    '|',
+    '<',
+    '>',
+    '=',
+    '~'
 }
 
 def get_token(identifier):
-    return KEYWORDS_AND_SYMBOLS.get(identifier, T.BaseToken(identifier))
+
+    if identifier in KEYWORDS:
+        return T.KeywordToken(identifier)
+
+    if identifier in SYMBOLS:
+        return T.SymbolToken(identifier)
+
+    return T.BaseToken(identifier)

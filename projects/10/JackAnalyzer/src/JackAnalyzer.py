@@ -13,7 +13,6 @@ def main():
 
     args = sys.argv
 
-    # TODO: add support for single files or directories of files
     if (len(args) != 2):
         print('Usage: python JackAnalyzer.py <file.jack>|<path-to-jack-files-directory>')
         sys.exit(1)

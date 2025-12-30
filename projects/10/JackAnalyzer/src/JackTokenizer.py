@@ -76,7 +76,6 @@ class JackTokenizer():
     def char_terminates_token(self):
 
         if self.raw_source_code[self.cursor] in SYMBOLS:
-            # TODO: we might not want to increment the cursor in this case
             return True
 
         if self.char_is_skippable():

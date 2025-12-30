@@ -104,5 +104,6 @@ class JackTokenizer():
             self.cursor += 1
 
     def tokenType(self):
-        # TODO: implement
-        pass
+        if self.current_token:
+            return self.current_token.type
+        return None

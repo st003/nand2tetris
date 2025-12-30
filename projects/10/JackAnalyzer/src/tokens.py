@@ -1,3 +1,5 @@
+from constants import TOKEN_TYPE
+
 class BaseToken():
     """Base class for all Tokens."""
 
@@ -13,10 +15,10 @@ class KeywordToken(BaseToken):
 
     def __init__(self, value):
         self.value = value
-        self.type = 'keyword'
+        self.type = TOKEN_TYPE.KEYWORD
 
 class SymbolToken(BaseToken):
 
     def __init__(self, value):
         self.value = value
-        self.type = 'symbol'
+        self.type = TOKEN_TYPE.SYMBOL

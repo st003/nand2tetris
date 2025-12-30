@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 from exceptions import JackTokenizerError
-from lexical_elements import get_token
+from lexical_elements import get_token, SYMBOLS
 from xml_formatter import make_pretty
 
 class JackTokenizer():
@@ -27,6 +27,11 @@ class JackTokenizer():
         if self.debug:
             return f'{self.parent_dir}/{self.file_name}T_DEBUG.xml'
         return f'{self.parent_dir}/{self.file_name}T.xml'
+
+    def add_token_to_xml(self):
+        if self.current_token is not None:
+            new_token = ET.SubElement(self.xml_root, self.current_token.type)
+            new_token.text = self.current_token.get_xml_value()
 
     def write_xml(self):
         xml_tree = ET.ElementTree(self.xml_root)
@@ -69,7 +74,15 @@ class JackTokenizer():
         return False
 
     def char_terminates_token(self):
-        return self.char_is_skippable()
+
+        if self.raw_source_code[self.cursor] in SYMBOLS:
+            # TODO: we might not want to increment the cursor in this case
+            return True
+
+        if self.char_is_skippable():
+            return True
+
+        return False
 
     def hasMoreTokens(self):
         return self.cursor < self.raw_course_code_char_count
@@ -81,22 +94,30 @@ class JackTokenizer():
 
         while self.hasMoreTokens():
 
+            # start token scan
             if not scanning_token:
 
-                # start token scan
                 if not self.char_is_skippable():
-                    scanning_token = True
-                    token_start = self.cursor
 
+                    # symbols do not occupy more than a single char
+                    if self.raw_source_code[self.cursor] in SYMBOLS:
+                        self.current_token = get_token(self.raw_source_code[self.cursor])
+                        self.add_token_to_xml()
+                        self.cursor += 1
+                        # exit loop so only a single token is captured
+                        break
+
+                    # all other tokens are 2+ characters
+                    else:
+                        scanning_token = True
+                        token_start = self.cursor
+
+            # end token scan
             else:
 
-                # complete token scan
                 if self.char_terminates_token():
                     self.current_token = get_token(self.raw_source_code[token_start:self.cursor])
-
-                    new_token = ET.SubElement(self.xml_root, self.current_token.type)
-                    new_token.text = self.current_token.get_xml_value()
-
+                    self.add_token_to_xml()
                     scanning_token = False
                     # exit loop so only a single token is captured
                     break

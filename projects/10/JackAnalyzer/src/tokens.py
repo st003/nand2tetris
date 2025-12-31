@@ -32,7 +32,21 @@ class IdentifierToken(BaseToken):
         self.value = value
         self.type = TOKEN_TYPE.IDENTIFIER
 
-# TODO: add integer constant token
+class IntegerConstantToken(BaseToken):
+
+    def __init__(self, value):
+        self.value = value
+        self.type = TOKEN_TYPE.INTEGER_CONSTANT
+
+    @staticmethod
+    def is_integer_token(value):
+        try:
+            as_int = int(value)
+            if as_int < 0 or as_int > 32767:
+                return False
+            return True
+        except ValueError:
+            return False
 
 class KeywordToken(BaseToken):
 

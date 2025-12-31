@@ -6,4 +6,4 @@ def make_pretty(xml_etree, indent=2):
     as_minidom = minidom.parseString(etree_str)
     indent_spaces = ' ' * indent
     xml_str = as_minidom.toprettyxml(indent=indent_spaces)
-    return xml_str.lstrip('<?xml version="1.0" ?>').strip()
+    return xml_str.lstrip('<?xml version="1.0" ?>').lstrip()

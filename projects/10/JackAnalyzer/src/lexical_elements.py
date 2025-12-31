@@ -54,4 +54,7 @@ def get_token(value):
     if value in SYMBOLS:
         return T.SymbolToken(value)
 
+    if T.IntegerConstantToken.is_integer_token(value):
+        return T.IntegerConstantToken(value)
+
     return T.IdentifierToken(value)

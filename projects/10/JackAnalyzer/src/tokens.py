@@ -1,4 +1,5 @@
 from constants import TOKEN_TYPE
+from exceptions import JackTokenizerError
 
 class BaseToken():
     """Base class for all Tokens."""
@@ -27,9 +28,18 @@ class IdentifierToken(BaseToken):
 
     def __init__(self, value):
 
-        # TODO: add error checking:
-        # cannot start with a number
-        # can contain only alpha-number and underscores
+        # first char cannot be a number
+        try:
+            int(value[0])
+            raise JackTokenizerError(f"Identifier '{value}' cannot begin with an integer")
+        except ValueError:
+            # failure to convert the first char to a int is good
+            pass
+
+        # must contain only alphanumeric and/or underscores
+        for c in value:
+            if not c.isalnum() and c != '_':
+                raise JackTokenizerError(f"Identifier '{value}' contains illegal characters")
 
         self.value = value
         self.type = TOKEN_TYPE.IDENTIFIER

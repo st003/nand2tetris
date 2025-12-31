@@ -46,12 +46,12 @@ SYMBOLS = {
     '~'
 }
 
-def get_token(identifier):
+def get_token(value):
 
-    if identifier in KEYWORDS:
-        return T.KeywordToken(identifier)
+    if value in KEYWORDS:
+        return T.KeywordToken(value)
 
-    if identifier in SYMBOLS:
-        return T.SymbolToken(identifier)
+    if value in SYMBOLS:
+        return T.SymbolToken(value)
 
-    return T.BaseToken(identifier)
+    return T.IdentifierToken(value)

@@ -13,6 +13,7 @@ class BaseToken():
         return f' {self.value} '
 
 class IdentifierToken(BaseToken):
+    """Class, method, function, or variable names."""
 
     def __init__(self, value):
 
@@ -33,6 +34,10 @@ class IdentifierToken(BaseToken):
         self.type = TOKEN_TYPE.IDENTIFIER
 
 class IntegerConstantToken(BaseToken):
+    """Integers from 0-32767."""
+
+    MIN = 0
+    MAX = 32767
 
     def __init__(self, value):
         self.value = value
@@ -42,25 +47,28 @@ class IntegerConstantToken(BaseToken):
     def is_integer_token(value):
         try:
             as_int = int(value)
-            if as_int < 0 or as_int > 32767:
+            if as_int < IntegerConstantToken.MIN or as_int > IntegerConstantToken.MAX:
                 return False
             return True
         except ValueError:
             return False
 
 class KeywordToken(BaseToken):
+    """One of the language defined keywords."""
 
     def __init__(self, value):
         self.value = value
         self.type = TOKEN_TYPE.KEYWORD
 
 class StringConstantToken(BaseToken):
+    """A sequence of chars bounded by double-quotes."""
 
     def __init__(self, value):
         self.value = value
         self.type = TOKEN_TYPE.STRING_CONSTANT
 
 class SymbolToken(BaseToken):
+    """One of the language defined symbols."""
 
     def __init__(self, value):
         self.value = value

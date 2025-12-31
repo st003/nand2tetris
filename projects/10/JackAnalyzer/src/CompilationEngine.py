@@ -1,6 +1,7 @@
 from JackTokenizer import JackTokenizer
 
 class CompilationEngine():
+    """Class for lexing and parsing Jack source code."""
 
     def __init__(self, jack_file_path, debug = False):
         self.jack_file_path = jack_file_path

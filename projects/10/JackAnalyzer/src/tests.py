@@ -16,3 +16,7 @@ class TestFileUtil(unittest.TestCase):
         file_path = Path('myFile.xml')
         output = is_jack_file(file_path)
         self.assertFalse(output)
+
+    # TODO: add tests for:
+    # get_token
+    # is_integer_token

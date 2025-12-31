@@ -6,6 +6,11 @@ from tokens import StringConstantToken
 from xml_formatter import make_pretty
 
 class JackTokenizer():
+    """
+    Tokenizer for the Jack language.
+
+    Create a single instance of JackTokenizer for each Jack file.
+    """
 
     def __init__(self, jack_file_path, debug = False):
 
@@ -30,11 +35,13 @@ class JackTokenizer():
         return f'{self.parent_dir}/{self.file_name}T.xml'
 
     def add_token_to_xml(self):
+        """Inserts the current token into the internal XML etree."""
         if self.current_token is not None:
             new_token = ET.SubElement(self.xml_root, self.current_token.type)
             new_token.text = self.current_token.get_xml_value()
 
     def write_xml(self):
+        """Saves the internal XML etree to a file."""
         xml_tree = ET.ElementTree(self.xml_root)
         xml_text = make_pretty(xml_tree, indent=0)
         try:
@@ -44,6 +51,7 @@ class JackTokenizer():
             raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
     def char_is_skippable(self):
+        """Determines if the current char can be skipped during tokenization."""
 
         # check for comment start
         if (not self.is_single_line_comment
@@ -75,6 +83,7 @@ class JackTokenizer():
         return False
 
     def char_terminates_token(self):
+        """Determines if the current char terminates a token scan."""
 
         if self.raw_source_code[self.cursor] in SYMBOLS:
             return True
@@ -85,9 +94,11 @@ class JackTokenizer():
         return False
 
     def hasMoreTokens(self):
+        """Determines if the current Jack file can contain additional tokens."""
         return self.cursor < self.raw_course_code_char_count
 
     def advance(self):
+        """Select the next token in the Jack file."""
 
         scanning_token = False
         scanning_string_constant = False
@@ -139,6 +150,7 @@ class JackTokenizer():
             self.cursor += 1
 
     def tokenType(self):
+        """Get the type of the current token."""
         if self.current_token:
             return self.current_token.type
         return None

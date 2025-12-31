@@ -47,6 +47,7 @@ SYMBOLS = {
 }
 
 def get_token(value):
+    """Returns the token type based on a sequence of chars."""
 
     if value in KEYWORDS:
         return T.KeywordToken(value)

@@ -12,18 +12,6 @@ class BaseToken():
         """Returns the token's value formatted for xml."""
         return f' {self.value} '
 
-class KeywordToken(BaseToken):
-
-    def __init__(self, value):
-        self.value = value
-        self.type = TOKEN_TYPE.KEYWORD
-
-class SymbolToken(BaseToken):
-
-    def __init__(self, value):
-        self.value = value
-        self.type = TOKEN_TYPE.SYMBOL
-
 class IdentifierToken(BaseToken):
 
     def __init__(self, value):
@@ -44,5 +32,22 @@ class IdentifierToken(BaseToken):
         self.value = value
         self.type = TOKEN_TYPE.IDENTIFIER
 
-# TODO: add string constant
-# TODO: add integer constant
+# TODO: add integer constant token
+
+class KeywordToken(BaseToken):
+
+    def __init__(self, value):
+        self.value = value
+        self.type = TOKEN_TYPE.KEYWORD
+
+class StringConstantToken(BaseToken):
+
+    def __init__(self, value):
+        self.value = value
+        self.type = TOKEN_TYPE.STRING_CONSTANT
+
+class SymbolToken(BaseToken):
+
+    def __init__(self, value):
+        self.value = value
+        self.type = TOKEN_TYPE.SYMBOL

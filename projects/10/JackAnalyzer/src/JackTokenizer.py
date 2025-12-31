@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 
 from exceptions import JackTokenizerError
 from lexical_elements import get_token, SYMBOLS
+from tokens import StringConstantToken
 from xml_formatter import make_pretty
 
 class JackTokenizer():
@@ -89,6 +90,7 @@ class JackTokenizer():
     def advance(self):
 
         scanning_token = False
+        scanning_string_constant = False
         token_start = 0
 
         while self.hasMoreTokens():
@@ -103,22 +105,35 @@ class JackTokenizer():
                         self.current_token = get_token(self.raw_source_code[self.cursor])
                         self.add_token_to_xml()
                         self.cursor += 1
-                        # exit loop so only a single token is captured
                         break
 
                     # all other tokens are 2+ characters
                     else:
+                        # handle string constants
+                        if self.raw_source_code[self.cursor] == '"':
+                            scanning_string_constant = True
+
                         scanning_token = True
                         token_start = self.cursor
 
             # end token scan
             else:
 
-                if self.char_terminates_token():
+                # terminate string constants
+                if scanning_string_constant and self.raw_source_code[self.cursor] == '"':
+                    # strip off the leading and trailing double-quotes
+                    string_constant = self.raw_source_code[(token_start + 1):self.cursor]
+                    self.current_token = StringConstantToken(string_constant)
+                    self.add_token_to_xml()
+                    scanning_token = False
+                    scanning_string_constant = False
+                    self.cursor += 1
+                    break
+
+                if not scanning_string_constant and self.char_terminates_token():
                     self.current_token = get_token(self.raw_source_code[token_start:self.cursor])
                     self.add_token_to_xml()
                     scanning_token = False
-                    # exit loop so only a single token is captured
                     break
 
             self.cursor += 1

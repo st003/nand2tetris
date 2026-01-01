@@ -49,7 +49,7 @@ def main():
             for file_path in src_path.iterdir():
                 if is_jack_file(file_path):
                     ce = CompilationEngine(file_path, debug)
-                    ce.compile()
+                    ce.compileClass()
 
         end_time: float = time.perf_counter()
         exec_time: float = round((end_time - start_time), 5)

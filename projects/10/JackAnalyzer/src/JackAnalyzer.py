@@ -4,7 +4,7 @@ import traceback
 from pathlib import Path
 
 from CompilationEngine import CompilationEngine
-from exceptions import JackAnalyzerError
+from exceptions import CompilationEngineError, JackAnalyzerError
 from file_util import is_jack_file
 
 def main():
@@ -50,6 +50,7 @@ def main():
                 if is_jack_file(file_path):
                     ce = CompilationEngine(file_path, debug)
                     ce.compileClass()
+                    ce.write_xml()
 
         end_time: float = time.perf_counter()
         exec_time: float = round((end_time - start_time), 5)

@@ -12,7 +12,7 @@ class JackTokenizer():
     Create a single instance of JackTokenizer for each Jack file.
     """
 
-    def __init__(self, jack_file_path, debug = False):
+    def __init__(self, jack_file_path, debug=False):
 
         self.parent_dir = jack_file_path.parent
         self.file_name = jack_file_path.stem
@@ -30,6 +30,10 @@ class JackTokenizer():
             self.raw_course_code_char_count = len(self.raw_source_code)
 
     def get_output_file_path(self):
+        """
+        Returns the output file path inserting a debug string when the debug
+        flag is set.
+        """
         if self.debug:
             return f'{self.parent_dir}/{self.file_name}T_DEBUG.xml'
         return f'{self.parent_dir}/{self.file_name}T.xml'

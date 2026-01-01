@@ -2,7 +2,7 @@ class JackAnalyzerError(Exception):
     """Base exception for errors handled by the JackAnalyzer."""
     pass
 
-class CompilationEngineError(Exception):
+class CompilationEngineError(JackAnalyzerError):
     """Base exception for errors handled by the CompilationEngine."""
     pass
 

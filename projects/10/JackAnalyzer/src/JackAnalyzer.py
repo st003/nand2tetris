@@ -7,26 +7,39 @@ from CompilationEngine import CompilationEngine
 from exceptions import JackAnalyzerError
 from file_util import is_jack_file
 
-DEBUG = True # comment out before submission
-
 def main():
 
     args = sys.argv
+    arg_count = len(args)
 
-    if (len(args) != 2):
-        print('Usage: python JackAnalyzer.py <file.jack>|<path-to-jack-files-directory>')
+    debug = False
+    src_path = ''
+
+    if (arg_count < 2 or arg_count > 3):
+        print('Usage: python JackAnalyzer.py [-d] <file.jack>|<path-to-jack-files-directory>')
         sys.exit(1)
+
+    if (arg_count == 2):
+        src_path = Path(args[1])
+
+    elif (arg_count == 3):
+
+        if args[1] != '-d':
+            print(f"Error: '{args[1]}' is not a valid option")
+            sys.exit(1)
+
+        debug = True
+        src_path = Path(args[2])
 
     try:
         start_time = time.perf_counter()
 
-        src_path = Path(args[1])
         output_path = ''
 
         if src_path.is_file():
             if is_jack_file(src_path):
                 output_path = src_path.parent
-                ce = CompilationEngine(src_path, DEBUG)
+                ce = CompilationEngine(src_path, debug)
                 ce.compile()
             else:
                 raise JackAnalyzerError(f"File '{src_path.name}' does not have the extention '.jack'")
@@ -35,7 +48,7 @@ def main():
             output_path = src_path
             for file_path in src_path.iterdir():
                 if is_jack_file(file_path):
-                    ce = CompilationEngine(file_path, DEBUG)
+                    ce = CompilationEngine(file_path, debug)
                     ce.compile()
 
         end_time: float = time.perf_counter()

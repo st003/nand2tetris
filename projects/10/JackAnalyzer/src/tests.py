@@ -20,43 +20,43 @@ class TestFileUtil(unittest.TestCase):
         self.assertFalse(output)
 
     def test_get_token_keyword(self):
-        """."""
+        """Returns a keyword token."""
         output = get_token('class')
         self.assertIsInstance(output, T.KeywordToken)
 
     def test_get_token_symbol(self):
-        """."""
+        """Returns a symbol token."""
         output = get_token('(')
         self.assertIsInstance(output, T.SymbolToken)
 
     def test_get_token_integer_constant(self):
-        """."""
+        """Returns an integer constant token."""
         output = get_token('1')
         self.assertIsInstance(output, T.IntegerConstantToken)
 
     def test_get_token_identifier(self):
-        """."""
+        """Returns an identifier token."""
         output = get_token('MyClass')
         self.assertIsInstance(output, T.IdentifierToken)
 
     def test_is_integer_token_success(self):
-        """."""
-        output = T.IntegerConstantToken.is_integer_token('1')
+        """Verifies an integer string can be converted into an integer constant token."""
+        output = T.IntegerConstantToken.is_integer_token('10')
         self.assertTrue(output)
 
     def test_is_integer_token_not_int(self):
-        """."""
+        """Check a letter string cannot be converted into an integer constant token."""
         output = T.IntegerConstantToken.is_integer_token('a')
         self.assertFalse(output)
 
     def test_is_integer_token_less_than_min(self):
-        """."""
+        """Verifies an integer constant is not less than the min value."""
         value = str(T.IntegerConstantToken.MIN - 1)
         output = T.IntegerConstantToken.is_integer_token(value)
         self.assertFalse(output)
 
     def test_is_integer_token_greater_than_max(self):
-        """."""
+        """Verifies an integer constant is not greater than the max value."""
         value = str(T.IntegerConstantToken.MAX + 1)
         output = T.IntegerConstantToken.is_integer_token(value)
         self.assertFalse(output)

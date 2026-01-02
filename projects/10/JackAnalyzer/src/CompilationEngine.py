@@ -85,8 +85,8 @@ class CompilationEngine():
             raise CompilationEngineError(f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_token_to_xml()
 
-    def eat_token_in(self, set):
-        """Advances to the next token and checks its category."""
+    def next_token_is(self, set):
+        """Advances to the next token and checks its value."""
         self.tokenizer.advance()
         return (self.tokenizer.current_token.value in set)
 
@@ -102,16 +102,11 @@ class CompilationEngine():
 
     def compileClass(self):
         """Parses and compiles a Class declaration."""
-
         self.eat_token_by_value('class')
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.eat_token_by_value('{')
-
         # TODO: call n-number of complileClassVarDec()
-
-        while self.eat_token_in({'constructor', 'function', 'method'}):
-            self.complileSubroutineDec()
-
+        self.complileSubroutineDec()
         # TODO: uncomment after all other compile methods are implemented
         # self.eat_token_by_value('}')
 
@@ -122,21 +117,22 @@ class CompilationEngine():
 
     def complileSubroutineDec(self):
         """Parses and compiles a sub-routine declaration."""
+        while self.next_token_is({'constructor', 'function', 'method'}):
 
-        self.add_token_to_xml(sub_element='subroutineDec')
+            self.add_token_to_xml(sub_element='subroutineDec')
 
-        self.tokenizer.advance()
-        if self.tokenizer.current_token.value == 'void' or self.token_is_return_type():
-            self.add_token_to_xml()
-        else:
-            raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid sub-routine return type")
+            self.tokenizer.advance()
+            if self.tokenizer.current_token.value == 'void' or self.token_is_return_type():
+                self.add_token_to_xml()
+            else:
+                raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid sub-routine return type")
 
-        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        self.eat_token_by_value('(')
-        self.complileParameterList()
-        self.eat_token_by_value(')')
-        self.complileSubroutineBody()
-        self.internal_etree_stack.pop()
+            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+            self.eat_token_by_value('(')
+            self.complileParameterList()
+            self.eat_token_by_value(')')
+            self.complileSubroutineBody()
+            self.internal_etree_stack.pop()
 
     def complileParameterList(self):
         """Parses and compiles a parameter list."""
@@ -149,7 +145,7 @@ class CompilationEngine():
         self.add_sub_element_to_xml('subroutineBody')
         self.eat_token_by_value('{')
 
-        while self.eat_token_in({'var'}):
+        while self.next_token_is({'var'}):
             self.complileVarDec()
 
         # TODO: uncomment when complileVarDec and complileStatements are implmented

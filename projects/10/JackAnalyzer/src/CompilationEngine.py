@@ -135,25 +135,53 @@ class CompilationEngine():
         self.eat_token_by_value('(')
         self.complileParameterList()
         self.eat_token_by_value(')')
-
-        # TODO: implement complileSubroutineBody()
-        # TODO: pop the etree stack
+        self.complileSubroutineBody()
+        self.internal_etree_stack.pop()
 
     def complileParameterList(self):
-        """Parses and compiles a sub-routine declaration."""
+        """Parses and compiles a parameter list."""
         self.add_sub_element_to_xml('parameterList')
         # TODO: implement parameter list args
         self.internal_etree_stack.pop()
 
     def complileSubroutineBody(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses and compiles a sub-routine body."""
+        self.add_sub_element_to_xml('subroutineBody')
+        self.eat_token_by_value('{')
+
+        while self.eat_token_in({'var'}):
+            self.complileVarDec()
+
+        # TODO: uncomment when complileVarDec and complileStatements are implmented
+        # self.eat_token_by_value('}')
+
+        self.internal_etree_stack.pop()
 
     def complileVarDec(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses and compiles a var declaration."""
+
+        self.add_token_to_xml(sub_element='varDec')
+
+        self.tokenizer.advance()
+        if self.token_is_return_type():
+            self.add_token_to_xml()
+        else:
+            raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid return type")
+
+        # get 1 or more variable names
+        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        while True:
+            self.tokenizer.advance()
+            if self.tokenizer.current_token.value == ',':
+                self.add_token_to_xml()
+                self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+            elif self.tokenizer.current_token.value == ';':
+                self.add_token_to_xml()
+                break
+            else:
+                raise CompilationEngineError(f"Expected ',' or ';' not '{self.tokenizer.current_token.value}'")
+
+        self.internal_etree_stack.pop()
 
     def complileStatements(self):
         """."""

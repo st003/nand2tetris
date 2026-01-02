@@ -45,6 +45,13 @@ class CompilationEngine():
             new_token = ET.SubElement(self.internal_etree_stack[-1], self.tokenizer.current_token.type)
             new_token.text = self.tokenizer.current_token.get_xml_value()
 
+    def add_sub_element_to_xml(self, name):
+        """Creates a new sub-element in the xml and move it to the top of the etree stack."""
+        if name is not None:
+            new_sub_element = ET.SubElement(self.internal_etree_stack[-1], name)
+            # push onto the stack so subsequent elements are nested
+            self.internal_etree_stack.append(new_sub_element)
+
     def write_xml(self):
         """
         Creates XML files from the tokenizer and the CompilationEngine
@@ -61,34 +68,33 @@ class CompilationEngine():
         try:
             with open(self.get_output_file_path(), 'w') as output_file:
                 output_file.write(xml_text)
-        except Exception as error:
-            raise CompilationEngineError(f"Unable to create XML class file at: '{self.get_output_file_path()}'") from error
+        except OSError as error:
+            raise IOError(f"Unable to create XML class file at: '{self.get_output_file_path()}'") from error
 
     def eat_token_by_value(self, value):
         """Advances to the next token and checks its value."""
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            if self.tokenizer.current_token.value != value:
-                raise CompilationEngineError(f"CompilationEngine.eat_token_by_value() expected '{value}' but got '{self.tokenizer.current_token.value}'")
-        else:
-            raise CompilationEngineError('Tokenizer has reached the end of the file')
+        self.tokenizer.advance()
+        if self.tokenizer.current_token.value != value:
+            raise CompilationEngineError(f"CompilationEngine.eat_token_by_value() expected '{value}' but got '{self.tokenizer.current_token.value}'")
+        self.add_token_to_xml()
 
     def eat_token_by_type(self, type):
         """Advances to the next token and checks its type."""
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            if self.tokenizer.tokenType() != type:
-                raise CompilationEngineError(f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
-        else:
-            raise CompilationEngineError('Tokenizer has reached the end of the file')
+        self.tokenizer.advance()
+        if self.tokenizer.tokenType() != type:
+            raise CompilationEngineError(f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
+        self.add_token_to_xml()
 
     def eat_token_in(self, set):
         """Advances to the next token and checks its category."""
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            return (self.tokenizer.current_token.value in set)
-        else:
-            raise CompilationEngineError('Tokenizer has reached the end of the file')
+        self.tokenizer.advance()
+        return (self.tokenizer.current_token.value in set)
+
+    def token_is_return_type(self):
+        """Check if the current token is valid return type."""
+        # NOTE: technically 'identifier' is not enough to prove it's a class definition
+        return (self.tokenizer.current_token.value in {'int', 'char', 'boolean'}
+                or self.tokenizer.tokenType() == TOKEN_TYPE.IDENTIFIER)
 
     # TODO: definitions found at:
     # 4.5 @2:19
@@ -98,13 +104,8 @@ class CompilationEngine():
         """Parses and compiles a Class declaration."""
 
         self.eat_token_by_value('class')
-        self.add_token_to_xml()
-
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        self.add_token_to_xml()
-
         self.eat_token_by_value('{')
-        self.add_token_to_xml()
 
         # TODO: call n-number of complileClassVarDec()
 
@@ -113,7 +114,6 @@ class CompilationEngine():
 
         # TODO: uncomment after all other compile methods are implemented
         # self.eat_token_by_value('}')
-        # self.add_token_to_xml()
 
     def complileClassVarDec(self):
         """."""
@@ -123,36 +123,27 @@ class CompilationEngine():
     def complileSubroutineDec(self):
         """Parses and compiles a sub-routine declaration."""
 
-        self.add_token_to_xml('subroutineDec')
+        self.add_token_to_xml(sub_element='subroutineDec')
 
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            if (self.tokenizer.current_token.value in {'void', 'int', 'char', 'boolean'}
-                or self.tokenizer.tokenType() == TOKEN_TYPE.IDENTIFIER):
-                self.add_token_to_xml()
-            else:
-                raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid sub-routine return type")
+        self.tokenizer.advance()
+        if self.tokenizer.current_token.value == 'void' or self.token_is_return_type():
+            self.add_token_to_xml()
         else:
-            raise CompilationEngineError('Tokenizer has reached the end of the file')
+            raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid sub-routine return type")
 
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        self.add_token_to_xml()
-
         self.eat_token_by_value('(')
-        self.add_token_to_xml()
-
-        # TODO: implement complileParameterList()
-
-        # self.eat_token_by_value(')')
-        # self.add_token_to_xml()
+        self.complileParameterList()
+        self.eat_token_by_value(')')
 
         # TODO: implement complileSubroutineBody()
         # TODO: pop the etree stack
 
     def complileParameterList(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses and compiles a sub-routine declaration."""
+        self.add_sub_element_to_xml('parameterList')
+        # TODO: implement parameter list args
+        self.internal_etree_stack.pop()
 
     def complileSubroutineBody(self):
         """."""

@@ -51,8 +51,8 @@ class JackTokenizer():
         try:
             with open(self.get_output_file_path(), 'w') as output_file:
                 output_file.write(xml_text)
-        except Exception as error:
-            raise JackTokenizerError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
+        except OSError as error:
+            raise IOError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
 
     def char_is_skippable(self):
         """Determines if the current char can be skipped during tokenization."""
@@ -103,6 +103,10 @@ class JackTokenizer():
 
     def advance(self):
         """Select the next token in the Jack file."""
+
+        if not self.hasMoreTokens():
+            self.current_token = None
+            raise JackTokenizerError('Tokenizer has reached the end of the file')
 
         scanning_token = False
         scanning_string_constant = False

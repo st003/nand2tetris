@@ -28,18 +28,8 @@ class CompilationEngine():
             return f'{self.parent_dir}/{self.file_name}_DEBUG.xml'
         return f'{self.parent_dir}/{self.file_name}.xml'
 
-    def add_token_to_xml(self, sub_element=None):
-        """
-        Inserts the current token into the internal XML etree.
-
-        Creates a new sub-element first if defined.
-        """
-
-        if sub_element is not None:
-            new_sub_element = ET.SubElement(self.internal_etree_stack[-1], sub_element)
-            # push onto the stack so subsequent elements are nested
-            self.internal_etree_stack.append(new_sub_element)
-
+    def add_token_to_xml(self):
+        """Inserts the current token into the internal XML etree."""
         if self.tokenizer.current_token is not None:
             # always use the top of the stack
             new_token = ET.SubElement(self.internal_etree_stack[-1], self.tokenizer.current_token.type)
@@ -85,9 +75,8 @@ class CompilationEngine():
             raise CompilationEngineError(f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_token_to_xml()
 
-    def next_token_is(self, set):
-        """Advances to the next token and checks its value."""
-        self.tokenizer.advance()
+    def current_token_in(self, set):
+        """Checks the current token's value membership against a provided set."""
         return (self.tokenizer.current_token.value in set)
 
     def token_is_return_type(self):
@@ -117,22 +106,28 @@ class CompilationEngine():
 
     def complileSubroutineDec(self):
         """Parses and compiles a sub-routine declaration."""
-        while self.next_token_is({'constructor', 'function', 'method'}):
-
-            self.add_token_to_xml(sub_element='subroutineDec')
-
+        while True:
             self.tokenizer.advance()
-            if self.tokenizer.current_token.value == 'void' or self.token_is_return_type():
-                self.add_token_to_xml()
-            else:
-                raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid sub-routine return type")
+            if self.current_token_in({'constructor', 'function', 'method'}):
 
-            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-            self.eat_token_by_value('(')
-            self.complileParameterList()
-            self.eat_token_by_value(')')
-            self.complileSubroutineBody()
-            self.internal_etree_stack.pop()
+                self.add_sub_element_to_xml('subroutineDec')
+                self.add_token_to_xml()
+
+                self.tokenizer.advance()
+                if self.tokenizer.current_token.value == 'void' or self.token_is_return_type():
+                    self.add_token_to_xml()
+                else:
+                    raise CompilationEngineError(f"{self.tokenizer.current_token.value} is not a valid sub-routine return type")
+
+                self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+                self.eat_token_by_value('(')
+                self.complileParameterList()
+                self.eat_token_by_value(')')
+                self.complileSubroutineBody()
+                self.internal_etree_stack.pop()
+
+            else:
+                break
 
     def complileParameterList(self):
         """Parses and compiles a parameter list."""
@@ -145,8 +140,12 @@ class CompilationEngine():
         self.add_sub_element_to_xml('subroutineBody')
         self.eat_token_by_value('{')
 
-        while self.next_token_is({'var'}):
-            self.complileVarDec()
+        while True:
+            self.tokenizer.advance()
+            if self.current_token_in({'var'}):
+                self.complileVarDec()
+            else:
+                break
 
         # TODO: uncomment when complileVarDec and complileStatements are implmented
         # self.eat_token_by_value('}')
@@ -156,7 +155,8 @@ class CompilationEngine():
     def complileVarDec(self):
         """Parses and compiles a var declaration."""
 
-        self.add_token_to_xml(sub_element='varDec')
+        self.add_sub_element_to_xml('varDec')
+        self.add_token_to_xml()
 
         self.tokenizer.advance()
         if self.token_is_return_type():

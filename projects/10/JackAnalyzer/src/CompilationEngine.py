@@ -213,19 +213,18 @@ class CompilationEngine():
         """Parses a let statement."""
 
         self.add_sub_element_to_xml('letStatement')
-        self.add_token_to_xml() #  this should be 'let'
+        self.add_token_to_xml() # expext the current token to be 'let'
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
 
         self.tokenizer.advance()
         if self.get_current_token_value() == '[':
-            # TODO: implement
-            # self.complileExpression()
-            # self.eat_token_by_value(']')
-            pass
+            # TODO: self.complileExpression()
+            self.eat_token_by_value(']')
         elif self.get_current_token_value() == '=':
             self.add_token_to_xml()
 
-        # TODO: 1 expression
+        # TODO:
+        self.complileExpression()
         # self.eat_token_by_value(';')
 
         self.internal_etree_stack.pop()
@@ -252,14 +251,45 @@ class CompilationEngine():
         pass
 
     def complileExpression(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses an expression."""
+        self.add_sub_element_to_xml('expression')
+
+        self.complileTerm()
+        # TODO: 1+ (op term)
+
+        self.internal_etree_stack.pop()
 
     def complileTerm(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses a term."""
+
+        self.add_sub_element_to_xml('term')
+
+        if self.tokenizer.tokenType() == TOKEN_TYPE.INTEGER_CONSTANT:
+            self.add_token_to_xml()
+        elif self.tokenizer.tokenType() == TOKEN_TYPE.STRING_CONSTANT:
+            self.add_token_to_xml()
+        elif self.current_token_in({'true', 'false', 'null', 'this'}):
+            self.add_token_to_xml()
+        elif self.tokenizer.tokenType() == TOKEN_TYPE.IDENTIFIER:
+            # TODO: check the next token to determine if:
+            # varName
+            # varName[expression]
+            # subroutineCall
+            pass
+
+        # (expression)
+
+        elif self.current_token_in({'-', '~'}):
+            self.add_token_to_xml()
+        else:
+          # TODO: throw and error here?
+          pass
+
+        # TODO: it calls itself?
+        # self.tokenizer.advance()
+        # self.complileTerm()
+
+        self.internal_etree_stack.pop()
 
     def complileExpressionList(self):
         """."""

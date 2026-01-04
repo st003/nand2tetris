@@ -37,10 +37,7 @@ class CompilationEngine():
 
     def add_current_token_to_xml(self):
         """Inserts the current token into the internal XML etree."""
-        if self.tokenizer.current_token is not None:
-            # always use the top of the stack
-            new_token = ET.SubElement(self.internal_etree_stack[-1], self.tokenizer.current_token.type)
-            new_token.text = self.tokenizer.current_token.get_xml_value()
+        self.add_token_to_xml(self.tokenizer.current_token)
 
     def add_sub_element_to_xml(self, name):
         """Creates a new sub-element in the xml and move it to the top of the etree stack."""
@@ -152,21 +149,31 @@ class CompilationEngine():
 
     def complileSubroutineBody(self):
         """Parses a sub-routine body."""
+
         self.add_sub_element_to_xml('subroutineBody')
         self.eat_token_by_value('{')
 
+        # variable declarations
         while True:
             self.tokenizer.advance()
-            if self.complileVarDec() or self.complileStatements():
+            if self.complileVarDec():
                 continue
             else:
-                # TODO: check for and add '}'
                 break
+
+        # statements
+        self.complileStatements()
+
+        # TODO: uncomment when complileStatements() is complete
+        # if self.get_current_token_value() == '}':
+        #     self.add_current_token_to_xml()
+        # else:
+        #     raise CompilationEngineError(self.tokenizer, "Expected '}' but got '" + f"{self.get_current_token_value()}'")
 
         self.internal_etree_stack.pop()
 
     def complileVarDec(self):
-        """Parses a var declaration."""
+        """Parses a var declaration. Evaluates the current token."""
 
         if not self.current_token_in({'var'}):
             return False
@@ -197,24 +204,33 @@ class CompilationEngine():
         return True
 
     def complileStatements(self):
-        """Attempts to parse each statement type."""
+        """Parses all statements by type. Evaluates the current token."""
 
         if not self.current_token_in({'let', 'if', 'while', 'do', 'return'}):
-            return False
+            return
 
-        self.add_sub_element_to_xml('statements') # TODO: when do we pop?
+        self.add_sub_element_to_xml('statements')
 
-        stmnt = self.get_current_token_value()
-        if stmnt == 'let':
-            return self.complileLet()
-        elif stmnt == 'if':
-            pass
-        elif stmnt == 'while':
-            pass
-        elif stmnt == 'do':
-            pass
-        elif stmnt == 'return':
-            pass
+        while True:
+
+            if not self.current_token_in({'let', 'if', 'while', 'do', 'return'}):
+                break
+
+            stmnt = self.get_current_token_value()
+            if stmnt == 'let':
+                self.complileLet()
+            elif stmnt == 'if':
+                pass
+            elif stmnt == 'while':
+                pass
+            elif stmnt == 'do':
+                pass
+            elif stmnt == 'return':
+                pass
+
+            self.tokenizer.advance()
+
+        self.internal_etree_stack.pop()
 
     def complileLet(self):
         """Parses a let statement."""
@@ -240,7 +256,6 @@ class CompilationEngine():
         self.eat_token_by_value(';')
 
         self.internal_etree_stack.pop()
-        return True
 
     def complileIf(self):
         """."""
@@ -296,17 +311,26 @@ class CompilationEngine():
                 self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
                 self.eat_token_by_value('(')
                 self.complileExpressionList()
-                self.eat_token_by_value(')')
+
+                # when complileExpressionList finds a varName it handles the closing ')'
+                if self.get_current_token_value() != ')':
+                    self.eat_token_by_value(')')
 
             # TODO: method subroutineCall
             elif self.get_current_token_value() == '(':
                 pass
+
             # TODO: varName[expression]
             elif self.get_current_token_value() == '[':
                 pass
-            # TODO: varName
+
+            # varName
             else:
-                pass
+                self.add_token_to_xml(previous_token)
+                if self.get_current_token_value() != ')':
+                    raise CompilationEngineError(self.tokenizer, f"CompilationEngine.complileTerm() expected ')' but found {self.get_current_token_value()}")
+                # TODO: this is wrong, need to pop out of expression list first
+                self.add_current_token_to_xml()
 
         # TODO: (expression)
 

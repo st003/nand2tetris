@@ -312,8 +312,9 @@ class CompilationEngine():
                 self.eat_token_by_value('(')
                 self.complileExpressionList()
 
-                # when complileExpressionList finds a varName it handles the closing ')'
-                if self.get_current_token_value() != ')':
+                if self.get_current_token_value() == ')':
+                    self.add_current_token_to_xml()
+                else:
                     self.eat_token_by_value(')')
 
             # TODO: method subroutineCall
@@ -327,10 +328,6 @@ class CompilationEngine():
             # varName
             else:
                 self.add_token_to_xml(previous_token)
-                if self.get_current_token_value() != ')':
-                    raise CompilationEngineError(self.tokenizer, f"CompilationEngine.complileTerm() expected ')' but found {self.get_current_token_value()}")
-                # TODO: this is wrong, need to pop out of expression list first
-                self.add_current_token_to_xml()
 
         # TODO: (expression)
 

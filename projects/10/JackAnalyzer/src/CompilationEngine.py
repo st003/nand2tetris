@@ -78,14 +78,14 @@ class CompilationEngine():
         """Advances to the next token and checks its value."""
         self.tokenizer.advance()
         if self.get_current_token_value() != value:
-            raise CompilationEngineError(f"CompilationEngine.eat_token_by_value() expected '{value}' but got '{self.get_current_token_value()}'")
+            raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_value() expected '{value}' but got '{self.get_current_token_value()}'")
         self.add_current_token_to_xml()
 
     def eat_token_by_type(self, type):
         """Advances to the next token and checks its type."""
         self.tokenizer.advance()
         if self.tokenizer.tokenType() != type:
-            raise CompilationEngineError(f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
+            raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_current_token_to_xml()
 
     def current_token_in(self, set):
@@ -133,7 +133,7 @@ class CompilationEngine():
         if self.get_current_token_value() == 'void' or self.token_is_return_type():
             self.add_current_token_to_xml()
         else:
-            raise CompilationEngineError(f"{self.get_current_token_value()} is not a valid sub-routine return type")
+            raise CompilationEngineError(self.tokenizer, f"{self.get_current_token_value()} is not a valid sub-routine return type")
 
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.eat_token_by_value('(')
@@ -178,7 +178,7 @@ class CompilationEngine():
         if self.token_is_return_type():
             self.add_current_token_to_xml()
         else:
-            raise CompilationEngineError(f"{self.get_current_token_value()} is not a valid return type")
+            raise CompilationEngineError(self.tokenizer, f"{self.get_current_token_value()} is not a valid return type")
 
         # get 1 or more variable names
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
@@ -191,7 +191,7 @@ class CompilationEngine():
                 self.add_current_token_to_xml()
                 break
             else:
-                raise CompilationEngineError(f"Expected ',' or ';' not '{self.get_current_token_value()}'")
+                raise CompilationEngineError(self.tokenizer, f"Expected ',' or ';' not '{self.get_current_token_value()}'")
 
         self.internal_etree_stack.pop()
         return True
@@ -233,11 +233,11 @@ class CompilationEngine():
             self.add_current_token_to_xml()
 
         else:
-            raise CompilationEngineError(f"let statement expected '[' or '=' but found {self.get_current_token_value()}")
+            raise CompilationEngineError(self.tokenizer, f"let statement expected '[' or '=' but found {self.get_current_token_value()}")
 
         self.tokenizer.advance()
         self.complileExpression()
-        # self.eat_token_by_value(';')
+        self.eat_token_by_value(';')
 
         self.internal_etree_stack.pop()
         return True
@@ -322,9 +322,9 @@ class CompilationEngine():
 
     def complileExpressionList(self):
         """Parses an expression list."""
-        self.tokenizer.advance()
         self.add_sub_element_to_xml('expressionList')
-        # TODO: 0+ expressions sperated by ,
+        self.tokenizer.advance()
+        # TODO: 0+ expressions sperated by ','
         self.complileExpression()
         self.internal_etree_stack.pop()
 

@@ -4,7 +4,7 @@ import traceback
 from pathlib import Path
 
 from CompilationEngine import CompilationEngine
-from exceptions import CompilationEngineError, JackAnalyzerError
+from exceptions import JackAnalyzerError
 from file_util import is_jack_file
 
 def main():
@@ -59,7 +59,7 @@ def main():
         print(f'Execution time: {exec_time} seconds\n')
 
     except JackAnalyzerError as error:
-        print(f'Error: {error}')
+        print(error)
         sys.exit(1)
 
     except Exception:

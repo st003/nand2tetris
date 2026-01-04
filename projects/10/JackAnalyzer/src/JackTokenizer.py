@@ -20,6 +20,7 @@ class JackTokenizer():
 
         self.cursor = 0
         self.current_token = None
+        self.line_num = 1
         self.is_single_line_comment = False
         self.is_multi_line_comment = False
 
@@ -82,6 +83,8 @@ class JackTokenizer():
             return True
 
         if self.raw_source_code[self.cursor].isspace():
+            if self.raw_source_code[self.cursor] == '\n':
+                self.line_num += 1
             return True
 
         return False

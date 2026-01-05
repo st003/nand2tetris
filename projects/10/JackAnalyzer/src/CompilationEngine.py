@@ -222,7 +222,7 @@ class CompilationEngine():
             elif stmnt == 'if':
                 pass
             elif stmnt == 'while':
-                pass
+                self.complileWhile()
             elif stmnt == 'do':
                 pass
             elif stmnt == 'return':
@@ -233,7 +233,7 @@ class CompilationEngine():
         self.internal_etree_stack.pop()
 
     def complileLet(self):
-        """Parses a let statement."""
+        """Parses a let statement. Evaluates the current token."""
 
         self.add_sub_element_to_xml('letStatement')
         self.add_current_token_to_xml() # expect the current token to be 'let'
@@ -249,7 +249,7 @@ class CompilationEngine():
             self.add_current_token_to_xml()
 
         else:
-            raise CompilationEngineError(self.tokenizer, f"let statement expected '[' or '=' but found {self.get_current_token_value()}")
+            raise CompilationEngineError(self.tokenizer, f"CompilationEngine.complileLet() expected '[' or '=' but got '{self.get_current_token_value()}'")
 
         self.tokenizer.advance()
         self.complileExpression()
@@ -263,9 +263,16 @@ class CompilationEngine():
         pass
 
     def complileWhile(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses a while statement. Evaluates the current token."""
+
+        self.add_sub_element_to_xml('whileStatement')
+        self.add_current_token_to_xml() # expect the current token to be 'while'
+        self.eat_token_by_value('(')
+
+        self.tokenizer.advance()
+        self.complileExpression()
+
+        self.internal_etree_stack.pop()
 
     def complileDo(self):
         """."""
@@ -278,16 +285,32 @@ class CompilationEngine():
         pass
 
     def complileExpression(self):
-        """Parses an expression."""
-        self.add_sub_element_to_xml('expression')
+        """Parses an expression. Evaluates the current token."""
 
-        self.complileTerm()
-        # TODO: 1+ (op term)
+        self.add_sub_element_to_xml('expression')
+        self.compileTerm()
+
+        # TODO: when exiting compileTerm on a varName, we have currently
+        # selected ')', but have done anything with it before advancing a
+        # 2nd time.
+        #
+        # if we have exited on a subroutineCall, then we have already capured the
+        # ')'
+
+        # # 0+ (op term)
+        # while True:
+        #     self.tokenizer.advance()
+        #     if not self.current_token_in({'+', '-', '*', '/', '&', '|', '<', '>', '='}):
+        #         break
+
+        #     self.add_current_token_to_xml()
+        #     self.tokenizer.advance()
+        #     self.compileTerm()
 
         self.internal_etree_stack.pop()
 
-    def complileTerm(self):
-        """Parses a term."""
+    def compileTerm(self):
+        """Parses a term. Evaluates the current token."""
 
         self.add_sub_element_to_xml('term')
 
@@ -334,7 +357,7 @@ class CompilationEngine():
         elif self.current_token_in({'-', '~'}):
             self.add_current_token_to_xml()
             self.tokenizer.advance()
-            self.complileTerm()
+            self.compileTerm()
         else:
           # TODO: throw and error here?
           pass

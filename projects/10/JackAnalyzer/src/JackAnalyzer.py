@@ -35,6 +35,7 @@ def main():
         start_time = time.perf_counter()
 
         output_path = ''
+        ce = None
 
         if src_path.is_file():
             if is_jack_file(src_path):
@@ -60,6 +61,9 @@ def main():
 
     except JackAnalyzerError as error:
         print(error)
+        if debug:
+            ce.write_xml()
+            print('\nDebug - wrote XML output with errors')
         sys.exit(1)
 
     except Exception:

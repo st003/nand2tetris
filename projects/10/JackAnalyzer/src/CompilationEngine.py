@@ -220,9 +220,7 @@ class CompilationEngine():
                 # TODO: implement
                 break
             elif next_token.value == 'while':
-                # self.complileWhile()
-                # TODO: implement
-                break
+                self.complileWhile()
             elif next_token.value == 'do':
                 # TODO: implement
                 break
@@ -231,7 +229,6 @@ class CompilationEngine():
                 break
 
             next_token = self.tokenizer.peek_next_token()
-            print(next_token.value)
             if next_token.value not in {'let', 'if', 'while', 'do', 'return'}:
                 break
 
@@ -269,16 +266,14 @@ class CompilationEngine():
 
     def complileWhile(self):
         """Parses a while statement. Evaluates the current token."""
-
         self.add_sub_element_to_xml('whileStatement')
-        self.add_current_token_to_xml() # expect the current token to be 'while'
+        self.eat_token_by_value('while')
         self.eat_token_by_value('(')
-
-        self.tokenizer.advance()
         self.complileExpression()
-
-        # TODO: finish implementmenting
-
+        self.eat_token_by_value(')')
+        self.eat_token_by_value('{')
+        self.complileStatements()
+        self.eat_token_by_value('}')
         self.internal_etree_stack.pop()
 
     def complileDo(self):
@@ -297,29 +292,20 @@ class CompilationEngine():
         self.add_sub_element_to_xml('expression')
         self.compileTerm()
 
-        # TODO: when exiting compileTerm on a varName, we have currently
-        # selected ')', but have not one anything with it before advancing a
-        # 2nd time.
-        #
-        # if we have exited on a subroutineCall, then we have already capured the
-        # ')'
-        #
-        # BOTTOM LINE, should we **ALWAYS** look ahead after exiting a term?
+        # 0+ (op term)
+        while True:
+            next_token = self.tokenizer.peek_next_token()
+            if next_token.value not in {'+', '-', '*', '/', '&', '|', '<', '>', '='}:
+                break
 
-        # # 0+ (op term)
-        # while True:
-        #     self.tokenizer.advance()
-        #     if not self.current_token_in({'+', '-', '*', '/', '&', '|', '<', '>', '='}):
-        #         break
-
-        #     self.add_current_token_to_xml()
-        #     self.tokenizer.advance()
-        #     self.compileTerm()
+            self.tokenizer.advance()
+            self.add_current_token_to_xml()
+            self.compileTerm()
 
         self.internal_etree_stack.pop()
 
     def compileTerm(self):
-        """Parses a term. Evaluates the current token."""
+        """Parses a term."""
 
         self.add_sub_element_to_xml('term')
 

@@ -70,20 +70,6 @@ class StringConstantToken(BaseToken):
 class SymbolToken(BaseToken):
     """One of the language defined symbols."""
 
-    xml_esc = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;'
-    }
-
     def __init__(self, value):
         self.value = value
         self.type = TOKEN_TYPE.SYMBOL
-
-    def get_xml_value(self):
-        """Returns the token's value formatted for xml."""
-        if self.value in self.xml_esc:
-            return f' {self.xml_esc[self.value]} '
-        else:
-            return super().get_xml_value()

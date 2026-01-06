@@ -326,7 +326,7 @@ class CompilationEngine():
 
             next_token = self.tokenizer.peek_next_token()
 
-            # subroutineCall example MyClass.func()
+            # subroutineCall example 'MyClass.func()'
             if next_token.value == '.':
                 self.eat_token_by_value('.')
                 self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
@@ -334,13 +334,15 @@ class CompilationEngine():
                 self.complileExpressionList()
                 self.eat_token_by_value(')')
 
-            # TODO: subroutineCall example func()
+            # TODO: subroutineCall example 'func()'
             elif next_token.value == '(':
                 pass
 
-            # TODO: varName[expression]
+            # varName[expression]
             elif next_token.value == '[':
-                pass
+                self.eat_token_by_value('[')
+                self.complileExpression()
+                self.eat_token_by_value(']')
 
         # TODO: (expression)
 

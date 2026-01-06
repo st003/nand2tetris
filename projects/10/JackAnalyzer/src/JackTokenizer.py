@@ -23,6 +23,7 @@ class JackTokenizer():
         self.line_num = 1
         self.is_single_line_comment = False
         self.is_multi_line_comment = False
+        self.skip_xml = False
 
         self.xml_root = ET.Element('tokens')
 
@@ -41,7 +42,7 @@ class JackTokenizer():
 
     def add_token_to_xml(self):
         """Inserts the current token into the internal XML etree."""
-        if self.current_token is not None:
+        if not self.skip_xml and self.current_token is not None:
             new_token = ET.SubElement(self.xml_root, self.current_token.type)
             new_token.text = self.current_token.get_xml_value()
 
@@ -165,3 +166,27 @@ class JackTokenizer():
         if self.current_token:
             return self.current_token.type
         return None
+
+    def peek_next_token(self):
+        """Look at the next token without advancing."""
+
+        # take snapshot of state
+        cursor_backup = self.cursor
+        current_token_backup = self.current_token
+        line_num_backup = self.line_num
+        is_single_line_comment_backup = self.is_single_line_comment
+        is_multi_line_comment_backup = self.is_multi_line_comment
+        self.skip_xml = True
+
+        self.advance()
+        next_token = self.current_token
+
+        # restore state
+        self.cursor = cursor_backup
+        self.current_token = current_token_backup
+        self.line_num = line_num_backup
+        self.is_single_line_comment = is_single_line_comment_backup
+        self.is_multi_line_comment = is_multi_line_comment_backup
+        self.skip_xml = False
+
+        return next_token

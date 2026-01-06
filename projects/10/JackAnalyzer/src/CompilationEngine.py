@@ -28,16 +28,12 @@ class CompilationEngine():
             return f'{self.parent_dir}/{self.file_name}_DEBUG.xml'
         return f'{self.parent_dir}/{self.file_name}.xml'
 
-    def add_token_to_xml(self, token):
-        """Inserts the token into the internal XML etree."""
-        if token is not None:
-            # always use the top of the stack
-            new_token = ET.SubElement(self.internal_etree_stack[-1], token.type)
-            new_token.text = token.get_xml_value()
-
     def add_current_token_to_xml(self):
         """Inserts the current token into the internal XML etree."""
-        self.add_token_to_xml(self.tokenizer.current_token)
+        if self.tokenizer.current_token is not None:
+            # always use the top of the stack
+            new_token = ET.SubElement(self.internal_etree_stack[-1], self.tokenizer.current_token.type)
+            new_token.text = self.tokenizer.current_token.get_xml_value()
 
     def add_sub_element_to_xml(self, name):
         """Creates a new sub-element in the xml and move it to the top of the etree stack."""
@@ -85,10 +81,6 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_current_token_to_xml()
 
-    def current_token_in(self, set):
-        """Checks the current token's value membership against a provided set."""
-        return (self.get_current_token_value() in set)
-
     def token_is_return_type(self):
         """Check if the current token is valid return type."""
         # NOTE: technically 'identifier' is not enough to prove it's a class definition
@@ -101,17 +93,22 @@ class CompilationEngine():
 
     def compileClass(self):
         """Parses a class declaration."""
+
         self.eat_token_by_value('class')
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.eat_token_by_value('{')
 
         while True:
-            self.tokenizer.advance()
-            if self.complileClassVarDec() or self.complileSubroutineDec():
+            if self.complileClassVarDec():
                 continue
-            else:
-                # TODO: check for and add '}'
-                break
+            break
+
+        while True:
+            if self.complileSubroutineDec():
+                continue
+            break
+
+        # TODO: self.eat_token_by_value('}')
 
     def complileClassVarDec(self):
         """."""
@@ -120,10 +117,13 @@ class CompilationEngine():
 
     def complileSubroutineDec(self):
         """Parses a sub-routine declaration."""
-        if not self.current_token_in({'constructor', 'function', 'method'}):
+
+        next_token = self.tokenizer.peek_next_token()
+        if next_token.value not in ({'constructor', 'function', 'method'}):
             return False
 
         self.add_sub_element_to_xml('subroutineDec')
+        self.tokenizer.advance()
         self.add_current_token_to_xml()
 
         self.tokenizer.advance()
@@ -137,8 +137,8 @@ class CompilationEngine():
         self.complileParameterList()
         self.eat_token_by_value(')')
         self.complileSubroutineBody()
-        self.internal_etree_stack.pop()
 
+        self.internal_etree_stack.pop()
         return True
 
     def complileParameterList(self):
@@ -155,11 +155,9 @@ class CompilationEngine():
 
         # variable declarations
         while True:
-            self.tokenizer.advance()
             if self.complileVarDec():
                 continue
-            else:
-                break
+            break
 
         # statements
         self.complileStatements()
@@ -173,13 +171,14 @@ class CompilationEngine():
         self.internal_etree_stack.pop()
 
     def complileVarDec(self):
-        """Parses a var declaration. Evaluates the current token."""
+        """Parses a var declaration."""
 
-        if not self.current_token_in({'var'}):
+        next_token = self.tokenizer.peek_next_token()
+        if next_token.value != 'var':
             return False
 
         self.add_sub_element_to_xml('varDec')
-        self.add_current_token_to_xml()
+        self.eat_token_by_value('var')
 
         self.tokenizer.advance()
         if self.token_is_return_type():
@@ -190,12 +189,12 @@ class CompilationEngine():
         # get 1 or more variable names
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         while True:
-            self.tokenizer.advance()
-            if self.get_current_token_value() == ',':
-                self.add_current_token_to_xml()
+            next_token = self.tokenizer.peek_next_token()
+            if next_token.value == ',':
+                self.eat_token_by_value(',')
                 self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-            elif self.get_current_token_value() == ';':
-                self.add_current_token_to_xml()
+            elif next_token.value == ';':
+                self.eat_token_by_value(';')
                 break
             else:
                 raise CompilationEngineError(self.tokenizer, f"Expected ',' or ';' not '{self.get_current_token_value()}'")
@@ -204,54 +203,60 @@ class CompilationEngine():
         return True
 
     def complileStatements(self):
-        """Parses all statements by type. Evaluates the current token."""
+        """Parses all statements by type."""
 
-        if not self.current_token_in({'let', 'if', 'while', 'do', 'return'}):
+        next_token = self.tokenizer.peek_next_token()
+
+        if next_token.value not in {'let', 'if', 'while', 'do', 'return'}:
             return
 
         self.add_sub_element_to_xml('statements')
 
         while True:
 
-            if not self.current_token_in({'let', 'if', 'while', 'do', 'return'}):
+            if next_token.value == 'let':
+                self.complileLet()
+            elif next_token.value == 'if':
+                # TODO: implement
+                break
+            elif next_token.value == 'while':
+                # self.complileWhile()
+                # TODO: implement
+                break
+            elif next_token.value == 'do':
+                # TODO: implement
+                break
+            elif next_token.value == 'return':
+                # TODO: implement
                 break
 
-            stmnt = self.get_current_token_value()
-            if stmnt == 'let':
-                self.complileLet()
-            elif stmnt == 'if':
-                pass
-            elif stmnt == 'while':
-                self.complileWhile()
-            elif stmnt == 'do':
-                pass
-            elif stmnt == 'return':
-                pass
-
-            self.tokenizer.advance()
+            next_token = self.tokenizer.peek_next_token()
+            print(next_token.value)
+            if next_token.value not in {'let', 'if', 'while', 'do', 'return'}:
+                break
 
         self.internal_etree_stack.pop()
 
     def complileLet(self):
-        """Parses a let statement. Evaluates the current token."""
+        """Parses a let statement."""
 
         self.add_sub_element_to_xml('letStatement')
-        self.add_current_token_to_xml() # expect the current token to be 'let'
+        self.eat_token_by_value('let')
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
 
-        self.tokenizer.advance()
-        if self.get_current_token_value() == '[':
+        next_token = self.tokenizer.peek_next_token()
+        if next_token.value == '[':
+            self.eat_token_by_value('[')
             self.complileExpression()
             self.eat_token_by_value(']')
             self.eat_token_by_value('=')
 
-        elif self.get_current_token_value() == '=':
-            self.add_current_token_to_xml()
+        elif next_token.value == '=':
+            self.eat_token_by_value('=')
 
         else:
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.complileLet() expected '[' or '=' but got '{self.get_current_token_value()}'")
 
-        self.tokenizer.advance()
         self.complileExpression()
         self.eat_token_by_value(';')
 
@@ -272,6 +277,8 @@ class CompilationEngine():
         self.tokenizer.advance()
         self.complileExpression()
 
+        # TODO: finish implementmenting
+
         self.internal_etree_stack.pop()
 
     def complileDo(self):
@@ -285,17 +292,19 @@ class CompilationEngine():
         pass
 
     def complileExpression(self):
-        """Parses an expression. Evaluates the current token."""
+        """Parses an expression."""
 
         self.add_sub_element_to_xml('expression')
         self.compileTerm()
 
         # TODO: when exiting compileTerm on a varName, we have currently
-        # selected ')', but have done anything with it before advancing a
+        # selected ')', but have not one anything with it before advancing a
         # 2nd time.
         #
         # if we have exited on a subroutineCall, then we have already capured the
         # ')'
+        #
+        # BOTTOM LINE, should we **ALWAYS** look ahead after exiting a term?
 
         # # 0+ (op term)
         # while True:
@@ -314,50 +323,46 @@ class CompilationEngine():
 
         self.add_sub_element_to_xml('term')
 
-        if self.tokenizer.tokenType() == TOKEN_TYPE.INTEGER_CONSTANT:
-            self.add_current_token_to_xml()
+        next_token = self.tokenizer.peek_next_token()
 
-        elif self.tokenizer.tokenType() == TOKEN_TYPE.STRING_CONSTANT:
-            self.add_current_token_to_xml()
+        if next_token.type == TOKEN_TYPE.INTEGER_CONSTANT:
+            self.eat_token_by_type(TOKEN_TYPE.INTEGER_CONSTANT)
 
-        elif self.current_token_in({'true', 'false', 'null', 'this'}):
-            self.add_current_token_to_xml()
+        elif next_token.type == TOKEN_TYPE.STRING_CONSTANT:
+            self.eat_token_by_type(TOKEN_TYPE.STRING_CONSTANT)
 
-        elif self.tokenizer.tokenType() == TOKEN_TYPE.IDENTIFIER:
-            previous_token = self.tokenizer.current_token
+        elif next_token.value in {'true', 'false', 'null', 'this'}:
             self.tokenizer.advance()
+            self.add_current_token_to_xml()
 
-            # function subroutineCall
-            if self.get_current_token_value() == '.':
-                self.add_token_to_xml(previous_token)
-                self.add_current_token_to_xml() # this is the '.'
+        elif next_token.type == TOKEN_TYPE.IDENTIFIER:
+            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+
+            next_token = self.tokenizer.peek_next_token()
+
+            # subroutineCall example MyClass.func()
+            if next_token.value == '.':
+                self.eat_token_by_value('.')
                 self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
                 self.eat_token_by_value('(')
                 self.complileExpressionList()
+                self.eat_token_by_value(')')
 
-                if self.get_current_token_value() == ')':
-                    self.add_current_token_to_xml()
-                else:
-                    self.eat_token_by_value(')')
-
-            # TODO: method subroutineCall
-            elif self.get_current_token_value() == '(':
+            # TODO: subroutineCall example func()
+            elif next_token.value == '(':
                 pass
 
             # TODO: varName[expression]
-            elif self.get_current_token_value() == '[':
+            elif next_token.value == '[':
                 pass
-
-            # varName
-            else:
-                self.add_token_to_xml(previous_token)
 
         # TODO: (expression)
 
-        elif self.current_token_in({'-', '~'}):
-            self.add_current_token_to_xml()
+        elif next_token.value in {'-', '~'}:
             self.tokenizer.advance()
+            self.add_current_token_to_xml()
             self.compileTerm()
+
         else:
           # TODO: throw and error here?
           pass
@@ -367,8 +372,8 @@ class CompilationEngine():
     def complileExpressionList(self):
         """Parses an expression list."""
         self.add_sub_element_to_xml('expressionList')
-        self.tokenizer.advance()
+
         # TODO: 0+ expressions sperated by ','
         self.complileExpression()
-        self.internal_etree_stack.pop()
 
+        self.internal_etree_stack.pop()

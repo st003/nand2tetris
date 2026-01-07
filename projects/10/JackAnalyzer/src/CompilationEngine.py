@@ -248,8 +248,7 @@ class CompilationEngine():
             if next_token.value == 'let':
                 self.complileLet()
             elif next_token.value == 'if':
-                # TODO: implement
-                break
+                self.complileIf()
             elif next_token.value == 'while':
                 self.complileWhile()
             elif next_token.value == 'do':
@@ -289,9 +288,26 @@ class CompilationEngine():
         self.internal_etree_stack.pop()
 
     def complileIf(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses an if statement."""
+
+        self.add_sub_element_to_xml('ifStatement')
+        self.eat_token_by_value('if')
+        self.eat_token_by_value('(')
+        self.complileExpression()
+        self.eat_token_by_value(')')
+        self.eat_token_by_value('{')
+        self.complileStatements()
+        self.eat_token_by_value('}')
+
+        # 0+ else
+        next_token = self.tokenizer.peek_next_token()
+        if next_token.value == 'else':
+            self.eat_token_by_value('else')
+            self.eat_token_by_value('{')
+            self.complileStatements()
+            self.eat_token_by_value('}')
+
+        self.internal_etree_stack.pop()
 
     def complileWhile(self):
         """Parses a while statement."""

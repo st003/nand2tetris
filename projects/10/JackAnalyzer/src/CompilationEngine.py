@@ -42,6 +42,10 @@ class CompilationEngine():
             # push onto the stack so subsequent elements are nested
             self.internal_etree_stack.append(new_sub_element)
 
+    def insert_xml_empty_escape_string(self):
+        """XML formatting helper for ensuring tags follow the <xml><xml/> format instead of </xml>."""
+        self.internal_etree_stack[-1].text = '__XML_EMPTY__'
+
     def write_xml(self):
         """
         Creates XML files from the tokenizer and the CompilationEngine
@@ -143,8 +147,12 @@ class CompilationEngine():
 
     def complileParameterList(self):
         """Parses a parameter list."""
+
         self.add_sub_element_to_xml('parameterList')
+
         # TODO: implement parameter list args
+        self.insert_xml_empty_escape_string()
+
         self.internal_etree_stack.pop()
 
     def complileSubroutineBody(self):
@@ -299,6 +307,7 @@ class CompilationEngine():
         self.add_sub_element_to_xml('expressionList')
 
         # 0+ expressions seperated by ','
+        expression_count = 0
         while True:
             next_token = self.tokenizer.peek_next_token()
 
@@ -308,12 +317,16 @@ class CompilationEngine():
                 break
 
             self.complileExpression()
+            expression_count += 1
 
             next_token = self.tokenizer.peek_next_token()
             if next_token.value == ',':
                 self.eat_token_by_value(',')
             else:
                 break
+
+        if expression_count == 0:
+            self.insert_xml_empty_escape_string()
 
         self.internal_etree_stack.pop()
 

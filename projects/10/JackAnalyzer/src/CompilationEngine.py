@@ -108,7 +108,7 @@ class CompilationEngine():
                 continue
             break
 
-        # TODO: self.eat_token_by_value('}')
+        self.eat_token_by_value('}')
 
     def complileClassVarDec(self):
         """."""
@@ -162,7 +162,7 @@ class CompilationEngine():
         # statements
         self.complileStatements()
 
-        # TODO: self.eat_token_by_value('}')
+        self.eat_token_by_value('}')
 
         self.internal_etree_stack.pop()
 

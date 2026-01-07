@@ -236,12 +236,14 @@ class CompilationEngine():
     def complileStatements(self):
         """Parses all statements by type."""
 
+        self.add_sub_element_to_xml('statements')
+
         next_token = self.tokenizer.peek_next_token()
 
         if next_token.value not in {'let', 'if', 'while', 'do', 'return'}:
+            self.insert_xml_empty_escape_string()
+            self.internal_etree_stack.pop()
             return
-
-        self.add_sub_element_to_xml('statements')
 
         while True:
 

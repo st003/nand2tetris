@@ -287,10 +287,25 @@ class CompilationEngine():
 
     def complileExpressionList(self):
         """Parses an expression list."""
+
         self.add_sub_element_to_xml('expressionList')
 
-        # TODO: 0+ expressions sperated by ','
-        self.complileExpression()
+        # 0+ expressions seperated by ','
+        while True:
+            next_token = self.tokenizer.peek_next_token()
+
+            if (next_token.type not in {TOKEN_TYPE.INTEGER_CONSTANT, TOKEN_TYPE.STRING_CONSTANT, TOKEN_TYPE.IDENTIFIER}
+                and next_token.value not in {'true', 'false', 'null', 'this', '(', '-', '~'}
+            ):
+                break
+
+            self.complileExpression()
+
+            next_token = self.tokenizer.peek_next_token()
+            if next_token.value == ',':
+                self.eat_token_by_value(',')
+            else:
+                break
 
         self.internal_etree_stack.pop()
 

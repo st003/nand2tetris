@@ -220,8 +220,7 @@ class CompilationEngine():
             elif next_token.value == 'do':
                 self.complileDo()
             elif next_token.value == 'return':
-                # TODO: implement
-                break
+                self.complileReturn()
 
             next_token = self.tokenizer.peek_next_token()
             if next_token.value not in {'let', 'if', 'while', 'do', 'return'}:
@@ -281,9 +280,18 @@ class CompilationEngine():
         self.internal_etree_stack.pop()
 
     def complileReturn(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses a return statement."""
+
+        self.add_sub_element_to_xml('returnStatement')
+        self.eat_token_by_value('return')
+
+        # 0+ expression
+        next_token = self.tokenizer.peek_next_token()
+        if next_token.value != ';':
+            self.complileExpression()
+
+        self.eat_token_by_value(';')
+        self.internal_etree_stack.pop()
 
     def complileExpressionList(self):
         """Parses an expression list."""
@@ -369,8 +377,7 @@ class CompilationEngine():
             self.compileTerm()
 
         else:
-          # TODO: throw and error here?
-          pass
+          raise CompilationEngineError(self.tokenizer, f"CompilationEngine.compileTerm() cannot start with '{next_token.value}'")
 
         self.internal_etree_stack.pop()
 

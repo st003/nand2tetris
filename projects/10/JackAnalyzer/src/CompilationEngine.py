@@ -85,7 +85,7 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_current_token_to_xml()
 
-    def token_is_return_type(self):
+    def token_is_type(self):
         """Check if the current token is valid return type."""
         # NOTE: technically 'identifier' is not enough to prove it's a class definition
         return (self.get_current_token_value() in {'int', 'char', 'boolean'}
@@ -115,15 +115,42 @@ class CompilationEngine():
         self.eat_token_by_value('}')
 
     def complileClassVarDec(self):
-        """."""
-        # TODO: implement
-        return False
+        """Parses a class variable declaration."""
+
+        next_token = self.tokenizer.peek_next_token()
+        if next_token.value not in {'static', 'field'}:
+            return False
+
+        self.add_sub_element_to_xml('classVarDec')
+        self.tokenizer.advance()
+        self.add_current_token_to_xml()
+
+        # type
+        self.tokenizer.advance()
+        if self.token_is_type():
+            self.add_current_token_to_xml()
+        else:
+            raise CompilationEngineError(self.tokenizer, f"{self.get_current_token_value()} is not a valid type")
+
+        # 1+ variable names separated by ','
+        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        while True:
+            next_token = self.tokenizer.peek_next_token()
+            if next_token.value != ',':
+                break
+            self.eat_token_by_value(',')
+            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+
+        self.eat_token_by_value(';')
+
+        self.internal_etree_stack.pop()
+        return True
 
     def complileSubroutineDec(self):
         """Parses a sub-routine declaration."""
 
         next_token = self.tokenizer.peek_next_token()
-        if next_token.value not in ({'constructor', 'function', 'method'}):
+        if next_token.value not in {'constructor', 'function', 'method'}:
             return False
 
         self.add_sub_element_to_xml('subroutineDec')
@@ -131,7 +158,7 @@ class CompilationEngine():
         self.add_current_token_to_xml()
 
         self.tokenizer.advance()
-        if self.get_current_token_value() == 'void' or self.token_is_return_type():
+        if self.get_current_token_value() == 'void' or self.token_is_type():
             self.add_current_token_to_xml()
         else:
             raise CompilationEngineError(self.tokenizer, f"{self.get_current_token_value()} is not a valid sub-routine return type")
@@ -185,10 +212,10 @@ class CompilationEngine():
         self.eat_token_by_value('var')
 
         self.tokenizer.advance()
-        if self.token_is_return_type():
+        if self.token_is_type():
             self.add_current_token_to_xml()
         else:
-            raise CompilationEngineError(self.tokenizer, f"{self.get_current_token_value()} is not a valid return type")
+            raise CompilationEngineError(self.tokenizer, f"{self.get_current_token_value()} is not a valid type")
 
         # get 1 or more variable names
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)

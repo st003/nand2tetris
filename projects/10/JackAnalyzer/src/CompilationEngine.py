@@ -162,11 +162,7 @@ class CompilationEngine():
         # statements
         self.complileStatements()
 
-        # TODO: uncomment when complileStatements() is complete
-        # if self.get_current_token_value() == '}':
-        #     self.add_current_token_to_xml()
-        # else:
-        #     raise CompilationEngineError(self.tokenizer, "Expected '}' but got '" + f"{self.get_current_token_value()}'")
+        # TODO: self.eat_token_by_value('}')
 
         self.internal_etree_stack.pop()
 
@@ -222,8 +218,7 @@ class CompilationEngine():
             elif next_token.value == 'while':
                 self.complileWhile()
             elif next_token.value == 'do':
-                # TODO: implement
-                break
+                self.complileDo()
             elif next_token.value == 'return':
                 # TODO: implement
                 break
@@ -265,7 +260,7 @@ class CompilationEngine():
         pass
 
     def complileWhile(self):
-        """Parses a while statement. Evaluates the current token."""
+        """Parses a while statement."""
         self.add_sub_element_to_xml('whileStatement')
         self.eat_token_by_value('while')
         self.eat_token_by_value('(')
@@ -277,14 +272,27 @@ class CompilationEngine():
         self.internal_etree_stack.pop()
 
     def complileDo(self):
-        """."""
-        # TODO: implement
-        pass
+        """Parses a do statement."""
+        self.add_sub_element_to_xml('doStatement')
+        self.eat_token_by_value('do')
+        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        self.complileSubroutineCall()
+        self.eat_token_by_value(';')
+        self.internal_etree_stack.pop()
 
     def complileReturn(self):
         """."""
         # TODO: implement
         pass
+
+    def complileExpressionList(self):
+        """Parses an expression list."""
+        self.add_sub_element_to_xml('expressionList')
+
+        # TODO: 0+ expressions sperated by ','
+        self.complileExpression()
+
+        self.internal_etree_stack.pop()
 
     def complileExpression(self):
         """Parses an expression."""
@@ -326,25 +334,19 @@ class CompilationEngine():
 
             next_token = self.tokenizer.peek_next_token()
 
-            # subroutineCall example 'MyClass.func()'
-            if next_token.value == '.':
-                self.eat_token_by_value('.')
-                self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-                self.eat_token_by_value('(')
-                self.complileExpressionList()
-                self.eat_token_by_value(')')
-
-            # TODO: subroutineCall example 'func()'
-            elif next_token.value == '(':
-                pass
-
             # varName[expression]
-            elif next_token.value == '[':
+            if next_token.value == '[':
                 self.eat_token_by_value('[')
                 self.complileExpression()
                 self.eat_token_by_value(']')
 
+            # subroutineCall
+            elif next_token.value in {'(', '.'}:
+                self.complileSubroutineCall()
+
         # TODO: (expression)
+        elif next_token.value == '(':
+            pass
 
         elif next_token.value in {'-', '~'}:
             self.tokenizer.advance()
@@ -357,11 +359,23 @@ class CompilationEngine():
 
         self.internal_etree_stack.pop()
 
-    def complileExpressionList(self):
-        """Parses an expression list."""
-        self.add_sub_element_to_xml('expressionList')
+    def complileSubroutineCall(self):
+        """
+        Parses a sub-routine call.
 
-        # TODO: 0+ expressions sperated by ','
-        self.complileExpression()
+        Assumes the class or sub-routine name has already been eaten.
+        """
+        next_token = self.tokenizer.peek_next_token()
 
-        self.internal_etree_stack.pop()
+        # example: 'MyClass.func()'
+        if next_token.value == '.':
+            self.eat_token_by_value('.')
+            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+            self.eat_token_by_value('(')
+            self.complileExpressionList()
+            self.eat_token_by_value(')')
+
+        # Example: 'func()'
+        elif next_token.value == '(':
+            # TODO: implement
+            pass

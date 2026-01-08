@@ -91,10 +91,6 @@ class CompilationEngine():
         return (token.value in {'int', 'char', 'boolean'}
                 or token.type == TOKEN_TYPE.IDENTIFIER)
 
-    # TODO: definitions found at:
-    # 4.5 @2:19
-    # 4.8 @12:50+
-
     def compileClass(self):
         """Parses a class declaration."""
 
@@ -476,5 +472,9 @@ class CompilationEngine():
 
         # Example: 'func()'
         elif next_token.value == '(':
-            # TODO: implement
-            pass
+            self.eat_token_by_value('(')
+            self.complileExpressionList()
+            self.eat_token_by_value(')')
+
+        else:
+            raise CompilationEngineError(self.tokenizer, f"CompilationEngine.complileSubroutineCall() expected '.' or '(' but got '{next_token.value}'")

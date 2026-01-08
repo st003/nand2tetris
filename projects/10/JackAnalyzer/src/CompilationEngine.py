@@ -440,10 +440,13 @@ class CompilationEngine():
             elif next_token.value in {'(', '.'}:
                 self.complileSubroutineCall()
 
-        # TODO: (expression)
+        # (expression)
         elif next_token.value == '(':
-            pass
+            self.eat_token_by_value('(')
+            self.complileExpression()
+            self.eat_token_by_value(')')
 
+        # unaryOp
         elif next_token.value in {'-', '~'}:
             self.tokenizer.advance()
             self.add_current_token_to_xml()

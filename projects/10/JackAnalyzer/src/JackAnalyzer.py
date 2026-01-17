@@ -41,7 +41,8 @@ def main():
             if is_jack_file(src_path):
                 output_path = src_path.parent
                 ce = CompilationEngine(src_path, debug)
-                ce.compile()
+                ce.compileClass()
+                ce.write_xml()
             else:
                 raise JackAnalyzerError(f"File '{src_path.name}' does not have the extention '.jack'")
 

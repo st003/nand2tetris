@@ -12,11 +12,10 @@ class JackTokenizer():
     Create a single instance of JackTokenizer for each Jack file.
     """
 
-    def __init__(self, jack_file_path, debug=False):
+    def __init__(self, jack_file_path):
 
         self.parent_dir = jack_file_path.parent
         self.file_name = jack_file_path.stem
-        self.debug = debug
 
         self.cursor = 0
         self.current_token = None
@@ -31,13 +30,8 @@ class JackTokenizer():
             self.raw_source_code = jack_file.read()
             self.raw_course_code_char_count = len(self.raw_source_code)
 
-    def get_output_file_path(self):
-        """
-        Returns the output file path inserting a debug string when the debug
-        flag is set.
-        """
-        if self.debug:
-            return f'{self.parent_dir}/{self.file_name}T_DEBUG.xml'
+    def get_xml_output_file_path(self):
+        """Returns the output file path for the XML file."""
         return f'{self.parent_dir}/{self.file_name}T.xml'
 
     def add_token_to_xml(self):
@@ -51,10 +45,10 @@ class JackTokenizer():
         xml_tree = ET.ElementTree(self.xml_root)
         xml_text = make_pretty(xml_tree, indent=0)
         try:
-            with open(self.get_output_file_path(), 'w') as output_file:
+            with open(self.get_xml_output_file_path(), 'w') as output_file:
                 output_file.write(xml_text)
         except OSError as error:
-            raise IOError(f"Unable to create XML token file at: '{self.get_output_file_path()}'") from error
+            raise IOError(f"Unable to create XML token file at: '{self.get_xml_output_file_path()}'") from error
 
     def char_is_skippable(self):
         """Determines if the current char can be skipped during tokenization."""

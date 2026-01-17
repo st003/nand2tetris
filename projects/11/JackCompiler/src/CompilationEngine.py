@@ -8,24 +8,22 @@ from xml_formatter import make_pretty
 class CompilationEngine():
     """Class for lexing and parsing Jack source code."""
 
-    def __init__(self, jack_file_path, debug=False):
+    def __init__(self, jack_file_path):
 
         self.parent_dir = jack_file_path.parent
         self.file_name = jack_file_path.stem
-        self.debug = debug
 
-        self.tokenizer = JackTokenizer(jack_file_path, debug)
+        self.tokenizer = JackTokenizer(jack_file_path)
 
         # store the etree as a stack so the final xml is not flat
         self.internal_etree_stack = [ET.Element('class')]
 
     def get_output_file_path(self):
-        """
-        Returns the output file path inserting a debug string when the debug
-        flag is set.
-        """
-        if self.debug:
-            return f'{self.parent_dir}/{self.file_name}_DEBUG.xml'
+        """Returns the output file path for the VM file."""
+        return f'{self.parent_dir}/{self.file_name}.vm'
+
+    def get_xml_output_file_path(self):
+        """Returns the output file path for the XML file."""
         return f'{self.parent_dir}/{self.file_name}.xml'
 
     def add_current_token_to_xml(self):
@@ -60,10 +58,10 @@ class CompilationEngine():
         xml_tree = ET.ElementTree(self.internal_etree_stack[0])
         xml_text = make_pretty(xml_tree, indent=2)
         try:
-            with open(self.get_output_file_path(), 'w') as output_file:
+            with open(self.get_xml_output_file_path(), 'w') as output_file:
                 output_file.write(xml_text)
         except OSError as error:
-            raise IOError(f"Unable to create XML class file at: '{self.get_output_file_path()}'") from error
+            raise IOError(f"Unable to create XML class file at: '{self.get_xml_output_file_path()}'") from error
 
     def get_current_token_value(self):
         """Returns the text value of the current token."""

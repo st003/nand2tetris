@@ -40,8 +40,10 @@ def main():
         if src_path.is_file():
             if is_jack_file(src_path):
                 output_path = src_path.parent
-                ce = CompilationEngine(src_path, debug)
-                ce.compile()
+                ce = CompilationEngine(src_path)
+                ce.compileClass()
+                if debug:
+                        ce.write_xml()
             else:
                 raise JackAnalyzerError(f"File '{src_path.name}' does not have the extention '.jack'")
 
@@ -49,21 +51,25 @@ def main():
             output_path = src_path
             for file_path in src_path.iterdir():
                 if is_jack_file(file_path):
-                    ce = CompilationEngine(file_path, debug)
+                    ce = CompilationEngine(file_path)
                     ce.compileClass()
-                    ce.write_xml()
+                    if debug:
+                        ce.write_xml()
 
         end_time: float = time.perf_counter()
         exec_time: float = round((end_time - start_time), 5)
 
-        print(f'\nAnalysis complete. Output XMLs exported to: {output_path}')
-        print(f'Execution time: {exec_time} seconds\n')
+        print(f'\nCompilation complete. Output VM files exported to: {output_path}')
+        print(f'Execution time: {exec_time} seconds')
+
+        if debug:
+            print(f'\nDebug - Generated debug XML output\n')
 
     except JackAnalyzerError as error:
         print(error)
         if debug:
             ce.write_xml()
-            print('\nDebug - wrote XML output with errors')
+            print('\nDebug - Generated XML output with errors')
         sys.exit(1)
 
     except Exception:

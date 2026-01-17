@@ -15,6 +15,7 @@ Source code for [Nand2Tetris](https://www.nand2tetris.org/) Part 1 & 2 projects.
 * Project directories 7 & 8 contain implementations of the VM Translator written in Python.
 * Project directory 9 contains an implementation of Pong written in the Jack language.
 * Project directory 10 contains an implementation of the Jack Analyzer written in Python.
+* Project directory 11 contains an implementation of the Jack Compiler written in Python.
 
 ## Authors
 

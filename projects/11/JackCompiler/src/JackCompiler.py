@@ -4,7 +4,7 @@ import traceback
 from pathlib import Path
 
 from CompilationEngine import CompilationEngine
-from exceptions import JackAnalyzerError
+from exceptions import JackCompilerError
 from file_util import is_jack_file
 
 def main():
@@ -45,7 +45,7 @@ def main():
                 if debug:
                         ce.write_xml()
             else:
-                raise JackAnalyzerError(f"File '{src_path.name}' does not have the extention '.jack'")
+                raise JackCompilerError(f"File '{src_path.name}' does not have the extention '.jack'")
 
         else:
             output_path = src_path
@@ -59,13 +59,13 @@ def main():
         end_time: float = time.perf_counter()
         exec_time: float = round((end_time - start_time), 5)
 
-        print(f'\nCompilation complete. Output VM files exported to: {output_path}')
+        print(f'\nCompilation complete. VM files written to: {output_path}')
         print(f'Execution time: {exec_time} seconds')
 
         if debug:
             print(f'\nDebug - Generated debug XML output\n')
 
-    except JackAnalyzerError as error:
+    except JackCompilerError as error:
         print(error)
         if debug:
             ce.write_xml()

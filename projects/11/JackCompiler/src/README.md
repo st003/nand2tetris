@@ -17,11 +17,11 @@ Linux/MacOS
 python JackCompiler.py [-d] <file.jack>|<path-to-jack-files-directory>
 ```
 
-Outputs a VM file for each Jack source code file
+Outputs a VM file for each Jack source code file.
 
 ### Options
 
-The optional flag "-d" will cause the compiler to output XML parse trees.
+The optional flag "-d" will cause the compiler to output debug XML parse trees.
 
 ## Running the tests
 

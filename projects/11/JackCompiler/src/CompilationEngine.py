@@ -4,6 +4,7 @@ from constants import TOKEN_TYPE
 from exceptions import CompilationEngineError
 from JackTokenizer import JackTokenizer
 from xml_formatter import make_pretty
+from SymbolTable import SymbolTable
 
 class CompilationEngine():
     """Class for lexing and parsing Jack source code."""
@@ -14,6 +15,7 @@ class CompilationEngine():
         self.file_name = jack_file_path.stem
 
         self.tokenizer = JackTokenizer(jack_file_path)
+        self.symbol_table = SymbolTable()
 
         # store the etree as a stack so the final xml is not flat
         self.internal_etree_stack = [ET.Element('class')]

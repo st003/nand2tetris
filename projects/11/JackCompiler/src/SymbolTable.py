@@ -1,32 +1,81 @@
+from exceptions import SymbolTableError
+
 # TODO: api implementation def found at: 5.10 @10:00
 
 class SymbolTable():
+    """Class for managing class and subroutine symbol tables."""
 
     def __init__(self):
-        # TODO: implement
-        # initialize class-level symbol table
-        pass
+        """Initializes the class and subroutine symbol table."""
+        self._class_scope = {}
+        self._static_count = 0
+        self._field_count = 0
+
+        self._subroutine_scope = {}
+        self._argument_count = 0
+        self._local_count = 0
 
     def startSubroutine(self):
+        """Resets the subroutine symbol table."""
+        self._subroutine_scope = {}
+        self._argument_count = 0
+        self._local_count = 0
+
+    def define(self, name, type, kind):
+        """Inserts a new entry into the correct symbol table."""
+
+        if kind == 'static':
+            self._class_scope[name] = {
+                'type': type,
+                'kind': kind,
+                'index': self._static_count
+            }
+            self._static_count += 1
+
+        elif kind == 'field':
+            self._class_scope[name] = {
+                'type': type,
+                'kind': kind,
+                'index': self._field_count
+            }
+            self._field_count += 1
+
+        elif kind == 'argument':
+            self._subroutine_scope[name] = {
+                'type': type,
+                'kind': kind,
+                'index': self._argument_count
+            }
+            self._argument_count += 1
+
+        elif kind == 'local':
+            self._subroutine_scope[name] = {
+                'type': type,
+                'kind': kind,
+                'index': self._local_count
+            }
+            self._local_count += 1
+
+        else:
+            raise SymbolTableError(f"Invalid symbol kind: '{kind}'")
+
+    def VarCount(self, kind):
+        # TODO: implement
+        return 0
+
+    def KindOf(self, name):
         # TODO: implement
         pass
 
-    def define(self):
+    def TypeOf(self, name):
         # TODO: implement
         pass
 
-    def VarCount(self):
-        # TODO: implement
-        pass
-
-    def KindOf(self):
-        # TODO: implement
-        pass
-
-    def TypeOf(self):
-        # TODO: implement
-        pass
-
-    def IndexOf(self):
-        # TODO: implement
-        pass
+    def IndexOf(self, name):
+        """Returns the index of the named symbol."""
+        if self._class_scope.get(name):
+            return self._class_scope[name]['index']
+        elif self._subroutine_scope.get(name):
+            return self._subroutine_scope[name]['index']
+        else:
+            raise SymbolTableError(f"Symbol with name '{name}' does not exist")

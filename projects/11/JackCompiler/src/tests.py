@@ -1,9 +1,11 @@
 import unittest
 from pathlib import Path
 
+import tokens as T
+from exceptions import SymbolTableError
 from file_util import is_jack_file
 from lexical_elements import get_token
-import tokens as T
+from SymbolTable import SymbolTable
 
 class TestFileUtil(unittest.TestCase):
 
@@ -60,3 +62,25 @@ class TestFileUtil(unittest.TestCase):
         value = str(T.IntegerConstantToken.MAX + 1)
         output = T.IntegerConstantToken.is_integer_token(value)
         self.assertFalse(output)
+
+    def test_symbol_table_counter(self):
+        """Tests a symbol's index does not change as the counter does."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        self.assertEqual(st._class_scope['test']['index'], 0)
+        self.assertEqual(st._static_count, 1)
+
+    def test_symbol_table_IndexOf_success(self):
+        """Tests a valid use case of IndexOf."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        actual = st.IndexOf('test')
+        self.assertEqual(actual, 0)
+
+    def test_symbol_table_IndexOf_fail(self):
+        """Tests an error use case of IndexOf."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        with self.assertRaises(SymbolTableError):
+            st.IndexOf('none')
+

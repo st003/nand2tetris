@@ -4,7 +4,7 @@ class JackCompilerError(Exception):
         return f'Error - {self.message}'
 
 class CompilationEngineError(JackCompilerError):
-    """Base exception for errors handled by the CompilationEngine."""
+    """Exception for errors handled by the CompilationEngine."""
 
     def __init__(self, tokenizer, message):
         self.tokenizer = tokenizer
@@ -15,6 +15,10 @@ class CompilationEngineError(JackCompilerError):
         return f'Error - line {self.tokenizer.line_num} - {self.message}'
 
 class JackTokenizerError(JackCompilerError):
-    """Base exception for errors handled by the JackTokenizer."""
+    """Exception for errors handled by the JackTokenizer."""
     def __str__(self):
         return f'Error - {self.message}'
+
+class SymbolTableError(JackCompilerError):
+    """Exception for errors handled by the SymbolTable."""
+    pass

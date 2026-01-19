@@ -118,6 +118,11 @@ class CompilationEngine():
             return False
 
         self.add_sub_element_to_xml('classVarDec')
+
+        # TODO: create some sort of local memory for tracking the
+        # var and type declarations until you get to the identifier
+        # at which time you can insert into the symbol table
+
         self.tokenizer.advance()
         self.add_current_token_to_xml()
 

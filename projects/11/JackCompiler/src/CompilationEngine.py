@@ -119,29 +119,39 @@ class CompilationEngine():
 
         self.add_sub_element_to_xml('classVarDec')
 
-        # TODO: create some sort of local memory for tracking the
-        # var and type declarations until you get to the identifier
-        # at which time you can insert into the symbol table
-
         self.tokenizer.advance()
         self.add_current_token_to_xml()
+        symbol_kind = self.tokenizer.current_token.value
 
         # type
+        symbol_type = None
         next_token = self.tokenizer.peek_next_token()
         if self.token_is_type(next_token):
             self.tokenizer.advance()
             self.add_current_token_to_xml()
+            symbol_type = self.tokenizer.current_token.value
         else:
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid type")
 
+        # TODO: 5.11 @5:00
+        # expand XML to include category, symbol table index, defined vs. used
+        # maybe create an eat_token_by_type identifier which takes type and kind
+        # as arguments?
+
         # 1+ variable names separated by ','
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        symbol_name = self.tokenizer.current_token.value
+        self.symbol_table.define(symbol_name, symbol_type, symbol_kind)
+
         while True:
             next_token = self.tokenizer.peek_next_token()
             if next_token.value != ',':
                 break
             self.eat_token_by_value(',')
             self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+
+            symbol_name = self.tokenizer.current_token.value
+            self.symbol_table.define(symbol_name, symbol_type, symbol_kind)
 
         self.eat_token_by_value(';')
 

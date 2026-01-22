@@ -28,12 +28,19 @@ class CompilationEngine():
         """Returns the output file path for the XML file."""
         return f'{self.parent_dir}/{self.file_name}.xml'
 
-    def add_current_token_to_xml(self):
-        """Inserts the current token into the internal XML etree."""
+    def add_current_token_to_xml(self, attrs=None):
+        """
+        Inserts the current token into the internal XML etree.
+
+        Optionally define custom attributes for XML tag.
+        """
         if self.tokenizer.current_token is not None:
             # always use the top of the stack
             new_token = ET.SubElement(self.internal_etree_stack[-1], self.tokenizer.current_token.type)
             new_token.text = self.tokenizer.current_token.get_xml_value()
+            if attrs is not None:
+                for k, v in attrs.items():
+                    new_token.set(k, str(v))
 
     def add_sub_element_to_xml(self, name):
         """Creates a new sub-element in the xml and move it to the top of the etree stack."""
@@ -90,12 +97,13 @@ class CompilationEngine():
         self.tokenizer.advance()
         if self.tokenizer.tokenType() != TOKEN_TYPE.IDENTIFIER:
             raise CompilationEngineError(self.tokenizer, f'CompilationEngine.eat_symbol_token() expected token but got is not an identifier')
-        self.symbol_table.define(self.tokenizer.current_token.value, symbol_type, symbol_kind)
+        name = self.tokenizer.current_token.value
+        self.symbol_table.define(name, symbol_type, symbol_kind)
 
         # TODO: 5.11 @5:00
-        # expand XML to include category, symbol table index, defined vs. used
-
-        self.add_current_token_to_xml()
+        # expand XML to include category, defined vs. used
+        attrs = {'category': '', 'index': self.symbol_table.IndexOf(name)}
+        self.add_current_token_to_xml(attrs=attrs)
 
     def token_is_type(self, token):
         """Check if the current token is valid return type."""

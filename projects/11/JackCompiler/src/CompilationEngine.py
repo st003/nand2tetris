@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-from constants import TOKEN_TYPE
+from constants import IDENTIFER_ATTR, TOKEN_TYPE
 from exceptions import CompilationEngineError
 from JackTokenizer import JackTokenizer
 from xml_formatter import make_pretty
@@ -92,17 +92,19 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_current_token_to_xml()
 
-    def eat_symbol_token(self, symbol_type, symbol_kind):
+    def eat_symbol_token(self, symbol_type, symbol_kind, defined_or_used):
         """Advances to the next identifier token and updates the symbol table."""
         self.tokenizer.advance()
+
         if self.tokenizer.tokenType() != TOKEN_TYPE.IDENTIFIER:
             raise CompilationEngineError(self.tokenizer, f'CompilationEngine.eat_symbol_token() expected token but got is not an identifier')
+
         name = self.tokenizer.current_token.value
         self.symbol_table.define(name, symbol_type, symbol_kind)
 
-        # TODO: 5.11 @5:00
-        # expand XML to include category, defined vs. used
-        attrs = {'category': '', 'index': self.symbol_table.IndexOf(name)}
+        # add identifier attributes
+        attrs = {'category': symbol_kind, 'index': self.symbol_table.IndexOf(name)}
+        attrs[defined_or_used] = 'true'
         self.add_current_token_to_xml(attrs=attrs)
 
     def token_is_type(self, token):
@@ -115,6 +117,7 @@ class CompilationEngine():
         """Parses a class declaration."""
 
         self.eat_token_by_value('class')
+        # TODO: add attrs to identifiers
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.eat_token_by_value('{')
 
@@ -154,13 +157,13 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"'{next_token.value}' is not a valid type")
 
         # 1+ variable names separated by ','
-        self.eat_symbol_token(symbol_type, symbol_kind)
+        self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
         while True:
             next_token = self.tokenizer.peek_next_token()
             if next_token.value != ',':
                 break
             self.eat_token_by_value(',')
-            self.eat_symbol_token(symbol_type, symbol_kind)
+            self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
 
         self.eat_token_by_value(';')
 

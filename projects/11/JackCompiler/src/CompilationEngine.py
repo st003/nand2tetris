@@ -85,6 +85,18 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_current_token_to_xml()
 
+    def eat_symbol_token(self, symbol_type, symbol_kind):
+        """Advances to the next identifier token and updates the symbol table."""
+        self.tokenizer.advance()
+        if self.tokenizer.tokenType() != TOKEN_TYPE.IDENTIFIER:
+            raise CompilationEngineError(self.tokenizer, f'CompilationEngine.eat_symbol_token() expected token but got is not an identifier')
+        self.symbol_table.define(self.tokenizer.current_token.value, symbol_type, symbol_kind)
+
+        # TODO: 5.11 @5:00
+        # expand XML to include category, symbol table index, defined vs. used
+
+        self.add_current_token_to_xml()
+
     def token_is_type(self, token):
         """Check if the current token is valid return type."""
         # NOTE: technically 'identifier' is not enough to prove it's a class definition
@@ -120,38 +132,27 @@ class CompilationEngine():
         self.add_sub_element_to_xml('classVarDec')
 
         self.tokenizer.advance()
-        self.add_current_token_to_xml()
         symbol_kind = self.tokenizer.current_token.value
+        self.add_current_token_to_xml()
 
         # type
         symbol_type = None
         next_token = self.tokenizer.peek_next_token()
         if self.token_is_type(next_token):
             self.tokenizer.advance()
-            self.add_current_token_to_xml()
             symbol_type = self.tokenizer.current_token.value
+            self.add_current_token_to_xml()
         else:
-            raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid type")
-
-        # TODO: 5.11 @5:00
-        # expand XML to include category, symbol table index, defined vs. used
-        # maybe create an eat_token_by_type identifier which takes type and kind
-        # as arguments?
+            raise CompilationEngineError(self.tokenizer, f"'{next_token.value}' is not a valid type")
 
         # 1+ variable names separated by ','
-        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        symbol_name = self.tokenizer.current_token.value
-        self.symbol_table.define(symbol_name, symbol_type, symbol_kind)
-
+        self.eat_symbol_token(symbol_type, symbol_kind)
         while True:
             next_token = self.tokenizer.peek_next_token()
             if next_token.value != ',':
                 break
             self.eat_token_by_value(',')
-            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-
-            symbol_name = self.tokenizer.current_token.value
-            self.symbol_table.define(symbol_name, symbol_type, symbol_kind)
+            self.eat_symbol_token(symbol_type, symbol_kind)
 
         self.eat_token_by_value(';')
 

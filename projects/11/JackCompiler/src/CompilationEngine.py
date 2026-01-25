@@ -121,7 +121,7 @@ class CompilationEngine():
         self.eat_token_by_value('{')
 
         while True:
-            if self.complileClassVarDec():
+            if self.compileClassVarDec():
                 continue
             break
 
@@ -132,7 +132,7 @@ class CompilationEngine():
 
         self.eat_token_by_value('}')
 
-    def complileClassVarDec(self):
+    def compileClassVarDec(self):
         """Parses a class variable declaration."""
 
         next_token = self.tokenizer.peek_next_token()
@@ -176,8 +176,8 @@ class CompilationEngine():
         if next_token.value not in {'constructor', 'function', 'method'}:
             return False
 
-        # TODO: for methods, insert the class as the first argument
         self.symbol_table.startSubroutine()
+        # TODO: for methods, insert the class as the first argument
 
         self.add_sub_element_to_xml('subroutineDec')
         self.tokenizer.advance()
@@ -262,20 +262,24 @@ class CompilationEngine():
         self.add_sub_element_to_xml('varDec')
         self.eat_token_by_value('var')
 
+        symbol_kind = 'local'
+        symbol_type = None
+
         next_token = self.tokenizer.peek_next_token()
         if self.token_is_type(next_token):
             self.tokenizer.advance()
             self.add_current_token_to_xml()
+            symbol_type = self.tokenizer.current_token.value
         else:
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid type")
 
         # get 1 or more variable names
-        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
         while True:
             next_token = self.tokenizer.peek_next_token()
             if next_token.value == ',':
                 self.eat_token_by_value(',')
-                self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+                self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
             elif next_token.value == ';':
                 self.eat_token_by_value(';')
                 break

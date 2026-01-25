@@ -117,7 +117,6 @@ class CompilationEngine():
         """Parses a class declaration."""
 
         self.eat_token_by_value('class')
-        # TODO: add attrs to identifiers
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.eat_token_by_value('{')
 
@@ -177,6 +176,9 @@ class CompilationEngine():
         if next_token.value not in {'constructor', 'function', 'method'}:
             return False
 
+        # TODO: for methods, insert the class as the first argument
+        self.symbol_table.startSubroutine()
+
         self.add_sub_element_to_xml('subroutineDec')
         self.tokenizer.advance()
         self.add_current_token_to_xml()
@@ -207,16 +209,24 @@ class CompilationEngine():
 
             self.tokenizer.advance() # this is the type
             self.add_current_token_to_xml()
-            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+
+            symbol_type = self.tokenizer.current_token.value
+            symbol_kind = 'argument'
+
+            self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
 
             while True:
                 next_token = self.tokenizer.peek_next_token()
                 if next_token.value != ',':
                     break
+
                 self.eat_token_by_value(',')
+
                 self.tokenizer.advance() # this is the type
                 self.add_current_token_to_xml()
-                self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+                symbol_type = self.tokenizer.current_token.value
+
+                self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
 
         else:
             self.insert_xml_empty_escape_string()

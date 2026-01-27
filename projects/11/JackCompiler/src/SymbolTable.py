@@ -57,15 +57,20 @@ class SymbolTable():
             self._local_count += 1
 
         else:
-            raise SymbolTableError(f"Invalid symbol kind: '{kind}'")
+            raise SymbolTableError(f"SymbolTable.define() - Invalid symbol kind: '{kind}'")
 
     def VarCount(self, kind):
         # TODO: implement
         return 0
 
     def KindOf(self, name):
-        # TODO: implement
-        pass
+        """Returns the kind of the named symbol."""
+        if self._class_scope.get(name):
+            return self._class_scope[name]['kind']
+        elif self._subroutine_scope.get(name):
+            return self._subroutine_scope[name]['kind']
+        else:
+            raise SymbolTableError(f"SymbolTable.KindOf() - Symbol with name '{name}' does not exist")
 
     def TypeOf(self, name):
         # TODO: implement
@@ -78,4 +83,4 @@ class SymbolTable():
         elif self._subroutine_scope.get(name):
             return self._subroutine_scope[name]['index']
         else:
-            raise SymbolTableError(f"Symbol with name '{name}' does not exist")
+            raise SymbolTableError(f"SymbolTable.IndexOf() - Symbol with name '{name}' does not exist")

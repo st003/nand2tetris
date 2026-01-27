@@ -43,7 +43,7 @@ def main():
                 ce = CompilationEngine(src_path)
                 ce.compileClass()
                 if debug:
-                        ce.write_xml()
+                    ce.write_xml()
             else:
                 raise JackCompilerError(f"File '{src_path.name}' does not have the extention '.jack'")
 

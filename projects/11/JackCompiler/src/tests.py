@@ -70,6 +70,20 @@ class TestFileUtil(unittest.TestCase):
         self.assertEqual(st._class_scope['test']['index'], 0)
         self.assertEqual(st._static_count, 1)
 
+    def test_symbol_table_KindOf_success(self):
+        """Tests a valid use case of KindOf."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        actual = st.KindOf('test')
+        self.assertEqual(actual, 'static')
+
+    def test_symbol_table_KindOf_fail(self):
+        """Tests an error use case of KindOf."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        with self.assertRaises(SymbolTableError):
+            st.KindOf('none')
+
     def test_symbol_table_IndexOf_success(self):
         """Tests a valid use case of IndexOf."""
         st = SymbolTable()

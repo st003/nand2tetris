@@ -92,7 +92,7 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.eat_token_by_type() expected '{type}' but got '{self.tokenizer.tokenType()}'")
         self.add_current_token_to_xml()
 
-    def eat_symbol_token(self, symbol_type, symbol_kind, defined_or_used):
+    def eat_symbol_token(self, defined_or_used, symbol_type=None, symbol_kind=None):
         """Advances to the next identifier token and updates the symbol table."""
         self.tokenizer.advance()
 
@@ -100,10 +100,12 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f'CompilationEngine.eat_symbol_token() expected token but got is not an identifier')
 
         name = self.tokenizer.current_token.value
-        self.symbol_table.define(name, symbol_type, symbol_kind)
+        if defined_or_used == IDENTIFER_ATTR.DEFINED:
+            self.symbol_table.define(name, symbol_type, symbol_kind)
 
         # add identifier attributes
-        attrs = {'category': symbol_kind, 'index': self.symbol_table.IndexOf(name)}
+        category = symbol_kind if symbol_kind else self.symbol_table.KindOf(name)
+        attrs = {'category': category, 'index': self.symbol_table.IndexOf(name)}
         attrs[defined_or_used] = 'true'
         self.add_current_token_to_xml(attrs=attrs)
 
@@ -156,13 +158,13 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"'{next_token.value}' is not a valid type")
 
         # 1+ variable names separated by ','
-        self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
+        self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
         while True:
             next_token = self.tokenizer.peek_next_token()
             if next_token.value != ',':
                 break
             self.eat_token_by_value(',')
-            self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
+            self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
 
         self.eat_token_by_value(';')
 
@@ -213,7 +215,7 @@ class CompilationEngine():
             symbol_type = self.tokenizer.current_token.value
             symbol_kind = 'argument'
 
-            self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
+            self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
 
             while True:
                 next_token = self.tokenizer.peek_next_token()
@@ -226,7 +228,7 @@ class CompilationEngine():
                 self.add_current_token_to_xml()
                 symbol_type = self.tokenizer.current_token.value
 
-                self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
+                self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
 
         else:
             self.insert_xml_empty_escape_string()
@@ -274,12 +276,12 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid type")
 
         # get 1 or more variable names
-        self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
+        self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
         while True:
             next_token = self.tokenizer.peek_next_token()
             if next_token.value == ',':
                 self.eat_token_by_value(',')
-                self.eat_symbol_token(symbol_type, symbol_kind, IDENTIFER_ATTR.DEFINED)
+                self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
             elif next_token.value == ';':
                 self.eat_token_by_value(';')
                 break
@@ -325,7 +327,7 @@ class CompilationEngine():
 
         self.add_sub_element_to_xml('letStatement')
         self.eat_token_by_value('let')
-        self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        self.eat_symbol_token(IDENTIFER_ATTR.USED)
 
         next_token = self.tokenizer.peek_next_token()
         if next_token.value == '[':

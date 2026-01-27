@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 from constants import IDENTIFER_ATTR, TOKEN_TYPE
-from exceptions import CompilationEngineError
+from exceptions import CompilationEngineError, SymbolTableError
 from JackTokenizer import JackTokenizer
 from xml_formatter import make_pretty
 from SymbolTable import SymbolTable
@@ -104,10 +104,14 @@ class CompilationEngine():
             self.symbol_table.define(name, symbol_type, symbol_kind)
 
         # add identifier attributes
-        category = symbol_kind if symbol_kind else self.symbol_table.KindOf(name)
-        attrs = {'category': category, 'index': self.symbol_table.IndexOf(name)}
-        attrs[defined_or_used] = 'true'
-        self.add_current_token_to_xml(attrs=attrs)
+        try:
+            category = symbol_kind if symbol_kind else self.symbol_table.KindOf(name)
+            attrs = {'category': category, 'index': self.symbol_table.IndexOf(name)}
+            attrs[defined_or_used] = 'true'
+            self.add_current_token_to_xml(attrs=attrs)
+        except SymbolTableError:
+            # skip XML attributes when you cannot locate a symbol
+            self.add_current_token_to_xml()
 
     def token_is_type(self, token):
         """Check if the current token is valid return type."""
@@ -469,7 +473,7 @@ class CompilationEngine():
             self.add_current_token_to_xml()
 
         elif next_token.type == TOKEN_TYPE.IDENTIFIER:
-            self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+            self.eat_symbol_token(IDENTIFER_ATTR.USED)
 
             next_token = self.tokenizer.peek_next_token()
 

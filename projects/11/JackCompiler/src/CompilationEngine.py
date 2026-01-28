@@ -16,6 +16,8 @@ class CompilationEngine():
 
         self.tokenizer = JackTokenizer(jack_file_path)
         self.symbol_table = SymbolTable()
+        self.class_name = None
+        self.current_subroutine = None
 
         # store the etree as a stack so the final xml is not flat
         self.internal_etree_stack = [ET.Element('class')]
@@ -123,13 +125,22 @@ class CompilationEngine():
         """Parses a class declaration."""
 
         self.eat_token_by_value('class')
+
+        # capture the class name for definine 'this' in method argument
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        self.class_name = self.tokenizer.current_token.value
+
         self.eat_token_by_value('{')
 
         while True:
             if self.compileClassVarDec():
                 continue
             break
+
+        # TODO: improve symbol table debug output
+        print(f"\nDebug - Symbol Tables for '{self.file_name}'")
+        print('\nClass')
+        print(self.symbol_table._class_scope)
 
         while True:
             if self.complileSubroutineDec():
@@ -182,12 +193,14 @@ class CompilationEngine():
         if next_token.value not in {'constructor', 'function', 'method'}:
             return False
 
-        self.symbol_table.startSubroutine()
-        # TODO: for methods, insert the class as the first argument
-
         self.add_sub_element_to_xml('subroutineDec')
         self.tokenizer.advance()
         self.add_current_token_to_xml()
+
+        self.symbol_table.startSubroutine()
+        # for methods, insert the 'this' as the first argument
+        if next_token.value == 'method':
+            self.symbol_table.define('this', self.class_name, 'argument')
 
         next_token = self.tokenizer.peek_next_token()
         if next_token.value == 'void' or self.token_is_type(next_token):
@@ -197,6 +210,8 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid sub-routine return type")
 
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
+        self.current_subroutine = self.tokenizer.current_token.value
+
         self.eat_token_by_value('(')
         self.complileParameterList()
         self.eat_token_by_value(')')
@@ -250,6 +265,9 @@ class CompilationEngine():
             if self.complileVarDec():
                 continue
             break
+
+        print(f'\n{self.current_subroutine}')
+        print(self.symbol_table._subroutine_scope)
 
         # statements
         self.complileStatements()

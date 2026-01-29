@@ -5,6 +5,7 @@ from exceptions import CompilationEngineError, SymbolTableError
 from JackTokenizer import JackTokenizer
 from xml_formatter import make_pretty
 from SymbolTable import SymbolTable
+from VMWriter import VMWriter
 
 class CompilationEngine():
     """Class for lexing and parsing Jack source code."""
@@ -21,12 +22,14 @@ class CompilationEngine():
         self.current_subroutine = None
         self.current_subroutine_type = None
 
+        self.vm_writer = VMWriter(f'{self.parent_dir}/{self.file_name}')
+
         # store the etree as a stack so the final xml is not flat
         self.internal_etree_stack = [ET.Element('class')]
 
-    def get_output_file_path(self):
-        """Returns the output file path for the VM file."""
-        return f'{self.parent_dir}/{self.file_name}.vm'
+    def write_vm_file(self):
+        """Writes the VM file output."""
+        self.vm_writer.close()
 
     def get_xml_output_file_path(self):
         """Returns the output file path for the XML file."""

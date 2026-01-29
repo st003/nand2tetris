@@ -2,9 +2,9 @@
 
 class VMWriter():
 
-    def __init__(self):
-        # TODO: implement
-        pass
+    def __init__(self, output_path):
+        self.output_path = output_path
+        self._lines = []
 
     def writePush(self):
         # TODO: implement
@@ -43,5 +43,6 @@ class VMWriter():
         pass
 
     def close(self):
-        # TODO: implement
-        pass
+        """Write the current VM file to the output path."""
+        with open(f'{self.output_path}.vm', 'w', newline='') as vm_file:
+            vm_file.writelines(self._lines)

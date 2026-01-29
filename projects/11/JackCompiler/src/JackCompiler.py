@@ -61,6 +61,7 @@ def main():
                 output_path = src_path.parent
                 ce = CompilationEngine(src_path, verbose)
                 ce.compileClass()
+                ce.write_vm_file()
                 if debug:
                     ce.write_xml()
             else:
@@ -72,6 +73,7 @@ def main():
                 if is_jack_file(file_path):
                     ce = CompilationEngine(file_path, verbose)
                     ce.compileClass()
+                    ce.write_vm_file()
                     if debug:
                         ce.write_xml()
 
@@ -86,6 +88,7 @@ def main():
 
     except JackCompilerError as error:
         print(error)
+        ce.write_vm_file()
         if debug:
             ce.write_xml()
             print('\nDebug - Generated XML output with errors')

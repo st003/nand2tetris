@@ -84,3 +84,14 @@ class SymbolTable():
             return self._subroutine_scope[name]['index']
         else:
             raise SymbolTableError(f"SymbolTable.IndexOf() - Symbol with name '{name}' does not exist")
+
+    def print_class_table(self, class_name):
+        """Prints out the class-level symbol table for debugging."""
+        print(f"\nDebug - Symbol Tables for '{class_name}'")
+        print('\nClass')
+        print(self._class_scope)
+
+    def print_subroutine_table(self, subroutine_name):
+        """Prints out the subroutine-level symbol table for debugging."""
+        print(f'\n{subroutine_name}')
+        print(self._subroutine_scope)

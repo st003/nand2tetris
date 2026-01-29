@@ -137,10 +137,8 @@ class CompilationEngine():
                 continue
             break
 
-        # TODO: improve symbol table debug output
-        print(f"\nDebug - Symbol Tables for '{self.file_name}'")
-        print('\nClass')
-        print(self.symbol_table._class_scope)
+        # TODO: call this based on a flag
+        self.symbol_table.print_class_table(self.file_name)
 
         while True:
             if self.complileSubroutineDec():
@@ -266,8 +264,8 @@ class CompilationEngine():
                 continue
             break
 
-        print(f'\n{self.current_subroutine}')
-        print(self.symbol_table._subroutine_scope)
+        # TODO: call this based on a flag
+        self.symbol_table.print_subroutine_table(self.current_subroutine)
 
         # statements
         self.complileStatements()

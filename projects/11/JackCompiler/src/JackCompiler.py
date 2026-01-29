@@ -81,17 +81,18 @@ def main():
         exec_time: float = round((end_time - start_time), 5)
 
         print(f'\nCompilation complete. VM files written to: {output_path}')
-        print(f'Execution time: {exec_time} seconds')
+        print(f'Execution time: {exec_time} seconds\n')
 
         if debug:
-            print(f'\nDebug - Generated debug XML output\n')
+            print(f'Debug - Generated debug XML output\n')
 
     except JackCompilerError as error:
         print(error)
         ce.write_vm_file()
+        print('Generated VM output with errors')
         if debug:
             ce.write_xml()
-            print('\nDebug - Generated XML output with errors')
+            print('Debug - Generated XML output with errors')
         sys.exit(1)
 
     except Exception:

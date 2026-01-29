@@ -88,17 +88,21 @@ class SymbolTable():
     def print_class_table(self, class_name):
         """Prints out the class-level symbol table for debugging."""
         print(f"\nDebug - Symbol Tables for '{class_name}'")
-        print('\nClass')
+        print('\nclass')
         self.pretty_print_table(self._class_scope)
 
-    def print_subroutine_table(self, subroutine_name):
+    def print_subroutine_table(self, subroutine_type, subroutine_name):
         """Prints out the subroutine-level symbol table for debugging."""
-        print(f'\n{subroutine_name}')
+        print(f'\n{subroutine_type}: {subroutine_name}')
         self.pretty_print_table(self._subroutine_scope)
 
     @staticmethod
     def pretty_print_table(table):
         """Pretty printer for tables."""
+
+        if len(table) == 0:
+            print('No symbols')
+            return
 
         maxVarLen = 0
         maxTypeLen = 0

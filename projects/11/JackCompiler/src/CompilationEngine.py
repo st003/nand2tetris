@@ -19,6 +19,7 @@ class CompilationEngine():
         self.symbol_table = SymbolTable()
         self.class_name = None
         self.current_subroutine = None
+        self.current_subroutine_type = None
 
         # store the etree as a stack so the final xml is not flat
         self.internal_etree_stack = [ET.Element('class')]
@@ -194,6 +195,7 @@ class CompilationEngine():
 
         self.add_sub_element_to_xml('subroutineDec')
         self.tokenizer.advance()
+        self.current_subroutine_type = self.tokenizer.current_token.value
         self.add_current_token_to_xml()
 
         self.symbol_table.startSubroutine()
@@ -266,7 +268,7 @@ class CompilationEngine():
             break
 
         if self.verbose_output:
-            self.symbol_table.print_subroutine_table(self.current_subroutine)
+            self.symbol_table.print_subroutine_table(self.current_subroutine_type, self.current_subroutine)
 
         # statements
         self.complileStatements()

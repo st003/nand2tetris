@@ -7,16 +7,29 @@ from CompilationEngine import CompilationEngine
 from exceptions import JackCompilerError
 from file_util import is_jack_file
 
+def validate_flags(flags):
+    """Validates flag string."""
+
+    if flags[0] != '-':
+        return False
+
+    for char in flags[1:]:
+        if char not in {'d', 'v'}:
+            return False
+
+    return True
+
 def main():
 
     args = sys.argv
     arg_count = len(args)
 
     debug = False
+    verbose = False
     src_path = ''
 
     if (arg_count < 2 or arg_count > 3):
-        print('Usage: python JackCompiler.py [-d] <file.jack>|<path-to-jack-files-directory>')
+        print('Usage: python JackCompiler.py [-d|v] <file.jack>|<path-to-jack-files-directory>')
         sys.exit(1)
 
     if (arg_count == 2):
@@ -24,11 +37,17 @@ def main():
 
     elif (arg_count == 3):
 
-        if args[1] != '-d':
+        # NOTE: flag validation could be better
+        if not validate_flags(args[1]):
             print(f"Error: '{args[1]}' is not a valid option")
             sys.exit(1)
 
-        debug = True
+        if 'd' in args[1]:
+            debug = True
+
+        if 'v' in args[1]:
+            verbose = True
+
         src_path = Path(args[2])
 
     try:
@@ -40,7 +59,7 @@ def main():
         if src_path.is_file():
             if is_jack_file(src_path):
                 output_path = src_path.parent
-                ce = CompilationEngine(src_path)
+                ce = CompilationEngine(src_path, verbose)
                 ce.compileClass()
                 if debug:
                     ce.write_xml()
@@ -51,7 +70,7 @@ def main():
             output_path = src_path
             for file_path in src_path.iterdir():
                 if is_jack_file(file_path):
-                    ce = CompilationEngine(file_path)
+                    ce = CompilationEngine(file_path, verbose)
                     ce.compileClass()
                     if debug:
                         ce.write_xml()

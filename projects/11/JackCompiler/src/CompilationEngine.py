@@ -9,10 +9,11 @@ from SymbolTable import SymbolTable
 class CompilationEngine():
     """Class for lexing and parsing Jack source code."""
 
-    def __init__(self, jack_file_path):
+    def __init__(self, jack_file_path, verbose=False):
 
         self.parent_dir = jack_file_path.parent
         self.file_name = jack_file_path.stem
+        self.verbose_output = verbose
 
         self.tokenizer = JackTokenizer(jack_file_path)
         self.symbol_table = SymbolTable()
@@ -137,8 +138,8 @@ class CompilationEngine():
                 continue
             break
 
-        # TODO: call this based on a flag
-        self.symbol_table.print_class_table(self.file_name)
+        if self.verbose_output:
+            self.symbol_table.print_class_table(self.file_name)
 
         while True:
             if self.complileSubroutineDec():
@@ -264,8 +265,8 @@ class CompilationEngine():
                 continue
             break
 
-        # TODO: call this based on a flag
-        self.symbol_table.print_subroutine_table(self.current_subroutine)
+        if self.verbose_output:
+            self.symbol_table.print_subroutine_table(self.current_subroutine)
 
         # statements
         self.complileStatements()

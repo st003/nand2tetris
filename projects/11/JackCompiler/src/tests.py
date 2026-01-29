@@ -4,8 +4,29 @@ from pathlib import Path
 import tokens as T
 from exceptions import SymbolTableError
 from file_util import is_jack_file
+from JackCompiler import validate_flags
 from lexical_elements import get_token
 from SymbolTable import SymbolTable
+
+class TestJackCompiler(unittest.TestCase):
+
+    def test_validate_flags_success(self):
+        """Tests all legal combinations of flags."""
+        output = validate_flags('-dv')
+        self.assertTrue(output)
+        output = validate_flags('-dv')
+        self.assertTrue(output)
+        output = validate_flags('-d')
+        self.assertTrue(output)
+        output = validate_flags('-v')
+        self.assertTrue(output)
+
+    def test_validate_flags_failure(self):
+        """Tests validate_flags fail conditions."""
+        output = validate_flags('d')
+        self.assertFalse(output)
+        output = validate_flags('x')
+        self.assertFalse(output)
 
 class TestFileUtil(unittest.TestCase):
 
@@ -20,6 +41,8 @@ class TestFileUtil(unittest.TestCase):
         file_path = Path('myFile.xml')
         output = is_jack_file(file_path)
         self.assertFalse(output)
+
+class TestLexer(unittest.TestCase):
 
     def test_get_token_keyword(self):
         """Returns a keyword token."""
@@ -40,6 +63,8 @@ class TestFileUtil(unittest.TestCase):
         """Returns an identifier token."""
         output = get_token('MyClass')
         self.assertIsInstance(output, T.IdentifierToken)
+
+class TestTokens(unittest.TestCase):
 
     def test_is_integer_token_success(self):
         """Verifies an integer string can be converted into an integer constant token."""
@@ -62,6 +87,8 @@ class TestFileUtil(unittest.TestCase):
         value = str(T.IntegerConstantToken.MAX + 1)
         output = T.IntegerConstantToken.is_integer_token(value)
         self.assertFalse(output)
+
+class TestSymbolTable(unittest.TestCase):
 
     def test_symbol_table_counter(self):
         """Tests a symbol's index does not change as the counter does."""

@@ -14,14 +14,17 @@ To use the compiler, from the src directory, run the command:
 
 Linux/MacOS
 ```
-python JackCompiler.py [-d] <file.jack>|<path-to-jack-files-directory>
+python JackCompiler.py [-d|v] <file.jack>|<path-to-jack-files-directory>
 ```
 
 Outputs a VM file for each Jack source code file.
 
 ### Options
 
-The optional flag "-d" will cause the compiler to output debug XML parse trees.
+The following optional flags may be set:
+
+* **d** - Will cause the compiler to output debug XML parse trees.
+* **v** - Will cause the compiler to output the symbol tables.
 
 ## Running the tests
 

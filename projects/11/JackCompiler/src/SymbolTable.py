@@ -89,9 +89,28 @@ class SymbolTable():
         """Prints out the class-level symbol table for debugging."""
         print(f"\nDebug - Symbol Tables for '{class_name}'")
         print('\nClass')
-        print(self._class_scope)
+        self.pretty_print_table(self._class_scope)
 
     def print_subroutine_table(self, subroutine_name):
         """Prints out the subroutine-level symbol table for debugging."""
         print(f'\n{subroutine_name}')
-        print(self._subroutine_scope)
+        self.pretty_print_table(self._subroutine_scope)
+
+    @staticmethod
+    def pretty_print_table(table):
+        """Pretty printer for tables."""
+
+        maxVarLen = 0
+        maxTypeLen = 0
+        maxKindLen = 0
+
+        for k, v in table.items():
+            maxVarLen = len(k) if (len(k) > maxVarLen) else maxVarLen
+            maxTypeLen = len(v['type']) if (len(v['type']) > maxTypeLen) else maxTypeLen
+            maxKindLen = len(v['kind']) if (len(v['kind']) > maxKindLen) else maxKindLen
+
+        for k, v in table.items():
+            varName = k + (' ' * (maxVarLen - len(k)))
+            typeVal = v['type'] + (' ' * (maxTypeLen - len(v['type'])))
+            kind = v['kind'] + (' ' * (maxKindLen - len(v['kind'])))
+            print(f'|{varName}|{typeVal}|{kind}|{v['index']}|')

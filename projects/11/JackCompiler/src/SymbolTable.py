@@ -1,7 +1,5 @@
 from exceptions import SymbolTableError
 
-# TODO: api implementation def found at: 5.10 @10:00
-
 class SymbolTable():
     """Class for managing class and subroutine symbol tables."""
 
@@ -60,8 +58,17 @@ class SymbolTable():
             raise SymbolTableError(f"SymbolTable.define() - Invalid symbol kind: '{kind}'")
 
     def VarCount(self, kind):
-        # TODO: implement
-        return 0
+        """For the current scope, returns the count of the kinds of symbols."""
+        if kind == 'static':
+            return self._static_count
+        elif kind == 'field':
+            return self._field_count
+        elif kind == 'argument':
+            return self._argument_count
+        elif kind == 'local':
+            return self._local_count
+        else:
+            raise SymbolTableError(f"SymbolTable.VarCount() - '{kind}' is not a valid symbol kind")
 
     def KindOf(self, name):
         """Returns the kind of the named symbol."""

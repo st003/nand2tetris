@@ -97,6 +97,37 @@ class TestSymbolTable(unittest.TestCase):
         self.assertEqual(st._class_scope['test']['index'], 0)
         self.assertEqual(st._static_count, 1)
 
+    def test_symbol_table_VarCount_success(self):
+        """Tests a valid case of VarCount."""
+
+        st = SymbolTable()
+        st.define('static1', 'int', 'static')
+        st.define('field1', 'int', 'field')
+        st.define('field2', 'int', 'field')
+        st.define('arg1', 'int', 'argument')
+        st.define('arg2', 'int', 'argument')
+        st.define('arg3', 'int', 'argument')
+        st.define('local1', 'int', 'local')
+        st.define('local2', 'int', 'local')
+        st.define('local3', 'int', 'local')
+        st.define('local4', 'int', 'local')
+
+        actual = st.VarCount('static')
+        self.assertEqual(actual, 1)
+        actual = st.VarCount('field')
+        self.assertEqual(actual, 2)
+        actual = st.VarCount('argument')
+        self.assertEqual(actual, 3)
+        actual = st.VarCount('local')
+        self.assertEqual(actual, 4)
+
+    def test_symbol_table_VarCount_fail(self):
+        """Tests an invalid case of VarCount."""
+        st = SymbolTable()
+        st.define('static1', 'int', 'static')
+        with self.assertRaises(SymbolTableError):
+            st.VarCount('none')
+
     def test_symbol_table_KindOf_success(self):
         """Tests a valid use case of KindOf."""
         st = SymbolTable()

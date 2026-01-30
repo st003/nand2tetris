@@ -1,5 +1,14 @@
 # TODO: api implementation def found at: 5.10 @13:27
 
+# TODO: Average:
+# call main
+# local variable declaration
+# arrays (declaration and access)
+# let statements
+# function calling
+# while loops
+# return statements
+
 class VMWriter():
 
     def __init__(self, output_path):

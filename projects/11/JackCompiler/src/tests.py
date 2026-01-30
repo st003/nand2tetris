@@ -111,6 +111,20 @@ class TestSymbolTable(unittest.TestCase):
         with self.assertRaises(SymbolTableError):
             st.KindOf('none')
 
+    def test_symbol_table_TypeOf_success(self):
+        """Tests a valid use case of TypeOf."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        actual = st.TypeOf('test')
+        self.assertEqual(actual, 'int')
+
+    def test_symbol_table_TypeOf_fail(self):
+        """Tests an error use case of TypeOf."""
+        st = SymbolTable()
+        st.define('test', 'int', 'static')
+        with self.assertRaises(SymbolTableError):
+            st.TypeOf('none')
+
     def test_symbol_table_IndexOf_success(self):
         """Tests a valid use case of IndexOf."""
         st = SymbolTable()
@@ -124,4 +138,3 @@ class TestSymbolTable(unittest.TestCase):
         st.define('test', 'int', 'static')
         with self.assertRaises(SymbolTableError):
             st.IndexOf('none')
-

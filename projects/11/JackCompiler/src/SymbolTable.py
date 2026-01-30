@@ -73,8 +73,13 @@ class SymbolTable():
             raise SymbolTableError(f"SymbolTable.KindOf() - Symbol with name '{name}' does not exist")
 
     def TypeOf(self, name):
-        # TODO: implement
-        pass
+        """Returns the type of the named symbol."""
+        if self._class_scope.get(name):
+            return self._class_scope[name]['type']
+        elif self._subroutine_scope.get(name):
+            return self._subroutine_scope[name]['type']
+        else:
+            raise SymbolTableError(f"SymbolTable.TypeOf() - Symbol with name '{name}' does not exist")
 
     def IndexOf(self, name):
         """Returns the index of the named symbol."""

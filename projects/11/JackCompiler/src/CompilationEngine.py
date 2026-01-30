@@ -106,7 +106,7 @@ class CompilationEngine():
         if self.tokenizer.tokenType() != TOKEN_TYPE.IDENTIFIER:
             raise CompilationEngineError(self.tokenizer, f'CompilationEngine.eat_symbol_token() expected token but got is not an identifier')
 
-        name = self.tokenizer.current_token.value
+        name = self.get_current_token_value()
         if defined_or_used == IDENTIFER_ATTR.DEFINED:
             self.symbol_table.define(name, symbol_type, symbol_kind)
 
@@ -133,7 +133,7 @@ class CompilationEngine():
 
         # capture the class name for definine 'this' in method argument
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        self.class_name = self.tokenizer.current_token.value
+        self.class_name = self.get_current_token_value()
 
         self.eat_token_by_value('{')
 
@@ -162,7 +162,7 @@ class CompilationEngine():
         self.add_sub_element_to_xml('classVarDec')
 
         self.tokenizer.advance()
-        symbol_kind = self.tokenizer.current_token.value
+        symbol_kind = self.get_current_token_value()
         self.add_current_token_to_xml()
 
         # type
@@ -170,7 +170,7 @@ class CompilationEngine():
         next_token = self.tokenizer.peek_next_token()
         if self.token_is_type(next_token):
             self.tokenizer.advance()
-            symbol_type = self.tokenizer.current_token.value
+            symbol_type = self.get_current_token_value()
             self.add_current_token_to_xml()
         else:
             raise CompilationEngineError(self.tokenizer, f"'{next_token.value}' is not a valid type")
@@ -198,7 +198,7 @@ class CompilationEngine():
 
         self.add_sub_element_to_xml('subroutineDec')
         self.tokenizer.advance()
-        self.current_subroutine_type = self.tokenizer.current_token.value
+        self.current_subroutine_type = self.get_current_token_value()
         self.add_current_token_to_xml()
 
         self.symbol_table.startSubroutine()
@@ -214,7 +214,7 @@ class CompilationEngine():
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid sub-routine return type")
 
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        self.current_subroutine = self.tokenizer.current_token.value
+        self.current_subroutine = self.get_current_token_value()
 
         self.eat_token_by_value('(')
         self.complileParameterList()
@@ -235,7 +235,7 @@ class CompilationEngine():
             self.tokenizer.advance() # this is the type
             self.add_current_token_to_xml()
 
-            symbol_type = self.tokenizer.current_token.value
+            symbol_type = self.get_current_token_value()
             symbol_kind = 'argument'
 
             self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
@@ -249,7 +249,7 @@ class CompilationEngine():
 
                 self.tokenizer.advance() # this is the type
                 self.add_current_token_to_xml()
-                symbol_type = self.tokenizer.current_token.value
+                symbol_type = self.get_current_token_value()
 
                 self.eat_symbol_token(IDENTIFER_ATTR.DEFINED, symbol_type, symbol_kind)
 
@@ -297,7 +297,7 @@ class CompilationEngine():
         if self.token_is_type(next_token):
             self.tokenizer.advance()
             self.add_current_token_to_xml()
-            symbol_type = self.tokenizer.current_token.value
+            symbol_type = self.get_current_token_value()
         else:
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid type")
 

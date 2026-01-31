@@ -362,10 +362,13 @@ class CompilationEngine():
 
         self.add_sub_element_to_xml('letStatement')
         self.eat_token_by_value('let')
+
+        # variable name
         self.eat_symbol_token(IDENTIFER_ATTR.USED)
         varName = self.get_current_token_value()
 
         next_token = self.tokenizer.peek_next_token()
+        # array access
         if next_token.value == '[':
             self.eat_token_by_value('[')
             self.complileExpression()
@@ -443,7 +446,7 @@ class CompilationEngine():
         self.internal_etree_stack.pop()
 
     def complileExpressionList(self):
-        """Parses an expression list."""
+        """Parses an expression list and returns the number of expressions."""
 
         self.add_sub_element_to_xml('expressionList')
 
@@ -470,6 +473,7 @@ class CompilationEngine():
             self.insert_xml_empty_escape_string()
 
         self.internal_etree_stack.pop()
+        return expression_count
 
     def complileExpression(self):
         """Parses an expression."""
@@ -522,6 +526,12 @@ class CompilationEngine():
             elif next_token.value in {'(', '.'}:
                 self.complileSubroutineCall()
 
+            # identifier must be a variable that is being passed in to
+            # a function as an argument
+            else:
+                varName = self.get_current_token_value()
+                self.vm_writer.writePush(self.symbol_table.KindOf(varName), self.symbol_table.IndexOf(varName))
+
         # (expression)
         elif next_token.value == '(':
             self.eat_token_by_value('(')
@@ -552,23 +562,22 @@ class CompilationEngine():
         # example: 'MyClass.func()'
         if next_token.value == '.':
             self.eat_token_by_value('.')
-
             self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
             func_name = self.get_current_token_value()
 
             self.eat_token_by_value('(')
-            self.complileExpressionList()
+            nArgs = self.complileExpressionList()
             self.eat_token_by_value(')')
 
-            # TODO: write function call. How do we know how may args are needed?
-            # do we get it from the expressionList?
-            self.vm_writer.writeCall(f'{class_or_func_name}.{func_name}', 0)
+            self.vm_writer.writeCall(f'{class_or_func_name}.{func_name}', nArgs)
 
         # Example: 'func()'
         elif next_token.value == '(':
             self.eat_token_by_value('(')
             self.complileExpressionList()
             self.eat_token_by_value(')')
+
+            # TODO: self.vm_writer.writeCall()
 
         else:
             raise CompilationEngineError(self.tokenizer, f"CompilationEngine.complileSubroutineCall() expected '.' or '(' but got '{next_token.value}'")

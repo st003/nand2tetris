@@ -1,11 +1,8 @@
 # TODO: api implementation def found at: 5.10 @13:27
 
 # TODO: Average:
-# call main
-# local variable declaration
 # arrays (declaration and access)
 # let statements
-# function calling
 # while loops
 # return statements
 
@@ -16,8 +13,13 @@ class VMWriter():
         self._lines = []
 
     def add_line(self, line):
-        """Adds the line to the lines list including a newline char."""
+        """Adds the line to the internal lines list and adds a newline char."""
         self._lines.append(f'{line}\n')
+
+    def close(self):
+        """Write the current VM file to the output path."""
+        with open(f'{self.output_path}.vm', 'w', newline='') as vm_file:
+            vm_file.writelines(self._lines)
 
     def writePush(self, segment, index):
         """Writes a VM push command to the buffer."""
@@ -45,9 +47,10 @@ class VMWriter():
         # TODO: implement
         pass
 
-    def writeCall(self):
-        # TODO: implement
-        pass
+    def writeCall(self, func_name, nArgs):
+        """Writes a VM call command to the buffer."""
+        cmd = f'call {func_name} {nArgs}'
+        self.add_line(cmd)
 
     def writeFunction(self, func_name, nLocals):
         """Writes a VM function command to the buffer."""
@@ -63,7 +66,18 @@ class VMWriter():
         cmt = f'// {comment}'
         self.add_line(cmt)
 
-    def close(self):
-        """Write the current VM file to the output path."""
-        with open(f'{self.output_path}.vm', 'w', newline='') as vm_file:
-            vm_file.writelines(self._lines)
+    def writeStringConstant(self, string):
+        """
+        Writes all VM commands needed for the given string.
+
+        Built-in String function defined at OS level.
+        """
+        # String.new() first arg is the max length of the string constant
+        self.writePush('constant', len(string))
+        self.writeCall('String.new', 1)
+        for char in string:
+            self.writePush('constant', ord(char)) # get ASCII decimal value of char
+            # NOTE: why is nArgs always 2?
+            # the max length is **probably** to the first arg
+            # and the ASCII representation of the char is the second arg
+            self.writeCall('String.appendChar', 2)

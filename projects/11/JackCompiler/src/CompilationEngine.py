@@ -27,6 +27,10 @@ class CompilationEngine():
         # store the etree as a stack so the final xml is not flat
         self.internal_etree_stack = [ET.Element('class')]
 
+    def get_current_subroutine_full_name(self):
+        """Constucts the current subroutine name using the 'Class.subroutine' format."""
+        return f'{self.file_name}.{self.current_subroutine}'
+
     def write_vm_file(self):
         """Writes the VM file output."""
         self.vm_writer.close()
@@ -129,7 +133,7 @@ class CompilationEngine():
     def compileClass(self):
         """Parses a class declaration."""
 
-        self.vm_writer.writeComment(f'Compiled {self.file_name}.jack')
+        self.vm_writer.writeComment(f'Compiled {self.file_name}.jack:')
         self.eat_token_by_value('class')
 
         # capture the class name for definine 'this' in method argument
@@ -204,9 +208,10 @@ class CompilationEngine():
 
         self.symbol_table.startSubroutine()
         # for methods, insert the 'this' as the first argument
-        if next_token.value == 'method':
+        if self.current_subroutine_type == 'method':
             self.symbol_table.define('this', self.class_name, 'argument')
 
+        # return type
         next_token = self.tokenizer.peek_next_token()
         if next_token.value == 'void' or self.token_is_type(next_token):
             self.tokenizer.advance()
@@ -214,6 +219,7 @@ class CompilationEngine():
         else:
             raise CompilationEngineError(self.tokenizer, f"{next_token.value} is not a valid sub-routine return type")
 
+        # function name
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.current_subroutine = self.get_current_token_value()
 
@@ -273,6 +279,8 @@ class CompilationEngine():
 
         if self.verbose_output:
             self.symbol_table.print_subroutine_table(self.current_subroutine_type, self.current_subroutine)
+
+        self.vm_writer.writeFunction(self.get_current_subroutine_full_name(), self.symbol_table.VarCount('local'))
 
         # statements
         self.complileStatements()

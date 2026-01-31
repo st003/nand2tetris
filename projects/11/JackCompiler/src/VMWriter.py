@@ -15,15 +15,19 @@ class VMWriter():
         self.output_path = output_path
         self._lines = []
 
+    def add_line(self, line):
+        """Adds the line to the lines list including a newline char."""
+        self._lines.append(f'{line}\n')
+
     def writePush(self, segment, index):
         """Writes a VM push command to the buffer."""
         cmd = f'push {segment} {index}'
-        self._lines.append(cmd)
+        self.add_line(cmd)
 
     def writePop(self, segment, index):
         """Writes a VM pop command to the buffer."""
         cmd = f'pop {segment} {index}'
-        self._lines.append(cmd)
+        self.add_line(cmd)
 
     def WriteArithmatic(self):
         # TODO: implement
@@ -45,9 +49,10 @@ class VMWriter():
         # TODO: implement
         pass
 
-    def writeFunction(self):
-        # TODO: implement
-        pass
+    def writeFunction(self, func_name, nLocals):
+        """Writes a VM function command to the buffer."""
+        cmd = f'function {func_name} {nLocals}'
+        self.add_line(cmd)
 
     def writeReturn(self):
         # TODO: implement
@@ -56,7 +61,7 @@ class VMWriter():
     def writeComment(self, comment):
         """Writes a VM comment to the buffer."""
         cmt = f'// {comment}'
-        self._lines.append(cmt)
+        self.add_line(cmt)
 
     def close(self):
         """Write the current VM file to the output path."""

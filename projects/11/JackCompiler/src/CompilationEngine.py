@@ -414,18 +414,29 @@ class CompilationEngine():
         """Parses a while statement."""
         self.add_sub_element_to_xml('whileStatement')
 
-        label_name = self.vm_writer.WriteLabel(self.class_name)
+        # generate a label for the beginning of the while loop
+        start_label = f'{self.class_name}_{self.vm_writer.label_count}'
+        self.vm_writer.WriteLabel(start_label)
+        self.vm_writer.increment_label_count()
 
         self.eat_token_by_value('while')
         self.eat_token_by_value('(')
+
         self.complileExpression()
+
+        # generate a label for the end of the while loop
+        end_label = f'{self.class_name}_{self.vm_writer.label_count}'
+        self.vm_writer.WriteIf(end_label)
+        self.vm_writer.increment_label_count()
+
         self.eat_token_by_value(')')
         self.eat_token_by_value('{')
         self.complileStatements()
         self.eat_token_by_value('}')
 
         self.internal_etree_stack.pop()
-        self.vm_writer.WriteGoto(label_name)
+        self.vm_writer.WriteGoto(start_label)
+        self.vm_writer.WriteLabel(end_label)
 
     def complileDo(self):
         """Parses a do statement."""

@@ -17,7 +17,11 @@ class VMWriter():
     def __init__(self, output_path):
         self.output_path = output_path
         self._lines = []
-        self._label_count = 0
+        self.label_count = 0
+
+    def increment_label_count(self):
+        """Increments the label count by 1."""
+        self.label_count += 1
 
     def add_line(self, line):
         """Adds the line to the internal lines list and adds a newline char."""
@@ -41,8 +45,10 @@ class VMWriter():
     def WriteArithmatic(self, op):
         """Writes a VM arithmatic command to the buffer."""
         if op == '*':
+            # TODO: implement
             pass
         elif op == '/':
+            # TODO: implement
             pass
         else:
             opCmd = self.arithmatic_map.get(op)
@@ -52,26 +58,20 @@ class VMWriter():
                 raise VMWriterError(f"VMWriter.WriteArithmatic() - '{op}' is not a valid arithatic operator")
 
     def WriteLabel(self, label_name):
-        """
-        Writes a VM label command to the buffer. Returns a copy of
-        the format label name.
-
-        Managers the label counter to garuntee unique format label names
-        """
-        fmt_label_name = f'{label_name}_{self._label_count}'
-        cmd = f'label {fmt_label_name}'
+        """Writes a VM label command to the buffer."""
+        cmd = f'label {label_name}'
         self.add_line(cmd)
-        self._label_count += 1
-        return fmt_label_name
 
-    def WriteGoto(self, format_label_name):
+    def WriteGoto(self, label_name):
         """Writes a VM goto command to the buffer."""
-        cmd = f'goto {format_label_name}'
+        cmd = f'goto {label_name}'
         self.add_line(cmd)
 
-    def WriteIf(self):
-        # TODO: implement
-        pass
+    def WriteIf(self, label_name):
+        """Writes a VM if-goto command to the buffer."""
+        self.add_line('not')
+        cmd = f'if-goto {label_name}'
+        self.add_line(cmd)
 
     def writeCall(self, func_name, nArgs):
         """Writes a VM call command to the buffer."""

@@ -129,6 +129,7 @@ class CompilationEngine():
     def compileClass(self):
         """Parses a class declaration."""
 
+        self.vm_writer.writeComment(f'Compiled {self.file_name}.jack')
         self.eat_token_by_value('class')
 
         # capture the class name for definine 'this' in method argument

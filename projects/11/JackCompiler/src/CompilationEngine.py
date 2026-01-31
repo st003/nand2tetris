@@ -413,6 +413,9 @@ class CompilationEngine():
     def complileWhile(self):
         """Parses a while statement."""
         self.add_sub_element_to_xml('whileStatement')
+
+        label_name = self.vm_writer.WriteLabel(self.class_name)
+
         self.eat_token_by_value('while')
         self.eat_token_by_value('(')
         self.complileExpression()
@@ -420,7 +423,9 @@ class CompilationEngine():
         self.eat_token_by_value('{')
         self.complileStatements()
         self.eat_token_by_value('}')
+
         self.internal_etree_stack.pop()
+        self.vm_writer.WriteGoto(label_name)
 
     def complileDo(self):
         """Parses a do statement."""
@@ -488,8 +493,11 @@ class CompilationEngine():
                 break
 
             self.tokenizer.advance()
+            op = self.get_current_token_value()
             self.add_current_token_to_xml()
             self.compileTerm()
+
+            self.vm_writer.WriteArithmatic(op)
 
         self.internal_etree_stack.pop()
 
@@ -502,6 +510,7 @@ class CompilationEngine():
 
         if next_token.type == TOKEN_TYPE.INTEGER_CONSTANT:
             self.eat_token_by_type(TOKEN_TYPE.INTEGER_CONSTANT)
+            self.vm_writer.writePush('constant', self.get_current_token_value())
 
         elif next_token.type == TOKEN_TYPE.STRING_CONSTANT:
             self.eat_token_by_type(TOKEN_TYPE.STRING_CONSTANT)

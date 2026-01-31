@@ -1,16 +1,23 @@
+from exceptions import VMWriterError
+
 # TODO: api implementation def found at: 5.10 @13:27
 
-# TODO: Average:
-# arrays (declaration and access)
-# let statements
-# while loops
-# return statements
-
 class VMWriter():
+
+    arithmatic_map = {
+        '+': 'add',
+        '-': 'sub',
+        '=': 'eq',
+        '>': 'gt',
+        '<': 'lt',
+        '&': 'and',
+        '|': 'or'
+    }
 
     def __init__(self, output_path):
         self.output_path = output_path
         self._lines = []
+        self._label_count = 0
 
     def add_line(self, line):
         """Adds the line to the internal lines list and adds a newline char."""
@@ -31,17 +38,36 @@ class VMWriter():
         cmd = f'pop {segment} {index}'
         self.add_line(cmd)
 
-    def WriteArithmatic(self):
-        # TODO: implement
-        pass
+    def WriteArithmatic(self, op):
+        """Writes a VM arithmatic command to the buffer."""
+        if op == '*':
+            pass
+        elif op == '/':
+            pass
+        else:
+            opCmd = self.arithmatic_map.get(op)
+            if opCmd:
+                self.add_line(opCmd)
+            else:
+                raise VMWriterError(f"VMWriter.WriteArithmatic() - '{op}' is not a valid arithatic operator")
 
-    def WriteLabel(self):
-        # TODO: implement
-        pass
+    def WriteLabel(self, label_name):
+        """
+        Writes a VM label command to the buffer. Returns a copy of
+        the format label name.
 
-    def WriteGoto(self):
-        # TODO: implement
-        pass
+        Managers the label counter to garuntee unique format label names
+        """
+        fmt_label_name = f'{label_name}_{self._label_count}'
+        cmd = f'label {fmt_label_name}'
+        self.add_line(cmd)
+        self._label_count += 1
+        return fmt_label_name
+
+    def WriteGoto(self, format_label_name):
+        """Writes a VM goto command to the buffer."""
+        cmd = f'goto {format_label_name}'
+        self.add_line(cmd)
 
     def WriteIf(self):
         # TODO: implement

@@ -20,3 +20,7 @@ class JackTokenizerError(JackCompilerError):
 class SymbolTableError(JackCompilerError):
     """Exception for errors handled by the SymbolTable."""
     pass
+
+class VMWriterError(JackCompilerError):
+    """Exception for errors handled by the VMWriter."""
+    pass

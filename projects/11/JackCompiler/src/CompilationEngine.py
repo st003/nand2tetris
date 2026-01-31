@@ -461,6 +461,9 @@ class CompilationEngine():
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
         self.complileSubroutineCall()
         self.eat_token_by_value(';')
+
+        # TODO: should this always happen? or only when the function return is 'void'?
+        self.vm_writer.writePop('temp', 0)
         self.internal_etree_stack.pop()
 
     def complileReturn(self):
@@ -473,8 +476,12 @@ class CompilationEngine():
         next_token = self.tokenizer.peek_next_token()
         if next_token.value != ';':
             self.complileExpression()
+        else:
+            self.vm_writer.writePush('constant', 0)
 
         self.eat_token_by_value(';')
+
+        self.vm_writer.writeReturn()
         self.internal_etree_stack.pop()
 
     def complileExpressionList(self):

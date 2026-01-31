@@ -1,8 +1,7 @@
 from exceptions import VMWriterError
 
-# TODO: api implementation def found at: 5.10 @13:27
-
 class VMWriter():
+    """Manages the VM commands."""
 
     arithmatic_map = {
         '+': 'add',
@@ -23,9 +22,12 @@ class VMWriter():
         """Increments the label count by 1."""
         self.label_count += 1
 
-    def add_line(self, line):
+    def add_line(self, line, indent=True):
         """Adds the line to the internal lines list and adds a newline char."""
-        self._lines.append(f'{line}\n')
+        if indent:
+            self._lines.append(f'    {line}\n')
+        else:
+            self._lines.append(f'{line}\n')
 
     def close(self):
         """Write the current VM file to the output path."""
@@ -43,13 +45,15 @@ class VMWriter():
         self.add_line(cmd)
 
     def WriteArithmatic(self, op):
-        """Writes a VM arithmatic command to the buffer."""
+        """
+        Writes a VM arithmatic command to the buffer.
+
+        Math methods are defined at the OS level.
+        """
         if op == '*':
-            # TODO: implement
-            pass
+            self.writeCall('Math.multiply', 2)
         elif op == '/':
-            # TODO: implement
-            pass
+            self.writeCall('Math.divide', 2)
         else:
             op_cmd = self.arithmatic_map.get(op)
             if op_cmd:
@@ -60,7 +64,7 @@ class VMWriter():
     def WriteLabel(self, label_name):
         """Writes a VM label command to the buffer."""
         cmd = f'label {label_name}'
-        self.add_line(cmd)
+        self.add_line(cmd, indent=False)
 
     def WriteGoto(self, label_name):
         """Writes a VM goto command to the buffer."""
@@ -81,16 +85,16 @@ class VMWriter():
     def writeFunction(self, func_name, n_locals):
         """Writes a VM function command to the buffer."""
         cmd = f'function {func_name} {n_locals}'
-        self.add_line(cmd)
+        self.add_line(cmd, indent=False)
 
     def writeReturn(self):
-        # TODO: implement
-        pass
+        """Writes a VM return command to the buffer."""
+        self.add_line('return')
 
     def writeComment(self, comment):
         """Writes a VM comment to the buffer."""
         cmt = f'// {comment}'
-        self.add_line(cmt)
+        self.add_line(cmt, indent=False)
 
     def writeStringConstant(self, string):
         """

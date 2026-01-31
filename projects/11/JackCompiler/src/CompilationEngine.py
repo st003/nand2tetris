@@ -359,22 +359,31 @@ class CompilationEngine():
 
     def complileLet(self):
         """Parses a let statement."""
+        setting_array = False
 
         self.add_sub_element_to_xml('letStatement')
         self.eat_token_by_value('let')
 
         # variable name
         self.eat_symbol_token(IDENTIFER_ATTR.USED)
-        varName = self.get_current_token_value()
+        var_name = self.get_current_token_value()
 
         next_token = self.tokenizer.peek_next_token()
-        # array access
+
+        # set position in array
         if next_token.value == '[':
+            setting_array = True
             self.eat_token_by_value('[')
             self.complileExpression()
             self.eat_token_by_value(']')
             self.eat_token_by_value('=')
 
+            # calculate array position by adding the array base address
+            # to the index offset value
+            self.vm_writer.writePush(self.symbol_table.KindOf(var_name), self.symbol_table.IndexOf(var_name))
+            self.vm_writer.WriteArithmatic('+')
+
+        # set variable
         elif next_token.value == '=':
             self.eat_token_by_value('=')
 
@@ -384,7 +393,14 @@ class CompilationEngine():
         self.complileExpression()
         self.eat_token_by_value(';')
 
-        self.vm_writer.writePop(self.symbol_table.KindOf(varName), self.symbol_table.IndexOf(varName))
+        if setting_array:
+            self.vm_writer.writePop('temp', 0) # backup of the value to be set (from the expression)
+            self.vm_writer.writePop('pointer', 1) # select 'that' (the array pointer)
+            self.vm_writer.writePush('temp', 0) # return the value to be set to the stack
+            self.vm_writer.writePop('that', 0) # set the value into the head of the array
+        else:
+            # when setting a non-array variable, pop the value into the memory segement
+            self.vm_writer.writePop(self.symbol_table.KindOf(var_name), self.symbol_table.IndexOf(var_name))
 
         self.internal_etree_stack.pop()
 
@@ -538,9 +554,19 @@ class CompilationEngine():
 
             # varName[expression]
             if next_token.value == '[':
+                array_var = self.get_current_token_value()
+
                 self.eat_token_by_value('[')
                 self.complileExpression()
                 self.eat_token_by_value(']')
+
+                # calculate array position by adding the array base address to the index offset value
+                self.vm_writer.writePush(self.symbol_table.KindOf(array_var), self.symbol_table.IndexOf(array_var))
+                self.vm_writer.WriteArithmatic('+')
+
+                # then select the array pointer and push the value in the array onto the stack
+                self.vm_writer.writePop('pointer', 1)
+                self.vm_writer.writePush('that', 0)
 
             # subroutineCall
             elif next_token.value in {'(', '.'}:
@@ -549,8 +575,8 @@ class CompilationEngine():
             # identifier must be a variable that is being passed in to
             # a function as an argument
             else:
-                varName = self.get_current_token_value()
-                self.vm_writer.writePush(self.symbol_table.KindOf(varName), self.symbol_table.IndexOf(varName))
+                var_name = self.get_current_token_value()
+                self.vm_writer.writePush(self.symbol_table.KindOf(var_name), self.symbol_table.IndexOf(var_name))
 
         # (expression)
         elif next_token.value == '(':

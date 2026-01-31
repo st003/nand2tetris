@@ -51,9 +51,9 @@ class VMWriter():
             # TODO: implement
             pass
         else:
-            opCmd = self.arithmatic_map.get(op)
-            if opCmd:
-                self.add_line(opCmd)
+            op_cmd = self.arithmatic_map.get(op)
+            if op_cmd:
+                self.add_line(op_cmd)
             else:
                 raise VMWriterError(f"VMWriter.WriteArithmatic() - '{op}' is not a valid arithatic operator")
 
@@ -73,14 +73,14 @@ class VMWriter():
         cmd = f'if-goto {label_name}'
         self.add_line(cmd)
 
-    def writeCall(self, func_name, nArgs):
+    def writeCall(self, func_name, n_args):
         """Writes a VM call command to the buffer."""
-        cmd = f'call {func_name} {nArgs}'
+        cmd = f'call {func_name} {n_args}'
         self.add_line(cmd)
 
-    def writeFunction(self, func_name, nLocals):
+    def writeFunction(self, func_name, n_locals):
         """Writes a VM function command to the buffer."""
-        cmd = f'function {func_name} {nLocals}'
+        cmd = f'function {func_name} {n_locals}'
         self.add_line(cmd)
 
     def writeReturn(self):

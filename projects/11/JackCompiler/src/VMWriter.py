@@ -91,6 +91,25 @@ class VMWriter():
         """Writes a VM return command to the buffer."""
         self.add_line('return')
 
+    def writeKeyword(self, kwd):
+        """Writes VM commands for the provided keyword to the buffer."""
+        if kwd == 'true':
+            # true is -1 in Hack ASM b/c all bits are 1
+            self.writePush('constant', 1)
+            self.add_line('neg')
+
+        elif kwd == 'false':
+            self.writePush('constant', 0)
+
+        elif kwd == 'null':
+            # TODO: implement
+            pass
+        elif kwd == 'this':
+            # TODO: implement
+            pass
+        else:
+            raise VMWriterError(f"VMWriter.writeKeyword() - '{kwd}' is not a valid keyword")
+
     def writeUnaryOp(self, op):
         """Writes a VM unary command to the buffer."""
         if op == '-':

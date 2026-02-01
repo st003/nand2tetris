@@ -553,6 +553,7 @@ class CompilationEngine():
         elif next_token.value in {'true', 'false', 'null', 'this'}:
             self.tokenizer.advance()
             self.add_current_token_to_xml()
+            self.vm_writer.writeKeyword(self.get_current_token_value())
 
         elif next_token.type == TOKEN_TYPE.IDENTIFIER:
             self.eat_symbol_token(IDENTIFER_ATTR.USED)

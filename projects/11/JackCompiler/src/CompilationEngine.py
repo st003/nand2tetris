@@ -594,8 +594,10 @@ class CompilationEngine():
         # unaryOp
         elif next_token.value in {'-', '~'}:
             self.tokenizer.advance()
+            unary_op = self.get_current_token_value()
             self.add_current_token_to_xml()
             self.compileTerm()
+            self.vm_writer.writeUnaryOp(unary_op)
 
         else:
           raise CompilationEngineError(self.tokenizer, f"CompilationEngine.compileTerm() cannot start with '{next_token.value}'")

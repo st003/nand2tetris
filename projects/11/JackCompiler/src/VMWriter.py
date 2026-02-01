@@ -59,7 +59,7 @@ class VMWriter():
             if op_cmd:
                 self.add_line(op_cmd)
             else:
-                raise VMWriterError(f"VMWriter.WriteArithmatic() - '{op}' is not a valid arithatic operator")
+                raise VMWriterError(f"VMWriter.WriteArithmatic() - '{op}' is not a valid arithmatic operator")
 
     def WriteLabel(self, label_name):
         """Writes a VM label command to the buffer."""
@@ -90,6 +90,15 @@ class VMWriter():
     def writeReturn(self):
         """Writes a VM return command to the buffer."""
         self.add_line('return')
+
+    def writeUnaryOp(self, op):
+        """Writes a VM unary command to the buffer."""
+        if op == '-':
+            self.add_line('neg')
+        elif op == '~':
+            self.add_line('not')
+        else:
+            raise VMWriterError(f"VMWriter.writeUnaryOp() - '{op}' is not a valid unary operator")
 
     def writeComment(self, comment):
         """Writes a VM comment to the buffer."""

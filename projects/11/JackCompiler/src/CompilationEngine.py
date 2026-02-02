@@ -412,17 +412,33 @@ class CompilationEngine():
         self.eat_token_by_value('(')
         self.complileExpression()
         self.eat_token_by_value(')')
+
+        # generate a label for exiting the if condition
+        exit_label = f'{self.class_name}_{self.vm_writer.label_count}'
+        self.vm_writer.increment_label_count()
+        # generate a label for jumping to the else condition
+        else_label = f'{self.class_name}_{self.vm_writer.label_count}'
+        self.vm_writer.increment_label_count()
+
+        self.vm_writer.WriteIf(else_label)
+
         self.eat_token_by_value('{')
         self.complileStatements()
         self.eat_token_by_value('}')
+
+        # at the end of the if condition, goto the exit label
+        self.vm_writer.WriteGoto(exit_label)
 
         # 0+ else
         next_token = self.tokenizer.peek_next_token()
         if next_token.value == 'else':
             self.eat_token_by_value('else')
             self.eat_token_by_value('{')
+            self.vm_writer.WriteLabel(else_label)
             self.complileStatements()
             self.eat_token_by_value('}')
+
+        self.vm_writer.WriteLabel(exit_label)
 
         self.internal_etree_stack.pop()
 

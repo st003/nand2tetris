@@ -110,9 +110,10 @@ class VMWriter():
         elif kwd == 'null':
             # TODO: implement
             pass
+
         elif kwd == 'this':
-            # TODO: implement
-            pass
+            self.writePush('pointer', 0)
+
         else:
             raise VMWriterError(f"VMWriter.writeKeyword() - '{kwd}' is not a valid keyword")
 

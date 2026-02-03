@@ -508,6 +508,7 @@ class CompilationEngine():
         if next_token.value != ';':
             self.complileExpression()
         else:
+            # when *not* returning a value, always return 0
             self.vm_writer.writePush('constant', 0)
 
         self.eat_token_by_value(';')

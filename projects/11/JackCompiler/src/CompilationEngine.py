@@ -290,6 +290,12 @@ class CompilationEngine():
             self.vm_writer.writeCall('Memory.alloc', 1)
             self.vm_writer.writePop('pointer', 0)
 
+        # for methods, before any statements are parsed, put the first argument (this) into the
+        # this memory segment
+        if self.current_subroutine_type == 'method':
+            self.vm_writer.writePush('argument', 0)
+            self.vm_writer.writePop('pointer', 0)
+
         # statements
         self.complileStatements()
 

@@ -22,6 +22,12 @@ class VMWriter():
         """Increments the label count by 1."""
         self.label_count += 1
 
+    def get_segment_value(self, segment):
+        """Converts the segment argument to the correct VM value."""
+        if segment == 'field':
+            return 'this'
+        return segment
+
     def add_line(self, line, indent=True):
         """Adds the line to the internal lines list and adds a newline char."""
         if indent:
@@ -36,12 +42,12 @@ class VMWriter():
 
     def writePush(self, segment, index):
         """Writes a VM push command to the buffer."""
-        cmd = f'push {segment} {index}'
+        cmd = f'push {self.get_segment_value(segment)} {index}'
         self.add_line(cmd)
 
     def writePop(self, segment, index):
         """Writes a VM pop command to the buffer."""
-        cmd = f'pop {segment} {index}'
+        cmd = f'pop {self.get_segment_value(segment)} {index}'
         self.add_line(cmd)
 
     def WriteArithmatic(self, op):

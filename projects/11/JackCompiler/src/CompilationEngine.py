@@ -442,13 +442,14 @@ class CompilationEngine():
 
         # at the end of the if condition, goto the exit label
         self.vm_writer.WriteGoto(exit_label)
+        # always place the else label, even if there is no else condition
+        self.vm_writer.WriteLabel(else_label)
 
         # 0+ else
         next_token = self.tokenizer.peek_next_token()
         if next_token.value == 'else':
             self.eat_token_by_value('else')
             self.eat_token_by_value('{')
-            self.vm_writer.WriteLabel(else_label)
             self.complileStatements()
             self.eat_token_by_value('}')
 

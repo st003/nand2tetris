@@ -207,6 +207,7 @@ class CompilationEngine():
         self.add_current_token_to_xml()
 
         self.symbol_table.startSubroutine()
+
         # for methods, insert the 'this' as the first argument
         if self.current_subroutine_type == 'method':
             self.symbol_table.define('this', self.class_name, 'argument')
@@ -281,6 +282,13 @@ class CompilationEngine():
             self.symbol_table.print_subroutine_table(self.current_subroutine_type, self.current_subroutine)
 
         self.vm_writer.writeFunction(self.get_current_subroutine_full_name(), self.symbol_table.VarCount('local'))
+
+        # for constructor, before any statements are parsed, you need to get the number of class-fields,
+        # allocate memory for the object, and then place the new object's pointer into 'this'
+        if self.current_subroutine_type == 'constructor':
+            self.vm_writer.writePush('constant', self.symbol_table.VarCount('field'))
+            self.vm_writer.writeCall('Memory.alloc', 1)
+            self.vm_writer.writePop('pointer', 0)
 
         # statements
         self.complileStatements()

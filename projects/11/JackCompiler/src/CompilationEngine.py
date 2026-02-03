@@ -475,7 +475,14 @@ class CompilationEngine():
         self.add_sub_element_to_xml('doStatement')
         self.eat_token_by_value('do')
         self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
-        self.complileSubroutineCall()
+
+        # determine if called class/subroutine is for a method by
+        # checking if it was declared in the symbol table
+        # TODO: does this work for func() type calls?
+        class_or_func_name = self.get_current_token_value()
+        is_method = self.symbol_table.varExists(class_or_func_name)
+        self.complileSubroutineCall(is_method=is_method)
+
         self.eat_token_by_value(';')
 
         # TODO: should this always happen? or only when the function return is 'void'?
@@ -621,7 +628,7 @@ class CompilationEngine():
 
         self.internal_etree_stack.pop()
 
-    def complileSubroutineCall(self):
+    def complileSubroutineCall(self, is_method=False):
         """
         Parses a sub-routine call.
 
@@ -633,15 +640,28 @@ class CompilationEngine():
 
         # example: 'MyClass.func()'
         if next_token.value == '.':
+
+            # class methods require the class instance be pushed onto the stack
+            # so it can be used as the first argument
+            if is_method:
+                self.vm_writer.writePush(self.symbol_table.KindOf(class_or_func_name), self.symbol_table.IndexOf(class_or_func_name))
+
             self.eat_token_by_value('.')
             self.eat_token_by_type(TOKEN_TYPE.IDENTIFIER)
             func_name = self.get_current_token_value()
 
             self.eat_token_by_value('(')
-            nArgs = self.complileExpressionList()
+            n_args = self.complileExpressionList()
             self.eat_token_by_value(')')
 
-            self.vm_writer.writeCall(f'{class_or_func_name}.{func_name}', nArgs)
+            # for class methods:
+            # (1) the vm function call uses the class name, no the variable name
+            # (2) 'this' argument does not appear in the expression list count
+            if is_method:
+                class_or_func_name = self.symbol_table.TypeOf(class_or_func_name)
+                n_args += 1
+
+            self.vm_writer.writeCall(f'{class_or_func_name}.{func_name}', n_args)
 
         # Example: 'func()'
         elif next_token.value == '(':

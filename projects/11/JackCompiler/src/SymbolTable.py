@@ -57,6 +57,15 @@ class SymbolTable():
         else:
             raise SymbolTableError(f"SymbolTable.define() - Invalid symbol kind: '{kind}'")
 
+    def varExists(self, name):
+        """Checks if a variable of the given name exists."""
+        if self._class_scope.get(name):
+            return True
+        elif self._subroutine_scope.get(name):
+            return True
+        else:
+            return False
+
     def VarCount(self, kind):
         """For the current scope, returns the count of the kinds of symbols."""
         if kind == 'static':

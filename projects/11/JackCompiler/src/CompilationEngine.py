@@ -493,7 +493,6 @@ class CompilationEngine():
 
         # determine if called class/subroutine is for a method by
         # checking if it was declared in the symbol table
-        # TODO: does this work for func() type calls?
         class_or_func_name = self.get_current_token_value()
         is_method = self.symbol_table.varExists(class_or_func_name)
         self.complileSubroutineCall(is_method=is_method)
@@ -617,7 +616,11 @@ class CompilationEngine():
 
             # subroutineCall
             elif next_token.value in {'(', '.'}:
-                self.complileSubroutineCall()
+                # determine if called class/subroutine is for a method by
+                # checking if it was declared in the symbol table
+                class_or_func_name = self.get_current_token_value()
+                is_method = self.symbol_table.varExists(class_or_func_name)
+                self.complileSubroutineCall(is_method=is_method)
 
             # identifier must be a variable that is being passed in to
             # a function as an argument

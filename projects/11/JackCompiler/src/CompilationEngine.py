@@ -499,7 +499,8 @@ class CompilationEngine():
 
         self.eat_token_by_value(';')
 
-        # TODO: should this always happen? or only when the function return is 'void'?
+        # do this always because a function that returns a value
+        # will no appear in a do-statement, but only in let-statements
         self.vm_writer.writePop('temp', 0)
         self.internal_etree_stack.pop()
 

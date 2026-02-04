@@ -108,8 +108,7 @@ class VMWriter():
             self.writePush('constant', 0)
 
         elif kwd == 'null':
-            # TODO: implement
-            pass
+            self.writePush('constant', 0)
 
         elif kwd == 'this':
             self.writePush('pointer', 0)

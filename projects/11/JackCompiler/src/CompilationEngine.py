@@ -684,6 +684,11 @@ class CompilationEngine():
 
         # Example: 'func()'
         elif next_token.value == '(':
+
+            # because we can only use this format inside a class method, the 'this' pointer
+            # must already be selected and is the first argument
+            self.vm_writer.writePush('pointer', 0)
+
             self.eat_token_by_value('(')
             n_args = self.complileExpressionList()
             self.eat_token_by_value(')')
@@ -693,9 +698,6 @@ class CompilationEngine():
             class_or_func_name = self.class_name
             # 'this' argument does not appear in the expression list count
             n_args += 1
-            # because we can only use this format inside a class method, the 'this' pointer
-            # must already be selected and is the first argument
-            self.vm_writer.writePush('pointer', 0)
             self.vm_writer.writeCall(f'{class_or_func_name}.{func_name}', n_args)
 
         else:

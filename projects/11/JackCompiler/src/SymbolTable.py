@@ -138,4 +138,4 @@ class SymbolTable():
             varName = k + (' ' * (maxVarLen - len(k)))
             typeVal = v['type'] + (' ' * (maxTypeLen - len(v['type'])))
             kind = v['kind'] + (' ' * (maxKindLen - len(v['kind'])))
-            print(f'|{varName}|{typeVal}|{kind}|{v['index']}|')
+            print(f"|{varName}|{typeVal}|{kind}|{v['index']}|")

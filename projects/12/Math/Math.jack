@@ -14,15 +14,40 @@ class Math {
 
     // Initializes the Math library.
     function void init() {
+        let n = 16; // width of Hack CPU instructions
         // TODO: implement
+        return;
     }
 
-    /** Returns the product of x and y. 
+    /** Returns the product of x and y.
      *  When a Jack compiler detects the multiplication operator '*'
-     *  in an expression, it handles it by invoking this method. 
+     *  in an expression, it handles it by invoking this method.
      *  Thus, in Jack, x * y and Math.multiply(x,y) return the same value. */
     function int multiply(int x, int y) {
-        // TODO: implement
+
+        var int sum, shiftedX;
+        var int i, w;
+        var int bit;
+
+        let shiftedX = x;
+
+        let i = 0;
+        let w = n - 1; // iterate each bit index
+        let bit = 1;
+
+        while(i < w) {
+
+            if ((y & bit) = bit) {
+                let sum = sum + shiftedX;
+            }
+
+            let shiftedX = shiftedX * 2;
+
+            let bit = bit * 2;
+            let i = i + 1;
+        }
+
+        return sum;
     }
 
     /** Returns the integer part of x / y.
@@ -31,10 +56,13 @@ class Math {
      *  Thus, x/y and Math.divide(x,y) return the same value. */
     function int divide(int x, int y) {
         // TODO: implement
+        return 0;
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
+        // TODO: implement
+        return 0;
     }
 
     /** Returns the greater value. */

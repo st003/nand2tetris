@@ -33,11 +33,10 @@ class Math {
         let shiftedX = x;
 
         let i = 0;
-        let w = n - 1; // the most significant bit determines the sign
         let bitMask = 1; // only one bit is high at any time
 
         // iterate each bit
-        while(i < w) {
+        while(i < n) {
 
             // check if the i'th bit is high
             if ((y & bitMask) = bitMask) {
@@ -45,10 +44,10 @@ class Math {
             }
 
             // right-pad x by one bit
-            let shiftedX = shiftedX * 2;
+            let shiftedX = shiftedX + shiftedX;
 
             // shift the high bit up one place
-            let bitMask = bitMask * 2;
+            let bitMask = bitMask + bitMask;
             let i = i + 1;
         }
 

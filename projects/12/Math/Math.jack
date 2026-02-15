@@ -59,8 +59,49 @@ class Math {
      *  an an expression, it handles it by invoking this method.
      *  Thus, x/y and Math.divide(x,y) return the same value. */
     function int divide(int x, int y) {
-        // TODO: implement
-        return 0;
+
+        var int q;
+
+        // using negative numbers internally causes
+        // an infinite loop
+        var boolean isNeg;
+        let isNeg = false;
+
+        if (x < 0) {
+            let x = Math.abs(x);
+            let isNeg = true;
+        }
+
+        if (y < 0) {
+            let y = Math.abs(y);
+            let isNeg = true;
+        }
+
+        // two negatives should result in a positive
+        if ((x < 0) & (y < 0)) {
+            let isNeg = false;
+        }
+
+        // early exit
+        if (y > x) {
+            return 0;
+        }
+
+        // recursively call divide with a larger and larger y
+        // this works b/c divide will eventually early exit
+        let q = Math.divide(x, (y * 2));
+
+        if ((x - (2 * q * y)) < y) {
+            let q = 2 * q;
+        } else {
+            let q = (2 * q) + 1;
+        }
+
+        if (isNeg) {
+            return q * -1;
+        }
+
+        return q;
     }
 
     /** Returns the integer part of the square root of x. */

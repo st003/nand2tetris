@@ -105,8 +105,8 @@ class Math {
             let isNeg = false;
         }
 
-        // early exit
-        if (y > x) {
+        // early exit and overflow prevention
+        if ((y > x) | (y < 0)) {
             return 0;
         }
 

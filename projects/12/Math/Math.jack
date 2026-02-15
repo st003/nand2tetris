@@ -27,23 +27,28 @@ class Math {
 
         var int sum, shiftedX;
         var int i, w;
-        var int bit;
+        var int bitMask;
 
+        let sum = 0;
         let shiftedX = x;
 
         let i = 0;
-        let w = n - 1; // iterate each bit index
-        let bit = 1;
+        let w = n - 1; // the most significant bit determines the sign
+        let bitMask = 1; // only one bit is high at any time
 
+        // iterate each bit
         while(i < w) {
 
-            if ((y & bit) = bit) {
+            // check if the i'th bit is high
+            if ((y & bitMask) = bitMask) {
                 let sum = sum + shiftedX;
             }
 
+            // right-pad x by one bit
             let shiftedX = shiftedX * 2;
 
-            let bit = bit * 2;
+            // shift the high bit up one place
+            let bitMask = bitMask * 2;
             let i = i + 1;
         }
 
@@ -84,8 +89,6 @@ class Math {
     /** Returns the absolute value of x. */
     function int abs(int x) {
         if (x < 0) {
-            // NOTE: use of * here requires Math.multiply()
-            // to be implemented correctly
             return x * -1;
         }
         return x;

@@ -15,6 +15,8 @@ The contents of Project 12 are as follows:
 * Array
 * Sys
 
+All instances of Main.jack, *.cmp, and *.tst are test files provided by the instructors.
+
 ## Building
 
 Each Class can be compiled using the Jack compiler located at [https://nand2tetris.github.io/web-ide/compiler](https://nand2tetris.github.io/web-ide/compiler) or by using the implementation located in Project 11.

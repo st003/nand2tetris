@@ -10,12 +10,29 @@ class Memory {
 
     // treat all of the computer RAM as an array
     static Array ram;
+    static int heapBase;
+    static int maxHeapSize;
+    static int freeList;
 
     /** Initializes the class. */
     function void init() {
+
         // set the pointer for the ram Array to 0 in order
         // to give Memory access to all the RAM by address
         let ram = 0;
+
+        // Hack computer defined initial location of the heap
+        let heapBase = 2048;
+        let freeList = heapBase;
+
+        // Hack computer defined max size of heap
+        let maxHeapSize = 14335;
+
+        // make entire heap a single heap segment initially
+        // configure heap segment header
+        let ram[heapBase] = null;
+        let ram[heapBase + 1] = maxHeapSize - 2;
+
         return;
     }
 
@@ -32,9 +49,51 @@ class Memory {
 
     /** Finds an available RAM block of the given size and returns
      *  a reference to its base address. */
-    function int alloc(int size) {
-        // TODO: implement
-        return 2048;
+    function Array alloc(int size) {
+
+        var int curPtr, curSize, curEndPtr;
+        var int newPtr, newTotalSize;
+
+        let curPtr = freeList;
+        let curSize = ram[curPtr + 1];
+        let newTotalSize = size + 2;
+
+        // scan the available heap segments in the free list while
+        // the current segement has a pointer to another segment
+        while(~(curPtr = null)) {
+
+            // if the given segment has enough space (first-fit algorithim)
+            if (~(curSize < newTotalSize)) {
+
+                // allocate a new segement starting from the end of the current segment
+
+                // (1) get the end of the current segment
+                // end pointer = segment pointer + header size + block size
+                let curEndPtr = curPtr + 2 + curSize;
+
+                // (2) find the head of the new segment by working backwards from the end
+                let newPtr = curEndPtr - newTotalSize;
+
+                // (3) configure the new segement's header
+                let ram[newPtr] = null;
+                let ram[newPtr + 1] = size;
+
+                // (4) update the header of the current segement
+                let ram[curPtr + 1] = curSize - newTotalSize;
+
+                // (5) return the new segment's data block
+                return ram[newPtr + 2];
+
+            // otherwise, move on to the next heap segment in the list
+            } else {
+                let curPtr = ram[curPtr];
+                let curSize = ram[curPtr + 1];
+            }
+        }
+
+        // if out of memory error
+        do Sys.error(1); // TODO: make class specific error codes
+        return null;
     }
 
     /** De-allocates the given object (cast as an array) by making

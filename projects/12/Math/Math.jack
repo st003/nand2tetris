@@ -32,7 +32,7 @@ class Math {
     }
 
     /** checks if the bit for n in the i'th position is high
-     *  i is z-indexed */
+     *  i is 0-indexed */
     function boolean bit(int n, int i) {
         return (~((n & powersOfTwo[i]) = 0));
     }

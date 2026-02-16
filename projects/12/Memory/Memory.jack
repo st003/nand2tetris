@@ -26,7 +26,7 @@ class Memory {
         let freeList = heapBase;
 
         // Hack computer defined max size of heap
-        let maxHeapSize = 14335;
+        let maxHeapSize = 14336;
 
         // make entire heap a single heap segment initially
         // configure heap segment header
@@ -60,7 +60,7 @@ class Memory {
 
         // scan the available heap segments in the free list while
         // the current segement has a pointer to another segment
-        while(~(curPtr = null)) {
+        while (~(curPtr = null)) {
 
             // if the given segment has enough space (first-fit algorithim)
             if (~(curSize < newTotalSize)) {
@@ -99,7 +99,23 @@ class Memory {
     /** De-allocates the given object (cast as an array) by making
      *  it available for future allocations. */
     function void deAlloc(Array o) {
-        // TODO: implement
-        return;
+
+        // traverse the free list until you find a null pointer in a heap segment's next feild
+        // then update that null pointer with the address of the newly freed block
+        // NOTE: this function does not do any memory defragmentation
+
+        var int next;
+        let next = freeList;
+
+        while (~(next = null)) {
+            if (ram[next] = null) {
+                let ram[next] = o;
+                let next = null;
+            } else {
+                let next = ram[next];
+            }
+        }
+
+        return 0;
     }
 }

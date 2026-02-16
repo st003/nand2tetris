@@ -26,11 +26,11 @@ class Memory {
         let freeList = heapBase;
 
         // Hack computer defined max size of heap
-        let maxHeapSize = 14336;
+        let maxHeapSize = 16384 - heapBase;
 
         // make entire heap a single heap segment initially
         // configure heap segment header
-        let ram[heapBase] = null;
+        let ram[heapBase] = 0;
         let ram[heapBase + 1] = maxHeapSize - 2;
 
         return;
@@ -60,7 +60,7 @@ class Memory {
 
         // scan the available heap segments in the free list while
         // the current segement has a pointer to another segment
-        while (~(curPtr = null)) {
+        while (~(curPtr = 0)) {
 
             // if the given segment has enough space (first-fit algorithim)
             if (~(curSize < newTotalSize)) {
@@ -75,14 +75,14 @@ class Memory {
                 let newPtr = curEndPtr - newTotalSize;
 
                 // (3) configure the new segement's header
-                let ram[newPtr] = null;
+                let ram[newPtr] = 0;
                 let ram[newPtr + 1] = size;
 
                 // (4) update the header of the current segement
                 let ram[curPtr + 1] = curSize - newTotalSize;
 
                 // (5) return the new segment's data block
-                return ram[newPtr + 2];
+                return (newPtr + 2);
 
             // otherwise, move on to the next heap segment in the list
             } else {
@@ -91,9 +91,7 @@ class Memory {
             }
         }
 
-        // if out of memory error
-        do Sys.error(1); // TODO: make class specific error codes
-        return null;
+        return 0;
     }
 
     /** De-allocates the given object (cast as an array) by making
@@ -107,10 +105,10 @@ class Memory {
         var int next;
         let next = freeList;
 
-        while (~(next = null)) {
-            if (ram[next] = null) {
-                let ram[next] = o;
-                let next = null;
+        while (next > 0) {
+            if (ram[next] = 0) {
+                let ram[next] = o - 2; // need to include the segment header in the operation
+                let next = 0;
             } else {
                 let next = ram[next];
             }

@@ -9,33 +9,93 @@
  */
 class Screen {
 
+    static int SCREEN;
+    static boolean currentColor;
+
     /** Initializes the Screen. */
     function void init() {
+
+        // Hack computer screen starts here in memory
+        let SCREEN = 16384; // TODO: is the correct? Should it be 16385?
+
+        // default the current color to black
+        let currentColor = true;
+
+        return;
     }
 
     /** Erases the entire screen. */
     function void clearScreen() {
+        // TODO: implement
+        return;
     }
 
     /** Sets the current color, to be used for all subsequent drawXXX commands.
      *  Black is represented by true, white by false. */
     function void setColor(boolean b) {
+        let currentColor = b;
+        return;
     }
 
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
+
+        var int addr, value, bit;
+        var int q, r;
+
+        // get the word which needs to be modified
+        let addr = SCREEN + (32 * y) + (x / 16);
+
+        // get the current value of the word so we can
+        // modify only the specified but without changing
+        // the whole word
+        let value = Memory.peek(addr);
+
+        // get the specific bit using x % 16. Modulus can be
+        // implemented using division, multiplication, and subtraction
+        let q = x / 16;
+        let r = x - (q * 16);
+
+        // TODO: calculate 2^r
+        let bit = -1;
+
+        // black
+        if (currentColor) {
+            // bitwise OR sets the specific bit high
+            let value = value|bit;
+
+        // white
+        } else {
+            // if greater than or equal to 0 because
+            // we don't want to flip already white bits
+            if (~((value - bit) < 0)) {
+                // subtracting sets the specific bit low
+                let value = value - bit;
+            }
+        }
+
+        // set the modified word in memory
+        do Memory.poke(addr, value);
+
+        return;
     }
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
+        // TODO: implement
+        return;
     }
 
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      *  and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        // TODO: implement
+        return;
     }
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
+        // TODO: implement
+        return;
     }
 }

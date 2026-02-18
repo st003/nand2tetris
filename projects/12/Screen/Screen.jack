@@ -40,7 +40,7 @@ class Screen {
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
 
-        var int addr, value, bit;
+        var int addr, value, bitMask;
         var int q, r;
 
         // get the word which needs to be modified
@@ -56,22 +56,18 @@ class Screen {
         let q = x / 16;
         let r = x - (q * 16);
 
-        // TODO: calculate 2^r
-        let bit = -1;
+        // create a bit mask from the remainder
+        let bitMask = Math.getPowerOfTwo(r);
 
         // black
         if (currentColor) {
             // bitwise OR sets the specific bit high
-            let value = value|bit;
+            let value = value | bitMask;
 
         // white
         } else {
-            // if greater than or equal to 0 because
-            // we don't want to flip already white bits
-            if (~((value - bit) < 0)) {
-                // subtracting sets the specific bit low
-                let value = value - bit;
-            }
+            // negating the mask and bitwise AND sets the specific bit low
+            let value = value & (~bitMask);
         }
 
         // set the modified word in memory

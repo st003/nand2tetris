@@ -37,6 +37,14 @@ class Math {
         return (~((n & powersOfTwo[i]) = 0));
     }
 
+    /** Returns 2^p where p is 0-15 */
+    function int getPowerOfTwo(int p) {
+        if ((p < 0) | (p > 15)) {
+            return 0;
+        }
+        return powersOfTwo[p];
+    }
+
     /** Returns the product of x and y.
      *  When a Jack compiler detects the multiplication operator '*'
      *  in an expression, it handles it by invoking this method.

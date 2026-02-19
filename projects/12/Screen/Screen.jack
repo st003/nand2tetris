@@ -16,7 +16,7 @@ class Screen {
     function void init() {
 
         // Hack computer screen starts here in memory
-        let SCREEN = 16384; // TODO: is the correct? Should it be 16385?
+        let SCREEN = 16384;
 
         // default the current color to black
         let currentColor = true;
@@ -26,7 +26,12 @@ class Screen {
 
     /** Erases the entire screen. */
     function void clearScreen() {
-        // TODO: implement
+        var int addr;
+        let addr = SCREEN;
+        while (addr < 24576) {
+            do Memory.poke(addr, 0);
+            let addr = addr + 1;
+        }
         return;
     }
 

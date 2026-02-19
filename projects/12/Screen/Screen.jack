@@ -41,7 +41,7 @@ class Screen {
     function void drawPixel(int x, int y) {
 
         var int addr, value, bitMask;
-        var int q, r;
+        var int r;
 
         // get the word which needs to be modified
         let addr = SCREEN + (32 * y) + (x / 16);
@@ -52,9 +52,7 @@ class Screen {
         let value = Memory.peek(addr);
 
         // get the specific bit using x % 16. Modulus can be
-        // implemented using division, multiplication, and subtraction
-        let q = x / 16;
-        let r = x - (q * 16);
+        let r = Math.modulus(x, 16);
 
         // create a bit mask from the remainder
         let bitMask = Math.getPowerOfTwo(r);

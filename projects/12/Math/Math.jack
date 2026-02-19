@@ -126,6 +126,13 @@ class Math {
         return q;
     }
 
+    /** Returns the modulus of the given values */
+    function int modulus(int x, int y) {
+        var int q;
+        let q = x / y;
+        return x - (q * y);
+    }
+
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
 

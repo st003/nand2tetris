@@ -84,6 +84,7 @@ class Screen {
 
         var int dx, dy, tmp;
         var int xo, yo, diff;
+        var int dyPos;
 
         // always draw left to right
         if (x1 > x2) {
@@ -91,6 +92,7 @@ class Screen {
             let x1 = x2;
             let x2 = tmp;
 
+            // and in this case flip y1 and y2
             let tmp = y1;
             let y1 = y2;
             let y2 = tmp;
@@ -99,45 +101,57 @@ class Screen {
         let dx = x2 - x1;
         let dy = y2 - y1;
 
+        let xo = 0;
+        let yo = 0;
+        let diff = 0;
+
         // horizonal line
         if (dy = 0) {
-            while (~(x1 > x2)) {
-                do Screen.drawPixel(x1, y1);
-                let x1 = x1 + 1;
+            // less than or equal to
+            while (~(xo > dx)) {
+                do Screen.drawPixel(x1 + xo, y1);
+                let xo = xo + 1;
             }
             return;
         }
 
         // vertical line
         if (dx = 0) {
-            // TODO: how to draw the from the bottom up?
-            while (~(y1 > y2)) {
-                do Screen.drawPixel(x1, y1);
-                if (dy < 0) {
-                    let y1 = y1 - 1;
-                } else {
-                    let y1 = y1 + 1;
+
+            // draw top to bottom
+            if (dy > 0) {
+                // less than or equal to
+                while (~(yo > dy)) {
+                    do Screen.drawPixel(x1, y1 + yo);
+                    let yo = yo + 1;
+                }
+
+            // draw bottom to top
+            } else {
+                // greater than or equal to
+                while (~(yo < dy)) {
+                    do Screen.drawPixel(x1, y1 + yo);
+                    let yo = yo - 1;
                 }
             }
+
             return;
         }
 
-        let xo = 0;
-        let yo = 0;
-        let diff = 0;
-
         // diagonal lines
+        let dyPos = Math.abs(dy); // force positive dy
         // while "less-than or equal to"
-        while (~(xo > dx) & ~(yo > Math.abs(dy))) {
+        while (~(xo > dx) & ~(yo > dyPos)) {
             do Screen.drawPixel(x1 + xo, y1 + yo);
             if (diff < 0) {
                 let xo = xo + 1;
-                let diff = diff + Math.abs(dy);
+                let diff = diff + dyPos;
             } else {
-                if (dy < 0) {
-                    let yo = yo - 1;
-                } else {
+                if (dy > 0) {
                     let yo = yo + 1;
+                } else {
+                    // this works because even if the yo > dyPos never fails, the other condition will eventually
+                    let yo = yo - 1;
                 }
                 let diff = diff - dx;
             }

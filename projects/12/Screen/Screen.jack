@@ -107,12 +107,13 @@ class Screen {
                 let mask = mask + Math.getPowerOfTwo(leftBit);
                 let leftBit = leftBit + 1;
             }
-            // draw white
-            if (~currentColor) {
-                let value = Memory.peek(leftWord);
-                let mask = value & ~mask;
+            let value = Memory.peek(leftWord);
+            if (currentColor) {
+                let value = value | mask;
+            } else {
+                let value = value & ~mask;
             }
-            do Memory.poke(leftWord, mask);
+            do Memory.poke(leftWord, value);
             return;
         }
 
@@ -126,12 +127,13 @@ class Screen {
                 let mask = mask + Math.getPowerOfTwo(leftBit);
                 let leftBit = leftBit + 1;
             }
-            // draw white
-            if (~currentColor) {
-                let value = Memory.peek(leftWord);
-                let mask = value & ~mask;
+            let value = Memory.peek(leftWord);
+            if (currentColor) {
+                let value = value | mask;
+            } else {
+                let value = value & ~mask;
             }
-            do Memory.poke(leftWord, mask);
+            do Memory.poke(leftWord, value);
         }
 
         // middle section
@@ -153,12 +155,13 @@ class Screen {
                 let mask = mask + Math.getPowerOfTwo(rightBit);
                 let rightBit = rightBit - 1;
             }
-            // draw white
-            if (~currentColor) {
-                let value = Memory.peek(rightWord);
-                let mask = value & ~mask;
+            let value = Memory.peek(rightWord);
+            if (currentColor) {
+                let value = value | mask;
+            } else {
+                let value = value & ~mask;
             }
-            do Memory.poke(rightWord, mask);
+            do Memory.poke(rightWord, value);
         }
 
         return;
@@ -244,13 +247,11 @@ class Screen {
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      *  and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
-
         // less than or equal to
         while (~(y1 > y2)) {
             do Screen.drawHorizontalLine(x1, x2, y1);
             let y1 = y1 + 1;
         }
-
         return;
     }
 

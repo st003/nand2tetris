@@ -188,11 +188,7 @@ class Screen {
 
         // horizonal line
         if (dy = 0) {
-            // less than or equal to
-            while (~(xo > dx)) {
-                do Screen.drawPixel(x1 + xo, y1);
-                let xo = xo + 1;
-            }
+            do Screen.drawHorizontalLine(x1, x2, y1);
             return;
         }
 

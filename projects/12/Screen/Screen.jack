@@ -56,8 +56,8 @@ class Screen {
         // the whole word
         let value = Memory.peek(addr);
 
-        // get the specific bit using x % 16. Modulus can be
-        let r = Math.modulus(x, 16);
+        // optimization: when dealing with powers of 2, (n & 15) is the same as Math.modulus(n, 16)
+        let r = x & 15;
 
         // create a bit mask from the remainder
         let bitMask = Math.getPowerOfTwo(r);
@@ -70,11 +70,92 @@ class Screen {
         // white
         } else {
             // negating the mask and bitwise AND sets the specific bit low
-            let value = value & (~bitMask);
+            let value = value & ~bitMask;
         }
 
         // set the modified word in memory
         do Memory.poke(addr, value);
+
+        return;
+    }
+
+    /** Optimized line draw for horizonal lines only */
+    function void drawHorizontalLine(int x1, int x2, int y) {
+
+        var int tmp, leftWord, rightWord;
+        var int mask, value, leftBit, rightBit;
+
+        // always draw right to left
+        if (x1 > x2) {
+            let tmp = x1;
+            let x1 = x2;
+            let x2 = tmp;
+        }
+
+        let leftWord = SCREEN + (32 * y) + (x1 / 16);
+        let rightWord = SCREEN + (32 * y) + (x2 / 16);
+
+        // if the start and end occupy the same word
+        if (leftWord = rightWord) {
+            // less than or equal to
+            while(~(x1 > x2)) {
+                do Screen.drawPixel(x1, y);
+                let x1 = x1 + 1;
+            }
+            return;
+        }
+
+        // for multiple words, start with the left word
+        let mask = 0;
+
+        // optimization: when dealing with powers of 2, (n & 15) is the same as Math.modulus(n, 16)
+        let leftBit = x1 & 15;
+        if (leftBit = 0) {
+            // full word
+            do Memory.poke(leftWord, currentColor);
+
+        } else {
+            while (~(leftBit > 15)) {
+                let mask = mask + Math.getPowerOfTwo(leftBit);
+                let leftBit = leftBit + 1;
+            }
+            // draw white
+            if (~currentColor) {
+                let value = Memory.peek(leftWord);
+                let mask = value & ~mask;
+            }
+            do Memory.poke(leftWord, mask);
+        }
+
+        // middle section
+        // start from the first word after the left word
+        let leftWord = leftWord + 1;
+        while (leftWord < rightWord) {
+            do Memory.poke(leftWord, currentColor);
+            let leftWord = leftWord + 1;
+        }
+
+        // right word
+        let mask = 0;
+
+        // optimization: when dealing with powers of 2, (n & 15) is the same as Math.modulus(n, 16)
+        let rightBit = x2 & 15;
+        if (rightBit = 15) {
+            // full word
+            do Memory.poke(leftWord, currentColor);
+
+        } else {
+            while (~(rightBit < 0)) {
+                let mask = mask + Math.getPowerOfTwo(rightBit);
+                let rightBit = rightBit - 1;
+            }
+            // draw white
+            if (~currentColor) {
+                let value = Memory.peek(rightWord);
+                let mask = value & ~mask;
+            }
+            do Memory.poke(rightWord, mask);
+        }
 
         return;
     }

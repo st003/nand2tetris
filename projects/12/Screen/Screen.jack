@@ -258,30 +258,23 @@ class Screen {
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
 
-        var int x1, x2;
-        var int dy, r2;
+        var int dx, dy, r2;
 
-        let r2 = r * r;
-
-        // top half of circle
-        let dy = r;
-        while (dy > 0) {
-            let x1 = x - Math.sqrt(r2 - (dy * dy));
-            let x2 = x + Math.sqrt(r2 - (dy * dy));
-            do Screen.drawHorizontalLine(x1, x2, (y - dy));
-            let dy = dy - 1;
+        // prevent screen overflow
+        if (r > 181) {
+            return;
         }
 
-        // middle line
-        do Screen.drawHorizontalLine((x - r), (x + r), y);
+        let dy = -r;
+        let r2 = r * r;
 
-        // bottom half of circle
-        let dy = 1;
-        // less than or equal to
+        // less then or equal to
         while (~(dy > r)) {
-            let x1 = x - Math.sqrt(r2 - (dy * dy));
-            let x2 = x + Math.sqrt(r2 - (dy * dy));
-            do Screen.drawHorizontalLine(x1, x2, (y + dy));
+
+            // calculate the x-offset using the Pythagorean theorem
+            let dx = Math.sqrt(r2 - (dy * dy));
+
+            do Screen.drawHorizontalLine((x - dx), (x + dx), y + dy);
             let dy = dy + 1;
         }
 

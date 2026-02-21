@@ -81,7 +81,68 @@ class Screen {
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
-        // TODO: implement
+
+        var int dx, dy, tmp;
+        var int xo, yo, diff;
+
+        // always draw left to right
+        if (x1 > x2) {
+            let tmp = x1;
+            let x1 = x2;
+            let x2 = tmp;
+
+            let tmp = y1;
+            let y1 = y2;
+            let y2 = tmp;
+        }
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+
+        // horizonal line
+        if (dy = 0) {
+            while (~(x1 > x2)) {
+                do Screen.drawPixel(x1, y1);
+                let x1 = x1 + 1;
+            }
+            return;
+        }
+
+        // vertical line
+        if (dx = 0) {
+            // TODO: how to draw the from the bottom up?
+            while (~(y1 > y2)) {
+                do Screen.drawPixel(x1, y1);
+                if (dy < 0) {
+                    let y1 = y1 - 1;
+                } else {
+                    let y1 = y1 + 1;
+                }
+            }
+            return;
+        }
+
+        let xo = 0;
+        let yo = 0;
+        let diff = 0;
+
+        // diagonal lines
+        // while "less-than or equal to"
+        while (~(xo > dx) & ~(yo > Math.abs(dy))) {
+            do Screen.drawPixel(x1 + xo, y1 + yo);
+            if (diff < 0) {
+                let xo = xo + 1;
+                let diff = diff + Math.abs(dy);
+            } else {
+                if (dy < 0) {
+                    let yo = yo - 1;
+                } else {
+                    let yo = yo + 1;
+                }
+                let diff = diff - dx;
+            }
+        }
+
         return;
     }
 

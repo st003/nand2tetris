@@ -94,22 +94,29 @@ class Screen {
 
         let leftWord = SCREEN + (32 * y) + (x1 / 16);
         let rightWord = SCREEN + (32 * y) + (x2 / 16);
-
-        // if the start and end occupy the same word
-        if (leftWord = rightWord) {
-            // less than or equal to
-            while(~(x1 > x2)) {
-                do Screen.drawPixel(x1, y);
-                let x1 = x1 + 1;
-            }
-            return;
-        }
-
-        // for multiple words, start with the left word
         let mask = 0;
 
         // optimization: when dealing with powers of 2, (n & 15) is the same as Math.modulus(n, 16)
         let leftBit = x1 & 15;
+        let rightBit = x2 & 15;
+
+        // if the start and end occupy the same word
+        if (leftWord = rightWord) {
+            // less than or equal to
+            while(~(leftBit > rightBit)) {
+                let mask = mask + Math.getPowerOfTwo(leftBit);
+                let leftBit = leftBit + 1;
+            }
+            // draw white
+            if (~currentColor) {
+                let value = Memory.peek(leftWord);
+                let mask = value & ~mask;
+            }
+            do Memory.poke(leftWord, mask);
+            return;
+        }
+
+        // for multiple words, start with the left word
         if (leftBit = 0) {
             // full word
             do Memory.poke(leftWord, currentColor);
@@ -137,9 +144,6 @@ class Screen {
 
         // right word
         let mask = 0;
-
-        // optimization: when dealing with powers of 2, (n & 15) is the same as Math.modulus(n, 16)
-        let rightBit = x2 & 15;
         if (rightBit = 15) {
             // full word
             do Memory.poke(leftWord, currentColor);

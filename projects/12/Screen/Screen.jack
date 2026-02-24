@@ -268,7 +268,7 @@ class Screen {
         let dy = -r;
         let r2 = r * r;
 
-        // less then or equal to
+        // less than or equal to
         while (~(dy > r)) {
 
             // calculate the x-offset using the Pythagorean theorem

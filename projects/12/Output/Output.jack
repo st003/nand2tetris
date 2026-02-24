@@ -17,8 +17,20 @@ class Output {
     // Character map for displaying characters
     static Array charMaps;
 
+    // curosor position
+    static int x, y;
+
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
+
+        // initialize font
+        do initMap();
+
+        // initialize cursor
+        let x = 0;
+        let y = 0;
+
+        return;
     }
 
     // Initializes the character map array

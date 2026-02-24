@@ -191,7 +191,7 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
-        if ((i > -1) & (i < 64) & (j > -1) & (j > 23)) {
+        if ((i > -1) & (i < 23) & (j > -1) & (j < 64)) {
             let row = i;
             let col = j;
         }

@@ -17,18 +17,22 @@ class Output {
     // Character map for displaying characters
     static Array charMaps;
 
-    // curosor position
-    static int x, y;
+    // cursor position
+    static int SCREEN;
+    static int col, row;
 
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
 
         // initialize font
-        do initMap();
+        do Output.initMap();
+
+        // Hack computer screen starts here in memory
+        let SCREEN = 16384;
 
         // initialize cursor
-        let x = 0;
-        let y = 0;
+        let row = 0;
+        let col = 0;
 
         return;
     }
@@ -81,6 +85,7 @@ class Output {
         do Output.create(64,30,51,51,59,59,59,27,3,30,0,0);  // @
         do Output.create(63,30,51,51,24,12,12,0,12,12,0,0);  // ?
 
+        // TODO: implement "A"
         do Output.create(65,0,0,0,0,0,0,0,0,0,0,0);          // A ** TO BE FILLED **
         do Output.create(66,31,51,51,51,31,51,51,51,31,0,0); // B
         do Output.create(67,28,54,35,3,3,3,35,54,28,0,0);    // C
@@ -186,28 +191,62 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
+        if ((i > -1) & (i < 64) & (j > -1) & (j > 23)) {
+            let row = i;
+            let col = j;
+        }
+        return;
     }
 
     /** Displays the given character at the cursor location,
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
+
+        var int addr, i;
+        var Array charMap;
+
+        // TODO: address calculation is not working yet
+        let addr = SCREEN + (row * 352) + (col / 2);
+        let charMap = Output.getMap(c);
+
+        let i = 0;
+        while (i < 11) {
+
+            // TODO: need to use a bit mask technique to draw only half the word
+
+            do Memory.poke(addr, charMap[i]);
+            let addr = addr + 32; // drop 1 pixel row
+
+            let i = i + 1;
+        }
+
+        do Output.moveCursor(row, col + 1);
+        return;
     }
 
     /** displays the given string starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printString(String s) {
+        // TODO: implement
+        return;
     }
 
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printInt(int i) {
+        // TODO: implement
+        return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        // TODO: implement
+        return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        // TODO: implement
+        return;
     }
 }

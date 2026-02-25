@@ -297,7 +297,18 @@ class Output {
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printInt(int i) {
-        // TODO: implement
+
+        var String str;
+
+        // create a string of size 6 because the maximum allowable
+        // number in Jack is -32767
+        let str = String.new(6);
+
+        // use the String method for converting ints to strings
+        do str.setInt(i);
+        do Output.printString(str);
+
+        do str.dispose();
         return;
     }
 

@@ -193,7 +193,9 @@ class Output {
         if ((i > -1) & (i < 23) & (j > -1) & (j < 64)) {
             let row = i;
             let col = j;
-            // TODO: do Output.printChar(32); // whitespace
+            // TODO: the instructions say to clear the current location
+            // but writing whitespace messes up the screen memory for some reason
+            // do Output.printChar(32); // whitespace
         }
         return;
     }
@@ -278,7 +280,17 @@ class Output {
     /** displays the given string starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printString(String s) {
-        // TODO: implement
+
+        var int len, i;
+
+        let len = s.length();
+        let i = 0;
+
+        while (i < len) {
+            do Output.printChar(s.charAt(i));
+            let i = i + 1;
+        }
+
         return;
     }
 

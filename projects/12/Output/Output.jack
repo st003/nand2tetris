@@ -194,7 +194,8 @@ class Output {
         if ((i > -1) & (i < 23) & (j > -1) & (j < 64)) {
             let row = i;
             let col = j;
-            do Output.printChar(32); // whitespace
+            // TODO: implement after figuring out the bit mask
+            // do Output.printChar(32); // whitespace
         }
         return;
     }
@@ -203,25 +204,65 @@ class Output {
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
 
-        var int addr, i;
+        var int word, charRow, i, current, mask;
+        var boolean rightSide;
         var Array charMap;
 
-        // TODO: address calculation is not working yet
-        let addr = SCREEN + (row * 352) + (col / 2);
+        // screen address
+        // + (number of rows * 11px * 32 cols/row)
+        // + (column number / 2) because each word contains 2 columns
+        let word = SCREEN + (row * 352) + (col / 2);
+
+        // becuase each word contains 2 columns we need to determine
+        // which half of the word the column lands in, then get the
+        // current word value and mask the non-modifed column to prevent
+        // unwanted overwrites to adjacent characters
+        //
+        // If the column number is even, then it occupies the right 8
+        // bits of the word. Odd columns occupy the left 8 bits.
+        // (n & 1) can be used to determine even or odd because all odd
+        // numbers have the 1-bit position set high
+        let rightSide = (col & 1) = 0;
+
         let charMap = Output.getMap(c);
 
         let i = 0;
         while (i < 11) {
 
-            // TODO: need to use a bit mask technique to draw only half the word
+            // get the current pixel row for the character map
+            let charRow = charMap[i];
 
-            do Memory.poke(addr, charMap[i]);
-            let addr = addr + 32; // drop 1 pixel row
+            // get the bits in the current word
+            let current = Memory.peek(word);
 
+            // based on which side of the column, generate a mask
+            if (rightSide) {
+                // generate a mask protecting the left 8-bits
+                let mask = -256; // 11111111 00000000
+            } else {
+                // generate a mask protecting the right 8-bits
+                let mask = 255; // 00000000 11111111
+                let charRow = charRow * 256; // shift the char map bits to the left side
+            }
+
+            // calculate the final output by protecting unaltered row with the mask
+            // and inserting the new bits for the character
+            let charRow = (current & mask) | charRow;
+
+            do Memory.poke(word, charRow);
+
+            // drop 1 pixel row
+            let word = word + 32;
+
+            // go to the next pixel row in the char map
             let i = i + 1;
         }
 
-        do Output.moveCursor(row, col + 1);
+        // move forward (does not wrap to next row)
+        if (col < 63) {
+            do Output.moveCursor(row, col + 1);
+        }
+
         return;
     }
 

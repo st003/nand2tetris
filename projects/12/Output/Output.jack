@@ -303,7 +303,10 @@ class Output {
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
-        // TODO: implement
+        if (row < 22) {
+            let row = row + 1;
+            let col = 0;
+        }
         return;
     }
 

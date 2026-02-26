@@ -199,6 +199,8 @@ class Output {
         }
 
         // clear the existing character by overwriting with white
+        // cannot call printChar b/c it will introduce an infinite
+        // loop
         let x1 = j * 8;
         let y1 = i * 11;
         let x2 = x1 + 7;
@@ -206,7 +208,7 @@ class Output {
 
         do Screen.setColor(false);
         do Screen.drawRectangle(x1, y1, x2, y2);
-        do Screen.setColor(true); 
+        do Screen.setColor(true);
 
         return;
     }

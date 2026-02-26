@@ -323,7 +323,23 @@ class Output {
 
     /** Moves the cursor one column back. */
     function void backSpace() {
-        // TODO: implement
+
+        // move back one column
+        if (col > 0) {
+            do Output.moveCursor(row, col - 1);
+
+        // if at the first column in a row
+        } else {
+            // move back to the end of the previous row
+            if (row > 0) {
+                do Output.moveCursor(row - 1, 63);
+
+            // if at (0,0) wrap to the end of the last column
+            } else {
+                do Output.moveCursor(22, 63);
+            }
+        }
+
         return;
     }
 }

@@ -193,9 +193,6 @@ class Output {
         if ((i > -1) & (i < 23) & (j > -1) & (j < 64)) {
             let row = i;
             let col = j;
-            // TODO: the instructions say to clear the current location
-            // but writing whitespace messes up the screen memory for some reason
-            // do Output.printChar(32); // whitespace
         }
         return;
     }

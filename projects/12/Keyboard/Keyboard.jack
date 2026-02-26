@@ -40,7 +40,7 @@ class Keyboard {
      */
     function char keyPressed() {
         var int key;
-        let key = Memeory.peek(KEYBOARD);
+        let key = Memory.peek(KEYBOARD);
         if (key > 0) {
             return key;
         } else {
@@ -52,8 +52,22 @@ class Keyboard {
      *  then echoes the key to the screen, and returns the character
      *  of the pressed key. */
     function char readChar() {
-        // TODO: implement
-        return 0;
+        var char key;
+        let key = 0;
+
+        // wait for the keyboard to be pressed
+        while (Keyboard.keyPressed() = 0) {}
+
+        // get the key which is pressed
+        let key = Keyboard.keyPressed();
+
+        // wait until no keys are pressed
+        while (~(Keyboard.keyPressed() = 0)) {}
+
+        // print out the char
+        do Output.printChar(key);
+
+        return key;
     }
 
     /**	Displays the message on the screen, reads from the keyboard the entered

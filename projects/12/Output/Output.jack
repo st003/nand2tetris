@@ -190,10 +190,24 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
+
+        var int x1, y1, x2, y2;
+
         if ((i > -1) & (i < 23) & (j > -1) & (j < 64)) {
             let row = i;
             let col = j;
         }
+
+        // clear the existing character by overwriting with white
+        let x1 = j * 8;
+        let y1 = i * 11;
+        let x2 = x1 + 7;
+        let y2 = y1 + 10;
+
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        do Screen.setColor(true); 
+
         return;
     }
 

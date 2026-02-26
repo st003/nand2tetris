@@ -64,8 +64,15 @@ class Keyboard {
         // wait until no keys are pressed
         while (~(Keyboard.keyPressed() = 0)) {}
 
-        // print out the char
-        do Output.printChar(key);
+        // backspace
+        if (key = 129) {
+            do Output.backSpace();
+        } else {
+            // don't print a the newline character
+            if (~(key = 128)) {
+                do Output.printChar(key);
+            }
+        }
 
         return key;
     }
@@ -74,8 +81,35 @@ class Keyboard {
      *  text until a newline character is detected, echoes the text to the screen,
      *  and returns its value. Also handles user backspaces. */
     function String readLine(String message) {
-        // TODO: implement
-        return "";
+
+        var String str;
+        var char c;
+
+        let str = String.new(64); // 64 is arbitrary but decided upon b/c 64 max columns
+
+        do Output.printString(message);
+
+        while (true) {
+            let c = Keyboard.readChar();
+
+            // newline
+            if (c = 128) {
+                do Output.println();
+                return str;
+
+            } else {
+
+                // backspace
+                if (c = 129) {
+                    do str.eraseLastChar();
+
+                } else {
+                    do str.appendChar(c);
+                }
+            }
+        }
+
+        return str;
     }
 
     /** Displays the message on the screen, reads from the keyboard the entered

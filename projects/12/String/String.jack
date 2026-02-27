@@ -10,16 +10,20 @@
  */
 class String {
 
+    field Array s;
+    field int length;
+
     /** constructs a new empty string with a maximum length of maxLength
      *  and initial length of 0. */
     constructor String new(int maxLength) {
-        // TODO: implement
-        return "";
+        let s = Memory.alloc(maxLength);
+        let length = 0;
+        return this;
     }
 
     /** Disposes this string. */
     method void dispose() {
-        // TODO: implement
+        do Memory.deAlloc(s);
         return;
     }
 

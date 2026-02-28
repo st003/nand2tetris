@@ -43,15 +43,16 @@ class String {
 
     /** Returns the character at the j-th location of this string. */
     method char charAt(int j) {
-        if (j < length) {
+        if (~(j < 0) & (j < length)) {
             return s[j];
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     /** Sets the character at the j-th location of this string to c. */
     method void setCharAt(int j, char c) {
-        if (j < cap) {
+        if (~(j < 0) & (j < cap)) {
             let s[j] = c;
         }
         return;
@@ -87,19 +88,19 @@ class String {
 
     /** Returns the new line character. */
     function char newLine() {
-        // TODO: implement
-        return 0;
+        // Decimal value for newline per Unit 6.9
+        return 128;
     }
 
     /** Returns the backspace character. */
     function char backSpace() {
-        // TODO: implement
-        return 0;
+        // Decimal value for backspace per Unit 6.9
+        return 129;
     }
 
     /** Returns the double quote (") character. */
     function char doubleQuote() {
-        // TODO: implement
-        return 0;
+        // ASCII decimal value for double-quote
+        return 34;
     }
 }

@@ -69,11 +69,13 @@ class String {
 
     /** Erases the last character from this string. */
     method void eraseLastChar() {
-        // TODO: implement
+        if (length > 0) {
+            let length = length - 1;
+        }
         return;
     }
 
-    /** Returns the integer value of this string, 
+    /** Returns the integer value of this string,
      *  until a non-digit character is detected. */
     method int intValue() {
         // TODO: implement

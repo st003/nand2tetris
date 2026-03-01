@@ -8,18 +8,51 @@ class Sys {
 
     /** Performs all the initializations required by the OS. */
     function void init() {
+        do Memory.init();
+        do Screen.init();
+        do Output.init();
+        do Keyboard.init();
+        do Math.init();
+
+        // Any jack program is expected to have Main.jack class
+        // with a main function
+        do Main.main();
+
+        return;
     }
 
     /** Halts the program execution. */
     function void halt() {
+        // stop program execution by creating an infinite loop
+        while (true) {}
+        return;
     }
 
-    /** Waits approximately duration milliseconds and returns.  */
+    /** Waits approximately duration milliseconds and returns. */
     function void wait(int duration) {
+
+        var int i, j;
+
+        let i = 0;
+        while (i < duration) {
+            let j = 0;
+            // arbitrary delay to mimic an actual delay
+            // value is set based on WEB IDE's execution speed
+            while (j < 30) {
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+
+        return;
     }
 
     /** Displays the given error code in the form "ERR<errorCode>",
      *  and halts the program's execution. */
     function void error(int errorCode) {
+        do Output.printString("ERR");
+        do Output.printInt(errorCode);
+        do Sys.halt();
+        return;
     }
 }

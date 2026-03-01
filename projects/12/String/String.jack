@@ -110,7 +110,7 @@ class String {
         }
 
         if (isNeg) {
-            let n = n * -1;
+            let n = -n;
         }
 
         return n;
@@ -118,7 +118,46 @@ class String {
 
     /** Sets this string to hold a representation of the given value. */
     method void setInt(int val) {
-        // TODO: implement
+
+        // move the internal string cursor to the beginning
+        let length = 0;
+
+        if (val < 0) {
+            let val = -val;
+            do appendChar(45); // decimal value for '-'
+        }
+
+        do setIntChars(val);
+        return;
+    }
+
+    /** Converts a positive int to a sequence of characters and inserts
+    * them into the current string. */
+    method void setIntChars(int val) {
+
+        var int q, r;
+        var char c;
+
+        // reduce the size of val for next iteration
+        let q = val / 10;
+
+        // get the right-most digit from val
+        let r = val - (q * 10);
+
+        // add ASCII offset to convert into char representation
+        let c = r + 48;
+
+        // by making this recursive, the digits from the left side are
+        // inserted into the array first. When the value is less than
+        // 10, that's you recursive exit
+        if (val < 10) {
+            do appendChar(c);
+
+        } else {
+            do setIntChars(q);
+            do appendChar(c);
+        }
+
         return;
     }
 

@@ -18,6 +18,10 @@ class Sys {
         // with a main function
         do Main.main();
 
+        // submission requires that function does not return but
+        // VM translator required return to compile. Halt solves
+        // this issue
+        do Sys.halt();
         return;
     }
 

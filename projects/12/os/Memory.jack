@@ -114,6 +114,6 @@ class Memory {
             }
         }
 
-        return 0;
+        return;
     }
 }

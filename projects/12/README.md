@@ -6,14 +6,8 @@ Project 12 contains implementation of the Hack OS library written in Jack.
 
 The contents of Project 12 are as follows:
 
-* Math
-* Memory
-* Screen
-* Output
-* Keyboard
-* String
-* Array
-* Sys
+* **os** - Implementations of the Hack OS library written in Jack.
+* **test_files** - Programs and test files for each OS library module
 
 All instances of Main.jack, *.cmp, and *.tst are test files provided by the instructors.
 

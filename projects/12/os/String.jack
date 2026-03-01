@@ -135,8 +135,7 @@ class String {
     * them into the current string. */
     method void setIntChars(int val) {
 
-        var int q, r;
-        var char c;
+        var int q, r, c;
 
         // reduce the size of val for next iteration
         let q = val / 10;
